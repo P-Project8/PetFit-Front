@@ -38,17 +38,17 @@ body::-webkit-scrollbar {
 
 @font-face {
   font-family: 'KaKamora';
-  src: url('./fonts/Kakamora.ttf');
+  src: url('./assets/fonts/Kakamora.ttf');
 }
 
 @font-face {
   font-family: 'Balsamiq';
-  src: url('./fonts/BalsamiqSans-Regular.ttf');
+  src: url('./assets/fonts/BalsamiqSans-Regular.ttf');
   font-weight: 400;
 }
 
 @font-face {
   font-family: 'Balsamiq';
-  src: url('./fonts/BalsamiqSans-Bold.ttf');
+  src: url('./assets/fonts/BalsamiqSans-Bold.ttf');
   font-weight: 700;
 }
