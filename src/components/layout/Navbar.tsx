@@ -1,17 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 import { Home, Search, Shirt, Heart, User } from 'lucide-react';
+import { useNavigate } from 'react-router';
 
 export function Navbar() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('home');
   const [isVisible, setIsVisible] = useState(true);
   const lastScrollY = useRef(0);
 
   const navItems = [
-    { id: 'home', icon: Home, label: '홈' },
-    { id: 'search', icon: Search, label: '검색' },
-    { id: 'styling', icon: Shirt, label: '스타일링' },
-    { id: 'wishlist', icon: Heart, label: '찜' },
-    { id: 'mypage', icon: User, label: '마이페이지' },
+    { id: 'home', icon: Home, label: '홈', location: '/' },
+    { id: 'search', icon: Search, label: '검색', location: '/search' },
+    { id: 'styling', icon: Shirt, label: '스타일링', location: '/style' },
+    { id: 'wishlist', icon: Heart, label: '찜', location: '/wish' },
+    { id: 'mypage', icon: User, label: '마이페이지', location: '/my' },
   ];
 
   useEffect(() => {
@@ -47,7 +49,10 @@ export function Navbar() {
           return (
             <button
               key={item.id}
-              onClick={() => setActiveTab(item.id)}
+              onClick={() => {
+                setActiveTab(item.id);
+                navigate(`${item.location}`);
+              }}
               className="flex items-center justify-center transition-colors"
             >
               <Icon
