@@ -7,6 +7,7 @@ import RootLayout from './layout';
 import CategoryPage from './pages/CategoryPage';
 import CartPage from './pages/CartPage';
 import WishPage from './pages/WishPage';
+import SearchPage from './pages/SearchPage';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -17,7 +18,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/category/:categoryId" element={<CategoryPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/wish" element={<WishPage />} />
-          <Route path="/search" />
+          <Route path="/search" element={<SearchPage />} />
           <Route path="/style" />
           <Route path="/my" />
         </Route>

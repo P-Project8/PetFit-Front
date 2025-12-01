@@ -23,7 +23,7 @@ export default function ProductListHeader({
   }
 
   return (
-    <div className="font-['Balsamiq'] w-full text-[#14314F] px-4 flex justify-between pt-4 items-center">
+    <div className="font-['Balsamiq'] w-full text-[#14314F] px-6 flex justify-between pt-4 items-center">
       <p className="text-sm">{itemCount} items</p>
       <div className="relative">
         <button

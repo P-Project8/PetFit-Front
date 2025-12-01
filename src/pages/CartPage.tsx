@@ -2,7 +2,7 @@ import PageHeader from '../components/layout/PageHeader';
 
 export default function CartPage() {
   return (
-    <div className="min-h-screen bg-white pt-12 pb-16">
+    <div className="min-h-screen bg-white py-12">
       <PageHeader title="장바구니" />
 
       {/* Custom Scrollbar Hide */}

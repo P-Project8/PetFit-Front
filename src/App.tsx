@@ -18,9 +18,7 @@ export default function App() {
 
   // 2. 이전 슬라이드로 이동
   const prevSlide = () => {
-    setCurrentSlide((prev) =>
-      prev === 0 ? mockBanners.length - 1 : prev - 1
-    );
+    setCurrentSlide((prev) => (prev === 0 ? mockBanners.length - 1 : prev - 1));
   };
 
   // 3. 5초 자동 슬라이드
