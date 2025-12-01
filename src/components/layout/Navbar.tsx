@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { Home, Search, Shirt, Heart, User } from 'lucide-react';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 
 export function Navbar() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('home');
+  const location = useLocation(); // 현재 경로 정보를 가져옴
+
+  // activeTab state는 삭제합니다. (location으로 대체 가능)
   const [isVisible, setIsVisible] = useState(true);
   const lastScrollY = useRef(0);
 
@@ -19,8 +21,6 @@ export function Navbar() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-
-      // 맨 위쪽(0)이거나, 스크롤을 위로 올릴 때 -> 보여줌
       if (currentScrollY < lastScrollY.current || currentScrollY <= 10) {
         setIsVisible(true);
       } else if (currentScrollY > lastScrollY.current) {
@@ -44,13 +44,16 @@ export function Navbar() {
       <div className="grid grid-cols-5 h-12">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = activeTab === item.id;
+
+          // 핵심 수정 부분: 현재 경로와 아이템의 경로가 일치하는지 확인
+          // location.pathname이 '/' 일 때, item.location이 '/'인 홈 아이콘이 true가 됨
+          const isActive = location.pathname === item.location;
 
           return (
             <button
               key={item.id}
               onClick={() => {
-                setActiveTab(item.id);
+                // setActiveTab 제거됨
                 navigate(`${item.location}`);
               }}
               className="flex items-center justify-center transition-colors"

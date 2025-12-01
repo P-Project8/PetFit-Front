@@ -16,7 +16,8 @@ export default function ProductSection({
   categoryId,
 }: ProductSectionProps) {
   const navigate = useNavigate();
-  const [activeIndex, setActiveIndex] = useState(0);
+
+  const [scrollProgress, setScrollProgress] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -24,23 +25,23 @@ export default function ProductSection({
     if (!container) return;
 
     function handleScroll() {
-      const scrollLeft = container!.scrollLeft;
-      const itemWidth = container!.scrollWidth / products.length;
-      const currentIndex = Math.round(scrollLeft / itemWidth);
-      setActiveIndex(Math.min(currentIndex, 3));
+      const maxScroll = container!.scrollWidth - container!.clientWidth;
+      const currentScroll = container!.scrollLeft;
+      const progress = maxScroll > 0 ? currentScroll / maxScroll : 0;
+      setScrollProgress(progress);
     }
 
     container.addEventListener('scroll', handleScroll);
     return () => container.removeEventListener('scroll', handleScroll);
   }, [products.length]);
 
-  const segmentWidth = 25;
-
   function handleViewAll() {
     if (categoryId) {
       navigate(`/category/${categoryId}`);
     }
   }
+
+  const BAR_WIDTH_PERCENT = 25;
 
   return (
     <section className="mb-8">
@@ -54,34 +55,29 @@ export default function ProductSection({
           </button>
         )}
       </div>
+
       <div
         ref={containerRef}
         className="flex gap-3 overflow-x-auto pb-2 w-full
-          snap-x snap-mandatory scroll-pl-4
-          scrollbar-hide
-          before:shrink-0 before:w-4
+          scroll-pl-4 scrollbar-hide
+          before:shrink-0 before:w-2
           after:shrink-0 after:w-2"
-        style={{ scrollSnapType: 'x mandatory' }}
       >
         {products.map((product) => (
-          <div
-            key={product.id}
-            className="snap-start shrink-0 w-40"
-            style={{ scrollSnapAlign: 'start' }}
-          >
+          <div key={product.id} className="shrink-0 w-40">
             <ProductCard product={product} />
           </div>
         ))}
       </div>
 
-      {/* Segmented Progress Bar */}
+      {/* 부드러운 진행 바 */}
       <div className="px-4 mt-3">
         <div className="w-full h-0.5 bg-gray-200 rounded-full overflow-hidden relative">
           <div
-            className="absolute h-full bg-[#14314F] transition-all duration-300 ease-out rounded-full"
+            className="absolute h-full bg-gray-400 rounded-full"
             style={{
-              left: `${activeIndex * segmentWidth}%`,
-              width: `${segmentWidth}%`,
+              left: `${scrollProgress * (100 - BAR_WIDTH_PERCENT)}%`,
+              width: `${BAR_WIDTH_PERCENT}%`,
             }}
           />
         </div>
