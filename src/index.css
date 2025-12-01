@@ -1,0 +1,54 @@
+@import 'tailwindcss';
+
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #fff;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body {
+  /* 스크롤바 숨기기 클래스의 속성을 여기에 직접 줍니다 */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden; /* 가로 스크롤 강력 차단 */
+  position: relative; /* 내부 요소 기준점 확보 */
+  touch-action: pan-y; /* 수직 스크롤은 허용하되, 대각선/수평 흔들림 방지 */
+  overscroll-behavior-y: none;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+@font-face {
+  font-family: 'KaKamora';
+  src: url('./fonts/Kakamora.ttf');
+}
+
+@font-face {
+  font-family: 'Balsamiq';
+  src: url('./fonts/BalsamiqSans-Regular.ttf');
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Balsamiq';
+  src: url('./fonts/BalsamiqSans-Bold.ttf');
+  font-weight: 700;
+}
