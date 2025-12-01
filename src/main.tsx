@@ -5,6 +5,8 @@ import './index.css';
 import App from './App';
 import RootLayout from './layout';
 import CategoryPage from './pages/CategoryPage';
+import CartPage from './pages/CartPage';
+import WishPage from './pages/WishPage';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -13,6 +15,11 @@ createRoot(document.getElementById('root')!).render(
         <Route element={<RootLayout />}>
           <Route index element={<App />} />
           <Route path="/category/:categoryId" element={<CategoryPage />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/wish" element={<WishPage />} />
+          <Route path="/search" />
+          <Route path="/style" />
+          <Route path="/my" />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -19,7 +19,7 @@ export function Header() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+      className={`fixed top-0 left-0 right-0 z-100 transition-all duration-500 ${
         isScrolled ? 'bg-white/60 backdrop-blur-md shadow-sm' : 'bg-white'
       }`}
     >
@@ -30,7 +30,7 @@ export function Header() {
             className="flex items-end select-none"
             onClick={() => navigate('/')}
           >
-            <img src="/P.png" alt="P" className="h-6 mb-1" />
+            <img src="/P.png" alt="P" className="h-5 mb-1" />
             <span
               className={`font-['KaKamora'] text-lg mr-0.5 text-[#14314F] overflow-hidden whitespace-nowrap transition-all duration-500 ease-in-out ${
                 isScrolled || !isMainPage
@@ -41,7 +41,7 @@ export function Header() {
               et
             </span>
 
-            <img src="/F.png" alt="F" className="h-6 mb-1" />
+            <img src="/F.png" alt="F" className="h-5 mb-1" />
             <span
               className={`font-['KaKamora'] text-lg text-[#14314F] overflow-hidden whitespace-nowrap transition-all duration-500 ease-in-out ${
                 isScrolled || !isMainPage
@@ -53,7 +53,10 @@ export function Header() {
             </span>
           </div>
 
-          <button className="p-2 hover:bg-gray-100 rounded-full transition-colors relative">
+          <button
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors relative"
+            onClick={() => navigate('/cart')}
+          >
             <ShoppingCart className="w-5 h-5 text-gray-700" />
             <span className="absolute top-0 right-0 bg-[#14314F] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
               3
