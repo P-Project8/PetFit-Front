@@ -44,17 +44,17 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
           {product.name}
         </h4>
         {isDiscounted ? (
-          <div className="flex items-center space-x-1.5 font-['Balsamiq']">
-            <p className="text-sm font-bold font-['Balsamiq'] text-red-600">
+          <div className="flex items-center space-x-1.5">
+            <p className="text-sm font-bold text-red-600">
               {product.discountRate}%
             </p>
 
-            <p className="text-sm font-bold font-['Balsamiq'] text-gray-900">
+            <p className="text-sm font-bold text-gray-900">
               {product.price.toLocaleString()}원
             </p>
           </div>
         ) : (
-          <p className="text-sm font-bold font-['Balsamiq'] text-gray-900">
+          <p className="text-sm font-bold text-gray-900">
             {product.price.toLocaleString()}원
           </p>
         )}
