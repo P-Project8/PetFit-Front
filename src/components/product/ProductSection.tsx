@@ -65,7 +65,10 @@ export default function ProductSection({
       >
         {products.map((product) => (
           <div key={product.id} className="shrink-0 w-40">
-            <ProductCard product={product} />
+            <ProductCard
+              product={product}
+              onClick={() => navigate(`/product/${product.id}`)}
+            />
           </div>
         ))}
       </div>

@@ -106,7 +106,10 @@ export default function CategoryPage() {
       />
 
       {/* Product Grid */}
-      <ProductGrid products={sortedProducts} />
+      <ProductGrid
+        products={sortedProducts}
+        onProductClick={(product) => navigate(`/product/${product.id}`)}
+      />
 
       {/* Custom Scrollbar Hide */}
       <style>{`

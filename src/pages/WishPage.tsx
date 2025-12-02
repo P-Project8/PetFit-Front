@@ -4,8 +4,10 @@ import ProductGrid from '@/components/product/ProductGrid';
 import ProductListHeader from '../components/product/ProductListHeader';
 import { useProductSort } from '../hooks/useProductSort';
 import { useMemo } from 'react';
+import { useNavigate } from 'react-router';
 
 export default function WishPage() {
+  const navigate = useNavigate();
   const baseProducts = useMemo(
     () => mockProducts.filter((product) => product.isLike),
     []
@@ -23,7 +25,10 @@ export default function WishPage() {
         sortOptions={sortOptions}
         onSortChange={setSortBy}
       />
-      <ProductGrid products={sortedProducts} />
+      <ProductGrid
+        products={sortedProducts}
+        onProductClick={(product) => navigate(`/product/${product.id}`)}
+      />
 
       {/* Custom Scrollbar Hide */}
       <style>{`

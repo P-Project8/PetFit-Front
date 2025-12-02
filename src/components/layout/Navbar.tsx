@@ -4,9 +4,10 @@ import { useLocation, useNavigate } from 'react-router';
 
 export function Navbar() {
   const navigate = useNavigate();
-  const location = useLocation(); // 현재 경로 정보를 가져옴
+  const location = useLocation();
 
-  // activeTab state는 삭제합니다. (location으로 대체 가능)
+  const hideNavbar = location.pathname.startsWith('/product/');
+
   const [isVisible, setIsVisible] = useState(true);
   const lastScrollY = useRef(0);
 
@@ -33,6 +34,8 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  if (hideNavbar) return null;
+
   return (
     <nav
       className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50
@@ -53,7 +56,6 @@ export function Navbar() {
             <button
               key={item.id}
               onClick={() => {
-                // setActiveTab 제거됨
                 navigate(`${item.location}`);
               }}
               className="flex items-center justify-center transition-colors"
