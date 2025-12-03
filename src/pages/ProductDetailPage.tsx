@@ -1,17 +1,18 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { Heart } from 'lucide-react';
-import { mockProducts } from '../data/mockProducts';
 import { calculateDiscountedPrice, hasDiscount } from '../utils/priceUtils';
 import ProductOptionModal from '../components/product/ProductOptionModal';
 import ReviewList from '../components/product/ReviewList';
 import PageHeader from '@/components/layout/PageHeader';
+import { useProductStore } from '../store/productStore';
 
 export default function ProductDetailPage() {
   const { productId } = useParams<{ productId: string }>();
-  const product = mockProducts.find((p) => p.id === Number(productId));
   const navigate = useNavigate();
-  const [isWished, setIsWished] = useState(product?.isLike);
+  const getProductById = useProductStore((state) => state.getProductById);
+  const toggleLike = useProductStore((state) => state.toggleLike);
+  const product = getProductById(Number(productId));
   const [showOptionModal, setShowOptionModal] = useState(false);
 
   if (!product) {
@@ -37,7 +38,7 @@ export default function ProductDetailPage() {
   );
 
   function handleWishClick() {
-    setIsWished(!isWished);
+    toggleLike(product.id);
   }
 
   function handleBuyClick() {
@@ -109,7 +110,7 @@ export default function ProductDetailPage() {
           className="text-[#14314F] text-xs w-12 flex flex-col items-center gap-1 mt-0.5"
           onClick={handleWishClick}
         >
-          {isWished ? (
+          {product.isLike ? (
             <Heart className="text-red-600 fill-red-600" />
           ) : (
             <Heart className="text-[#14314F]" />
