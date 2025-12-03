@@ -12,7 +12,7 @@ export default function MyPageLayout() {
   const location = useLocation();
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex bg-slate-50">
+    <div className="min-h-[calc(100vh-4rem)] flex bg-gray-100">
       {/* 왼쪽 사이드바 */}
       <aside className="w-56 border-r bg-white px-4 py-6">
         <h2 className="text-2xl font-bold mb-6">마이페이지</h2>
