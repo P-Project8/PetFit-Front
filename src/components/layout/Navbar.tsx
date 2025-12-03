@@ -6,7 +6,8 @@ export function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const hideNavbar = location.pathname.startsWith('/product/');
+  const hideNavbar =
+    location.pathname.startsWith('/product/') || location.pathname === '/cart';
 
   const [isVisible, setIsVisible] = useState(true);
   const lastScrollY = useRef(0);
