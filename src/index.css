@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-@import "tw-animate-css";
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -64,6 +64,13 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+    -webkit-text-fill-color: black; /* 글자색은 원래 스타일 유지 */
+    transition: background-color 9999s ease-out 0s;
+  }
 }
 
 html::-webkit-scrollbar,

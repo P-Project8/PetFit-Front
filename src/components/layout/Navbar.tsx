@@ -17,7 +17,7 @@ export function Navbar() {
     { id: 'search', icon: Search, label: '검색', location: '/search' },
     { id: 'styling', icon: Shirt, label: '스타일링', location: '/style' },
     { id: 'wishlist', icon: Heart, label: '찜', location: '/wish' },
-    { id: 'mypage', icon: User, label: '마이페이지', location: '/my' },
+    { id: 'mypage', icon: User, label: '마이페이지', location: '/login' },
   ];
 
   useEffect(() => {
