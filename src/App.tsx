@@ -134,7 +134,7 @@ export default function App() {
       </section>
 
       {/* Product Sections - Mobile Optimized */}
-      <div className="bg-white divide-y-8">
+      <div className="bg-white space-y-8">
         <ProductSection title="New" products={newProducts} categoryId="new" />
         <ProductSection title="Hot" products={hotProducts} categoryId="hot" />
         <ProductSection

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { Heart } from 'lucide-react';
 import { mockProducts } from '../data/mockProducts';
-import { hasDiscount } from '../utils/priceUtils';
+import { calculateDiscountedPrice, hasDiscount } from '../utils/priceUtils';
 import ProductOptionModal from '../components/product/ProductOptionModal';
 import ReviewList from '../components/product/ReviewList';
 import PageHeader from '@/components/layout/PageHeader';
@@ -31,9 +31,10 @@ export default function ProductDetailPage() {
   }
 
   const isDiscounted = hasDiscount(product.discountRate);
-  const originalPrice = isDiscounted
-    ? Math.round(product.price / (1 - (product.discountRate || 0) / 100))
-    : product.price;
+  const discountedPrice = calculateDiscountedPrice(
+    product.price,
+    product.discountRate
+  );
 
   function handleWishClick() {
     setIsWished(!isWished);
@@ -72,11 +73,11 @@ export default function ProductDetailPage() {
                   {product.discountRate}%
                 </span>
                 <span className="text-xl font-bold text-gray-900">
-                  {product.price.toLocaleString()}원
+                  {discountedPrice.toLocaleString()}원
                 </span>
               </div>
               <p className="text-base text-gray-400 line-through">
-                {originalPrice.toLocaleString()}원
+                {product.price.toLocaleString()}원
               </p>
             </div>
           ) : (
