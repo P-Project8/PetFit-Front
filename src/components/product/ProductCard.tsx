@@ -1,7 +1,7 @@
 import type { Product } from '../../data/mockProducts';
 import { Star, Heart } from 'lucide-react';
-import { useState } from 'react';
 import { calculateDiscountedPrice, hasDiscount } from '../../utils/priceUtils';
+import { useProductStore } from '../../store/productStore';
 
 interface ProductCardProps {
   product: Product;
@@ -9,7 +9,7 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, onClick }: ProductCardProps) {
-  const [isWished, setIsWished] = useState(product.isLike || false);
+  const toggleLike = useProductStore((state) => state.toggleLike);
   const isDiscounted = hasDiscount(product.discountRate);
 
   const discountedPrice = calculateDiscountedPrice(
@@ -19,7 +19,7 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
 
   function handleWishClick(e: React.MouseEvent) {
     e.stopPropagation();
-    setIsWished(!isWished);
+    toggleLike(product.id);
   }
 
   return (
@@ -39,7 +39,7 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
         >
           <Heart
             className={`w-4.5 h-4.5 ${
-              isWished ? 'fill-red-600 text-red-600' : 'fill-white/50'
+              product.isLike ? 'fill-red-600 text-red-600' : 'fill-white/50'
             }`}
           />
         </button>

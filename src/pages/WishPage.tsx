@@ -1,20 +1,31 @@
-import { mockProducts } from '@/data/mockProducts';
 import PageHeader from '../components/layout/PageHeader';
 import ProductGrid from '@/components/product/ProductGrid';
 import ProductListHeader from '../components/product/ProductListHeader';
 import { useProductSort } from '../hooks/useProductSort';
-import { useMemo } from 'react';
 import { useNavigate } from 'react-router';
+import { useProductStore } from '../store/productStore';
+import { usePagination } from '../hooks/usePagination';
+import Pagination from '../components/common/Pagination';
 
 export default function WishPage() {
   const navigate = useNavigate();
-  const baseProducts = useMemo(
-    () => mockProducts.filter((product) => product.isLike),
-    []
-  );
+  const products = useProductStore((state) => state.products);
+  const baseProducts = products.filter((product) => product.isLike);
 
   const { sortBy, setSortBy, sortedProducts, sortOptions } =
     useProductSort(baseProducts);
+
+  const {
+    currentPage,
+    totalPages,
+    paginatedItems,
+    goToPage,
+    canGoNext,
+    canGoPrev,
+  } = usePagination({
+    items: sortedProducts,
+    itemsPerPage: 12,
+  });
 
   return (
     <div className="min-h-screen bg-white pt-12 pb-16">
@@ -26,8 +37,17 @@ export default function WishPage() {
         onSortChange={setSortBy}
       />
       <ProductGrid
-        products={sortedProducts}
+        products={paginatedItems}
         onProductClick={(product) => navigate(`/product/${product.id}`)}
+      />
+
+      {/* Pagination */}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={goToPage}
+        canGoNext={canGoNext}
+        canGoPrev={canGoPrev}
       />
 
       {/* Custom Scrollbar Hide */}
