@@ -8,21 +8,22 @@ interface OnboardingModalProps {
 
 const slides = [
   {
-    title: '반려동물 사진 업로드',
-    description: '우리 아이의 사진을 선택하거나 촬영해주세요',
-    emoji: '📷',
+    title: '반려동물 사진 선택',
+    description: '스타일링 하고 싶은 강아지의\n사진을 업로드 해주세요',
+    image: '/images/onboarding1.png',
     step: '1/3',
   },
   {
     title: '옷 선택하기',
     description: '입혀볼 옷을 직접 업로드하거나\n상품 목록에서 선택하세요',
-    emoji: '👕',
+    image: '/images/onboarding2.png',
     step: '2/3',
   },
   {
     title: 'AI 스타일링 완성!',
-    description: 'AI가 자동으로 옷을 입혀드려요\n결과를 공유하고 상품도 구매해보세요',
-    emoji: '✨',
+    description:
+      'AI가 자동으로 옷을 입혀드려요\n결과를 공유하고 상품도 구매해보세요',
+    image: '/images/onboarding3.png',
     step: '3/3',
   },
 ];
@@ -56,7 +57,7 @@ export default function OnboardingModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center mt-12">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/60" onClick={handleClose}></div>
 
@@ -73,10 +74,16 @@ export default function OnboardingModal({
         {/* Slide Content */}
         <div className="text-center pt-4 pb-6">
           {/* Step Indicator */}
-          <p className="text-xs text-gray-400 mb-4">{slides[currentSlide].step}</p>
+          <p className="text-xs text-gray-400 mb-2">
+            {slides[currentSlide].step}
+          </p>
 
           {/* Emoji */}
-          <div className="text-6xl mb-6">{slides[currentSlide].emoji}</div>
+          <img
+            className="w-48 m-auto rounded-2xl mb-6 aspect-square overflow-hidden object-cover"
+            src={slides[currentSlide].image}
+            alt="@onboardingImg"
+          />
 
           {/* Title */}
           <h2 className="text-xl font-bold text-gray-900 mb-3">

@@ -1,6 +1,9 @@
+import { useState, useMemo } from 'react';
 import { X } from 'lucide-react';
 import { useProductStore } from '../../store/productStore';
 import ProductGrid from '../product/ProductGrid';
+import CategoryTabs from '../common/CategoryTabs';
+import { productCategories } from '../../data/mockCategories';
 import type { Product } from '../../data/mockProducts';
 
 interface ProductSelectionModalProps {
@@ -9,12 +12,24 @@ interface ProductSelectionModalProps {
   onSelect: (product: Product) => void;
 }
 
+// 전체 카테고리 추가
+const categoriesWithAll = [{ id: 'all', label: 'All' }, ...productCategories];
+
 export default function ProductSelectionModal({
   isOpen,
   onClose,
   onSelect,
 }: ProductSelectionModalProps) {
   const products = useProductStore((state) => state.products);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+
+  // 카테고리별 필터링
+  const filteredProducts = useMemo(() => {
+    if (selectedCategory === 'all') {
+      return products;
+    }
+    return products.filter((product) => product.category === selectedCategory);
+  }, [products, selectedCategory]);
 
   if (!isOpen) return null;
 
@@ -29,9 +44,9 @@ export default function ProductSelectionModal({
       <div className="absolute inset-0 bg-black/40" onClick={onClose}></div>
 
       {/* Modal Content */}
-      <div className="relative w-full bg-white rounded-t-2xl sm:rounded-2xl max-h-[80vh] overflow-hidden flex flex-col">
+      <div className="relative w-full bg-white rounded-t-2xl sm:rounded-2xl h-[80vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-4 flex items-center justify-between">
+        <div className="sticky top-0 bg-white px-4 pt-4 pb-2 flex items-center justify-between z-20">
           <h2 className="text-lg font-bold text-gray-900">옷 선택하기</h2>
           <button
             onClick={onClose}
@@ -41,9 +56,22 @@ export default function ProductSelectionModal({
           </button>
         </div>
 
+        {/* Category Tabs */}
+        <div className="sticky z-10">
+          <CategoryTabs
+            categories={categoriesWithAll}
+            activeCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+            className="shadow-xs"
+          />
+        </div>
+
         {/* Product Grid */}
         <div className="flex-1 overflow-y-auto p-4">
-          <ProductGrid products={products} onProductClick={handleProductClick} />
+          <ProductGrid
+            products={filteredProducts}
+            onProductClick={handleProductClick}
+          />
         </div>
       </div>
     </div>
