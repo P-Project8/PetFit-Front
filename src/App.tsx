@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { mockCategories } from './data/mockCategories';
-import { mockBanners } from './data/mockBanners';
 import ProductSection from './components/product/ProductSection';
 import { useProductStore } from './store/productStore';
 
@@ -14,12 +13,14 @@ export default function App() {
 
   // 1. 다음 슬라이드로 이동
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % mockBanners.length);
+    setCurrentSlide((prev) => (prev + 1) % carouselProducts.length);
   };
 
   // 2. 이전 슬라이드로 이동
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev === 0 ? mockBanners.length - 1 : prev - 1));
+    setCurrentSlide((prev) =>
+      prev === 0 ? carouselProducts.length - 1 : prev - 1
+    );
   };
 
   // 3. 5초 자동 슬라이드
@@ -54,6 +55,7 @@ export default function App() {
     }
   };
 
+  const carouselProducts = products.filter((p) => p.isCarousel).slice(0, 5);
   const newProducts = products.filter((p) => p.isNew).slice(0, 5);
   const hotProducts = products.filter((p) => p.isHot).slice(0, 5);
   const saleProducts = products.filter((p) => p.isSale).slice(0, 5);
@@ -72,8 +74,12 @@ export default function App() {
           className="flex h-full transition-transform duration-500 ease-out"
           style={{ transform: `translateX(-${currentSlide * 100}%)` }}
         >
-          {mockBanners.map((item) => (
-            <div key={item.id} className="w-full h-full shrink-0 relative">
+          {carouselProducts.map((item) => (
+            <div
+              key={item.id}
+              className="w-full h-full shrink-0 relative"
+              onClick={() => navigate(`/product/${item.id}`)}
+            >
               <div className="w-full h-full bg-gray-800">
                 {item.imageUrl && (
                   <img
@@ -98,7 +104,7 @@ export default function App() {
 
         {/* Dots Indicator */}
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 z-20">
-          {mockBanners.map((_, index) => (
+          {carouselProducts.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentSlide(index)}

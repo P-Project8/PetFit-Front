@@ -2,9 +2,11 @@ export interface Product {
   id: number;
   name: string;
   price: number;
+  description?: string;
   discountRate?: number;
   imageUrl?: string;
   category: string;
+  isCarousel?: boolean;
   isNew?: boolean;
   isHot?: boolean;
   isSale?: boolean;
@@ -20,7 +22,9 @@ export const mockProducts: Product[] = [
     name: '강아지 한복',
     price: 69000,
     imageUrl: '/src/assets/images/banner1.jpg',
+    description: '추석, 설날을 기념해보세요',
     category: 'one-piece',
+    isCarousel: true,
     isNew: true,
     wishCount: 234,
     rating: 4.8,
@@ -31,8 +35,10 @@ export const mockProducts: Product[] = [
     name: '겨자 후드티',
     price: 38000,
     imageUrl: '/src/assets/images/banner2.jpg',
+    description: '캐주얼한 느낌의 후드',
     category: 'outer',
     isHot: true,
+    isCarousel: true,
     wishCount: 567,
     rating: 4.9,
     reviewCount: 142,
@@ -42,7 +48,9 @@ export const mockProducts: Product[] = [
     name: '당근 캐릭터 나시',
     price: 29000,
     imageUrl: '/src/assets/images/banner3.jpg',
+    description: '귀여운 당근이 포인트',
     category: 'top',
+    isCarousel: true,
     isLike: true,
     wishCount: 189,
     rating: 4.6,
@@ -54,7 +62,9 @@ export const mockProducts: Product[] = [
     price: 49000,
     discountRate: 50,
     imageUrl: '/src/assets/images/banner4.jpg',
+    description: '비 오는 날 걱정 마세요 :)',
     category: 'outer',
+    isCarousel: true,
     isSale: true,
     isLike: true,
     wishCount: 892,
@@ -66,7 +76,9 @@ export const mockProducts: Product[] = [
     name: '알록달록 후드티',
     price: 42000,
     imageUrl: '/src/assets/images/banner5.jpg',
+    description: '눈에 띌 수 밖에 없는 귀여움',
     category: 'top',
+    isCarousel: true,
     isHot: true,
     isNew: true,
     wishCount: 445,

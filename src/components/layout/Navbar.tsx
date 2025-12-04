@@ -41,8 +41,8 @@ export function Navbar() {
 
   return (
     <nav
-      className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50
-      transition-transform duration-500 ease-in-out ${
+      className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50 pb-[env(safe-area-inset-bottom)]
+      transition-transform duration-300 ease-in-out will-change-transform ${
         isVisible ? 'translate-y-0' : 'translate-y-full'
       }
     `}
