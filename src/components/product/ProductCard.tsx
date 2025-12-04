@@ -1,7 +1,7 @@
 import type { Product } from '../../data/mockProducts';
 import { Star, Heart } from 'lucide-react';
-import { useState } from 'react';
-import { hasDiscount } from '../../utils/priceUtils';
+import { calculateDiscountedPrice, hasDiscount } from '../../utils/priceUtils';
+import { useProductStore } from '../../store/productStore';
 
 interface ProductCardProps {
   product: Product;
@@ -9,12 +9,17 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, onClick }: ProductCardProps) {
-  const [isWished, setIsWished] = useState(product.isLike || false);
+  const toggleLike = useProductStore((state) => state.toggleLike);
   const isDiscounted = hasDiscount(product.discountRate);
+
+  const discountedPrice = calculateDiscountedPrice(
+    product.price,
+    product.discountRate
+  );
 
   function handleWishClick(e: React.MouseEvent) {
     e.stopPropagation();
-    setIsWished(!isWished);
+    toggleLike(product.id);
   }
 
   return (
@@ -34,7 +39,7 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
         >
           <Heart
             className={`w-4.5 h-4.5 ${
-              isWished ? 'fill-red-600 text-red-600' : 'fill-white/50'
+              product.isLike ? 'fill-red-600 text-red-600' : 'fill-white/50'
             }`}
           />
         </button>
@@ -48,9 +53,8 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
             <p className="text-sm font-bold text-red-600">
               {product.discountRate}%
             </p>
-
             <p className="text-sm font-bold text-gray-900">
-              {product.price.toLocaleString()}원
+              {discountedPrice.toLocaleString()}원
             </p>
           </div>
         ) : (

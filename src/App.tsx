@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { mockCategories } from './data/mockCategories';
 import { mockBanners } from './data/mockBanners';
-import { mockProducts } from './data/mockProducts';
 import ProductSection from './components/product/ProductSection';
+import { useProductStore } from './store/productStore';
 
 export default function App() {
   const navigate = useNavigate();
+  const products = useProductStore((state) => state.products);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
@@ -53,9 +54,9 @@ export default function App() {
     }
   };
 
-  const newProducts = mockProducts.filter((p) => p.isNew).slice(0, 5);
-  const hotProducts = mockProducts.filter((p) => p.isHot).slice(0, 5);
-  const saleProducts = mockProducts.filter((p) => p.isSale).slice(0, 5);
+  const newProducts = products.filter((p) => p.isNew).slice(0, 5);
+  const hotProducts = products.filter((p) => p.isHot).slice(0, 5);
+  const saleProducts = products.filter((p) => p.isSale).slice(0, 5);
 
   return (
     <div className="min-h-screen bg-white py-12">
@@ -134,7 +135,7 @@ export default function App() {
       </section>
 
       {/* Product Sections - Mobile Optimized */}
-      <div className="bg-white divide-y-8">
+      <div className="bg-white space-y-8">
         <ProductSection title="New" products={newProducts} categoryId="new" />
         <ProductSection title="Hot" products={hotProducts} categoryId="hot" />
         <ProductSection

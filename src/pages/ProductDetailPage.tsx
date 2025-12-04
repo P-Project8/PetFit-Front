@@ -1,17 +1,18 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
-import { Heart } from 'lucide-react';
-import { mockProducts } from '../data/mockProducts';
-import { hasDiscount } from '../utils/priceUtils';
+import { Heart, Sparkles } from 'lucide-react';
+import { calculateDiscountedPrice, hasDiscount } from '../utils/priceUtils';
 import ProductOptionModal from '../components/product/ProductOptionModal';
 import ReviewList from '../components/product/ReviewList';
 import PageHeader from '@/components/layout/PageHeader';
+import { useProductStore } from '../store/productStore';
 
 export default function ProductDetailPage() {
   const { productId } = useParams<{ productId: string }>();
-  const product = mockProducts.find((p) => p.id === Number(productId));
   const navigate = useNavigate();
-  const [isWished, setIsWished] = useState(product?.isLike);
+  const getProductById = useProductStore((state) => state.getProductById);
+  const toggleLike = useProductStore((state) => state.toggleLike);
+  const product = getProductById(Number(productId));
   const [showOptionModal, setShowOptionModal] = useState(false);
 
   if (!product) {
@@ -31,16 +32,21 @@ export default function ProductDetailPage() {
   }
 
   const isDiscounted = hasDiscount(product.discountRate);
-  const originalPrice = isDiscounted
-    ? Math.round(product.price / (1 - (product.discountRate || 0) / 100))
-    : product.price;
+  const discountedPrice = calculateDiscountedPrice(
+    product.price,
+    product.discountRate
+  );
 
   function handleWishClick() {
-    setIsWished(!isWished);
+    toggleLike(product.id);
   }
 
   function handleBuyClick() {
     setShowOptionModal(true);
+  }
+
+  function handleAIStyling() {
+    navigate('/ai-styling', { state: { selectedProduct: product } });
   }
 
   return (
@@ -72,11 +78,11 @@ export default function ProductDetailPage() {
                   {product.discountRate}%
                 </span>
                 <span className="text-xl font-bold text-gray-900">
-                  {product.price.toLocaleString()}원
+                  {discountedPrice.toLocaleString()}원
                 </span>
               </div>
               <p className="text-base text-gray-400 line-through">
-                {originalPrice.toLocaleString()}원
+                {product.price.toLocaleString()}원
               </p>
             </div>
           ) : (
@@ -103,25 +109,35 @@ export default function ProductDetailPage() {
       </div>
 
       {/* Buy Button */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 flex gap-4">
-        <button
-          className="text-[#14314F] text-xs w-12 flex flex-col items-center gap-1 mt-0.5"
-          onClick={handleWishClick}
-        >
-          {isWished ? (
-            <Heart className="text-red-600 fill-red-600" />
-          ) : (
-            <Heart className="text-[#14314F]" />
-          )}
-
-          {product.wishCount}
-        </button>
-        <button
-          onClick={handleBuyClick}
-          className="flex-1 bg-[#14314F] text-white py-2 rounded-lg font-semibold text-base active:bg-[#0d1f33] transition-colors"
-        >
-          구매하기
-        </button>
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3">
+        <div className="flex gap-2 mb-2">
+          <button
+            onClick={handleAIStyling}
+            className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2.5 rounded-lg font-semibold text-sm active:opacity-90 transition-opacity flex items-center justify-center gap-2"
+          >
+            <Sparkles className="w-4 h-4" />
+            AI로 입혀보기
+          </button>
+        </div>
+        <div className="flex gap-2">
+          <button
+            className="text-[#14314F] text-xs w-12 flex flex-col items-center gap-1"
+            onClick={handleWishClick}
+          >
+            {product.isLike ? (
+              <Heart className="text-red-600 fill-red-600" />
+            ) : (
+              <Heart className="text-[#14314F]" />
+            )}
+            {product.wishCount}
+          </button>
+          <button
+            onClick={handleBuyClick}
+            className="flex-1 bg-[#14314F] text-white py-2.5 rounded-lg font-semibold text-base active:bg-[#0d1f33] transition-colors"
+          >
+            구매하기
+          </button>
+        </div>
       </div>
 
       {/* Option Modal */}

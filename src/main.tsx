@@ -9,6 +9,9 @@ import CartPage from './pages/CartPage';
 import WishPage from './pages/WishPage';
 import SearchPage from './pages/SearchPage';
 import ProductDetailPage from './pages/ProductDetailPage';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
+import AIStylingPage from './pages/AIStylingPage';
 import ScrollToTop from './components/common/ScrollToTop';
 
 createRoot(document.getElementById('root')!).render(
@@ -16,6 +19,11 @@ createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <ScrollToTop />
       <Routes>
+        {/* Auth pages - without layout */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+
+        {/* Main app - with layout */}
         <Route element={<RootLayout />}>
           <Route index element={<App />} />
           <Route path="/category/:categoryId" element={<CategoryPage />} />
@@ -23,7 +31,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/cart" element={<CartPage />} />
           <Route path="/wish" element={<WishPage />} />
           <Route path="/search" element={<SearchPage />} />
-          <Route path="/style" />
+          <Route path="/ai-styling" element={<AIStylingPage />} />
           <Route path="/my" />
         </Route>
       </Routes>

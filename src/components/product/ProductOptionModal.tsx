@@ -1,7 +1,8 @@
 import { useState, useRef } from 'react';
 import { X, Plus, Minus, ChevronDown, ChevronUp } from 'lucide-react';
 import type { Product } from '../../data/mockProducts';
-import { useNavigate } from 'react-router';
+import { useCartStore } from '../../store/cartStore';
+import { toast } from 'sonner';
 
 interface ProductOptionModalProps {
   product: Product;
@@ -22,7 +23,7 @@ export default function ProductOptionModal({
   product,
   onClose,
 }: ProductOptionModalProps) {
-  const navigate = useNavigate();
+  const addItem = useCartStore((state) => state.addItem);
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [options, setOptions] = useState<SelectedOption[]>([]);
@@ -99,19 +100,22 @@ export default function ProductOptionModal({
 
   function handleAddToCart() {
     if (options.length === 0) {
-      alert('옵션을 선택해주세요.');
+      toast('옵션을 선택해주세요.');
       return;
     }
 
-    // TODO: 장바구니에 추가하는 로직
-    alert('장바구니에 추가되었습니다.');
+    // 선택한 모든 옵션을 장바구니에 추가
+    options.forEach((option) => {
+      addItem(product, option.size, option.color, option.quantity);
+    });
+
+    toast.success('장바구니에 추가되었습니다.');
     onClose();
-    navigate('/cart');
   }
 
   function handlePurchase() {
     if (options.length === 0) {
-      alert('옵션을 선택해주세요.');
+      toast('옵션을 선택해주세요.');
       return;
     }
 
@@ -256,9 +260,9 @@ export default function ProductOptionModal({
             <button
               onClick={handleAddToCart}
               disabled={options.length === 0}
-              className={`flex-1 py-2 rounded-lg font-semibold text-base transition-colors ${
+              className={`flex-1 py-3 rounded-lg font-semibold text-base transition-colors ${
                 options.length > 0
-                  ? 'bg-white border border-gray-300 text-[#14314F] active:bg-gray-50'
+                  ? 'bg-gray-100 text-[#14314F] active:bg-gray-50'
                   : 'bg-gray-200 text-gray-400 cursor-not-allowed'
               }`}
             >
@@ -267,7 +271,7 @@ export default function ProductOptionModal({
             <button
               onClick={handlePurchase}
               disabled={options.length === 0}
-              className={`flex-1 py-2 rounded-lg font-semibold text-base transition-colors ${
+              className={`flex-1 py-3 rounded-lg font-semibold text-base transition-colors ${
                 options.length > 0
                   ? 'bg-[#14314F] text-white active:bg-[#0d1f33]'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
