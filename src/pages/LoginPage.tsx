@@ -65,6 +65,7 @@ export default function LoginPage() {
       toast.success('로그인 되었습니다.');
       navigate('/');
     } catch (error) {
+      console.log(error);
       toast.error('로그인에 실패했습니다.');
     } finally {
       setIsLoading(false);
