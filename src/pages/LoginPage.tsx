@@ -16,6 +16,7 @@ import {
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { ChevronLeft } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const loginSchema = z.object({
   userId: z.string().min(1, '아이디를 입력해주세요.'),
@@ -81,21 +82,76 @@ export default function LoginPage() {
 
       {/* Content */}
       <div className="flex-1 flex flex-col justify-center px-6 pb-20">
-        <div className="flex justify-center mb-10">
-          {/* Logo */}
+        {/* Logo */}
+        <motion.div
+          className="flex justify-center mb-10"
+          initial={{ opacity: 0, x: -100 }} // 먼 왼쪽에서 시작
+          animate={{ opacity: 1, x: 0 }} // 제자리로
+          transition={{
+            type: 'spring',
+            stiffness: 120, // 스프링 탄성
+            damping: 12, // 감속 (낮을수록 출렁임 큼)
+            duration: 0.6,
+          }}
+        >
           <div className="flex items-end">
-            <img src="/P.png" alt="P" className="h-12 mb-1" />
-            <span className="font-['KaKamora'] text-4xl mr-0.5 mb-1 text-[#14314F] whitespace-nowrap transition-all duration-500 ease-in-out">
+            <motion.img
+              src="/P.png"
+              alt="P"
+              className="h-12 mb-1"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{
+                delay: 0.2,
+                type: 'spring',
+                stiffness: 150,
+                damping: 14,
+              }}
+            />
+
+            <motion.span
+              className="font-['KaKamora'] text-4xl mr-0.5 mb-1 text-[#14314F]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{
+                delay: 0.35,
+                type: 'spring',
+                stiffness: 150,
+                damping: 14,
+              }}
+            >
               et
-            </span>
+            </motion.span>
 
-            <img src="/F.png" alt="F" className="h-12 mb-1" />
-            <span className="font-['KaKamora'] text-4xl mb-1 text-[#14314F] whitespace-nowrap transition-all duration-500 ease-in-out">
+            <motion.img
+              src="/F.png"
+              alt="F"
+              className="h-12 mb-1"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{
+                delay: 0.5,
+                type: 'spring',
+                stiffness: 150,
+                damping: 14,
+              }}
+            />
+
+            <motion.span
+              className="font-['KaKamora'] text-4xl mb-1 text-[#14314F]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{
+                delay: 0.65,
+                type: 'spring',
+                stiffness: 150,
+                damping: 14,
+              }}
+            >
               it
-            </span>
+            </motion.span>
           </div>
-        </div>
-
+        </motion.div>
         {/* Form */}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">

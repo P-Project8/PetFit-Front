@@ -150,7 +150,7 @@ export default function SignupPage() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 px-6 pt-16 pb-24">
+      <div className="flex-1 flex flex-col justify-center px-6 pb-20">
         {/* Logo */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-[#14314F] mb-2">회원가입</h1>
