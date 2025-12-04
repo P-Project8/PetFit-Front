@@ -1,6 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import { Upload, HelpCircle, Share2, RotateCcw, Sparkles } from 'lucide-react';
+import {
+  Upload,
+  HelpCircle,
+  Share2,
+  RotateCcw,
+  Plus,
+  ChevronRight,
+  X,
+  Shirt, // [변경됨] X 아이콘 임포트
+} from 'lucide-react';
 import type { Product } from '../data/mockProducts';
 import OnboardingModal from '../components/ai/OnboardingModal';
 import ProductSelectionModal from '../components/ai/ProductSelectionModal';
@@ -8,6 +17,7 @@ import PageHeader from '../components/layout/PageHeader';
 import { toast } from 'sonner';
 import ProductGrid from '../components/product/ProductGrid';
 import { useProductStore } from '../store/productStore';
+import LoadingSplashScreen from '@/components/ai/LoadingSplashScreen';
 
 export default function AIStylingPage() {
   const location = useLocation();
@@ -92,15 +102,13 @@ export default function AIStylingPage() {
       // TODO: Gemini API 연동
       // const response = await callGeminiAPI(petImageFile, clothingImage);
 
-      // Mock: 2초 후 결과 표시
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Mock: 5초 후 결과 표시
+      await new Promise((resolve) => setTimeout(resolve, 5000));
 
       // Mock result (실제로는 Gemini API 결과)
       setResultImage(petImage); // 임시로 pet image 표시
-
-      toast.success('AI 스타일링이 완성되었습니다!');
     } catch (error) {
-      toast.error('AI 스타일링에 실패했습니다.');
+      console.log(error);
     } finally {
       setIsProcessing(false);
     }
@@ -132,159 +140,309 @@ export default function AIStylingPage() {
     }
   }
 
-  // Get similar products (mock)
-  const similarProducts = products.slice(0, 4);
+  // Get similar products based on selected product
+  function getSimilarProducts() {
+    if (!selectedProduct) {
+      // 선택한 상품이 없으면 인기순으로 4개 반환
+      return products
+        .sort((a, b) => (b.wishCount || 0) - (a.wishCount || 0))
+        .slice(0, 4);
+    }
+
+    // 같은 카테고리의 상품들 필터링
+    const sameCategoryProducts = products.filter(
+      (p) =>
+        p.category === selectedProduct.category && p.id !== selectedProduct.id
+    );
+
+    // 가격 범위 계산 (선택한 상품 가격의 ±40%)
+    const priceMin = selectedProduct.price * 0.6;
+    const priceMax = selectedProduct.price * 1.4;
+
+    // 비슷한 가격대의 상품들
+    const similarPriceProducts = sameCategoryProducts.filter(
+      (p) => p.price >= priceMin && p.price <= priceMax
+    );
+
+    // 비슷한 가격대 상품이 4개 이상이면 그 중에서, 아니면 같은 카테고리에서
+    const candidateProducts =
+      similarPriceProducts.length >= 4
+        ? similarPriceProducts
+        : sameCategoryProducts;
+
+    // 평점과 찜 수를 고려한 정렬
+    const sorted = candidateProducts.sort((a, b) => {
+      const scoreA = (a.rating || 0) * 0.5 + (a.wishCount || 0) * 0.001;
+      const scoreB = (b.rating || 0) * 0.5 + (b.wishCount || 0) * 0.001;
+      return scoreB - scoreA;
+    });
+
+    // 4개 반환, 부족하면 다른 인기 상품으로 채우기
+    const result = sorted.slice(0, 4);
+    if (result.length < 4) {
+      const remainingCount = 4 - result.length;
+      const remainingProducts = products
+        .filter(
+          (p) =>
+            p.id !== selectedProduct.id && !result.some((r) => r.id === p.id)
+        )
+        .sort((a, b) => (b.wishCount || 0) - (a.wishCount || 0))
+        .slice(0, remainingCount);
+      result.push(...remainingProducts);
+    }
+
+    return result;
+  }
+
+  const similarProducts = getSimilarProducts();
 
   return (
-    <div className="min-h-screen bg-white py-12">
-      <PageHeader title="스타일링" onBackClick={() => navigate(-1)} />
+    <div className="min-h-screen bg-linear-to-b from-gray-50 to-white flex flex-col pt-12">
+      <PageHeader title="AI 스타일링" onBackClick={() => navigate(-1)} />
 
-      <div className="pt-6 px-4 space-y-6 relative">
-        <button
-          onClick={() => setShowOnboarding(true)}
-          className="text-gray-600 hover:text-gray-900 absolute top-7 right-7"
-        >
-          <HelpCircle className="w-5 h-5" />
-        </button>
-        {/* Step 1: Pet Image */}
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-gray-900">
-            Step 1. 반려동물 사진
-          </h2>
-          <div className="relative">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handlePetImageChange}
-              className="hidden"
-              id="pet-image-input"
-            />
-            <label
-              htmlFor="pet-image-input"
-              className={`block w-full aspect-square rounded-2xl border-2 border-dashed cursor-pointer transition-colors ${
-                petImage
-                  ? 'border-[#14314F] bg-gray-50'
-                  : 'border-gray-300 bg-gray-50 hover:border-[#14314F] hover:bg-gray-100'
+      <div className="pt-4 px-4 pb-8 flex-1 flex flex-col justify-center">
+        {!resultImage && (
+          <>
+            {/* Help Button */}
+            <div className="flex justify-end mb-4">
+              <button
+                onClick={() => setShowOnboarding(true)}
+                className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+              >
+                <HelpCircle className="w-4 h-4" />
+                <span>도움말</span>
+              </button>
+            </div>
+
+            {/* Steps Container */}
+            <div
+              className={`space-y-4 mb-6 ${
+                resultImage ? 'pointer-events-none opacity-40' : ''
               }`}
             >
-              {petImage ? (
-                <img
-                  src={petImage}
-                  alt="Pet"
-                  className="w-full h-full object-cover rounded-2xl"
-                />
-              ) : (
-                <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                  <Upload className="w-12 h-12 mb-2" />
-                  <p className="text-sm font-medium">사진을 선택하세요</p>
-                  <p className="text-xs">또는 촬영하기</p>
-                </div>
-              )}
-            </label>
-          </div>
-        </section>
+              {/* Step Cards Row */}
+              <div className="grid grid-cols-2 gap-3">
+                {/* Step 1: Pet Image Card */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-[#14314F] text-white flex items-center justify-center text-xs font-bold">
+                      1
+                    </div>
+                    <h3 className="text-sm font-semibold text-gray-900">
+                      반려동물
+                    </h3>
+                  </div>
 
-        {/* Step 2: Clothing Selection */}
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-gray-900">Step 2. 옷 선택</h2>
-          <div className="grid grid-cols-2 gap-2">
-            {/* Upload Button */}
-            <div className="relative">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleClothingImageChange}
-                className="hidden"
-                id="clothing-image-input"
-              />
-              <label
-                htmlFor="clothing-image-input"
-                className="block w-full aspect-square rounded-xl border-2 border-gray-300 bg-gray-50 hover:border-[#14314F] hover:bg-gray-100 cursor-pointer transition-colors"
-              >
-                <div className="flex flex-col items-center justify-center h-full text-gray-600">
-                  <Upload className="w-8 h-8 mb-1" />
-                  <p className="text-xs font-medium">직접 업로드</p>
-                </div>
-              </label>
-            </div>
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePetImageChange}
+                      className="hidden"
+                      id="pet-image-input"
+                    />
+                    <label
+                      htmlFor="pet-image-input"
+                      className={`block w-full aspect-3/4 rounded-xl border-2 cursor-pointer transition-all overflow-hidden relative ${
+                        petImage
+                          ? 'border-none shadow-md'
+                          : 'border-dashed border-gray-300 bg-white hover:border-[#14314F] hover:shadow-sm'
+                      }`}
+                    >
+                      {petImage ? (
+                        <div className="relative w-full h-full group">
+                          <img
+                            src={petImage}
+                            alt="Pet"
+                            className="w-full h-full object-cover"
+                          />
+                          {/* [변경됨] 반려동물 이미지 삭제 버튼 추가 */}
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault(); // label 클릭 동작 방지
+                              e.stopPropagation(); // 이벤트 전파 방지
+                              setPetImage(null);
+                              setPetImageFile(null);
+                            }}
+                            className="absolute top-2 right-2 p-1 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors z-10"
+                            aria-label="반려동물 이미지 삭제"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
 
-            {/* Product Selection Button */}
-            <button
-              onClick={() => setShowProductModal(true)}
-              className="w-full aspect-square rounded-xl border-2 border-gray-300 bg-gray-50 hover:border-[#14314F] hover:bg-gray-100 transition-colors"
-            >
-              <div className="flex flex-col items-center justify-center h-full text-gray-600">
-                <Sparkles className="w-8 h-8 mb-1" />
-                <p className="text-xs font-medium">상품 선택</p>
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                            <Plus className="w-8 h-8 text-white" />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                          <Upload className="w-8 h-8 mb-2" />
+                          <p className="text-xs font-medium px-2 text-center">
+                            사진 선택
+                          </p>
+                        </div>
+                      )}
+                    </label>
+                  </div>
+                </div>
+
+                {/* Step 2: Clothing Card */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-[#14314F] text-white flex items-center justify-center text-xs font-bold">
+                      2
+                    </div>
+                    <h3 className="text-sm font-semibold text-gray-900">옷</h3>
+                  </div>
+
+                  <div className="relative space-y-2">
+                    {clothingImage ? (
+                      <>
+                        <div
+                          onClick={() => setShowProductModal(true)}
+                          className="w-full aspect-3/4 rounded-xl overflow-hidden cursor-pointer shadow-md relative group"
+                        >
+                          <img
+                            src={clothingImage}
+                            alt="Selected clothing"
+                            className="w-full h-full object-cover"
+                          />
+                          {/* [변경됨] 옷 이미지 삭제 버튼 추가 */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation(); // 모달 열기 방지
+                              setClothingImage(null);
+                              setSelectedProduct(null);
+                            }}
+                            className="absolute top-2 right-2 p-1 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors z-10"
+                            aria-label="옷 이미지 삭제"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                            <Plus className="w-8 h-8 text-white" />
+                          </div>
+                          {selectedProduct && (
+                            <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 via-black/50 to-transparent p-2">
+                              <p className="text-white text-xs font-medium line-clamp-2">
+                                {selectedProduct.name}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Upload Option - 높이 유지용 */}
+                        <div className="relative">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleClothingImageChange}
+                            className="hidden"
+                            id="clothing-image-input-2"
+                          />
+                          <label
+                            htmlFor="clothing-image-input-2"
+                            className="flex items-center justify-center gap-1 w-full py-2 text-xs text-gray-500 hover:text-gray-700 cursor-pointer transition-colors"
+                          >
+                            <Upload className="w-3 h-3" />
+                            <span>다른 옷 업로드</span>
+                          </label>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        {/* Product Selection Button */}
+                        <button
+                          onClick={() => setShowProductModal(true)}
+                          className="w-full aspect-3/4 rounded-xl border-2 border-dashed border-gray-300 bg-white hover:border-[#14314F] hover:shadow-sm transition-all"
+                        >
+                          <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                            <Shirt className="w-8 h-8 mb-2" />
+                            <p className="text-xs font-medium">상품 선택</p>
+                          </div>
+                        </button>
+
+                        {/* Upload Option */}
+                        <div className="relative">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleClothingImageChange}
+                            className="hidden"
+                            id="clothing-image-input"
+                          />
+                          <label
+                            htmlFor="clothing-image-input"
+                            className="flex items-center justify-center gap-1 w-full py-2 text-xs text-gray-500 hover:text-gray-700 cursor-pointer transition-colors"
+                          >
+                            <Upload className="w-3 h-3" />
+                            <span>직접 업로드</span>
+                          </label>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
               </div>
-            </button>
-          </div>
 
-          {/* Selected Clothing Preview */}
-          {clothingImage && (
-            <div className="mt-4">
-              <div className="relative w-full aspect-square rounded-2xl border-2 border-[#14314F] overflow-hidden">
+              {/* Progress Indicator */}
+              <div className="flex items-center justify-center gap-2 py-2">
+                <div
+                  className={`h-1.5 w-8 rounded-full transition-colors ${
+                    petImage ? 'bg-[#14314F]' : 'bg-gray-200'
+                  }`}
+                />
+                <div
+                  className={`h-1.5 w-8 rounded-full transition-colors ${
+                    clothingImage ? 'bg-[#14314F]' : 'bg-gray-200'
+                  }`}
+                />
+              </div>
+
+              {/* AI Styling Button */}
+              <button
+                onClick={handleAIStyling}
+                disabled={!petImage || !clothingImage || isProcessing}
+                className={`w-full py-3 bg-[#14314F] text-white font-bold text-base rounded-xl disabled:bg-gray-300 disabled:cursor-not-allowed active:scale-[0.98] transition-all shadow-lg disabled:shadow-none flex items-center justify-center gap-2 ${
+                  resultImage ? 'pointer-events-none opacity-40' : ''
+                }`}
+              >
+                <span>옷 입혀보기</span>
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* Result Section */}
+        {resultImage && (
+          <div className="mt-8 space-y-8">
+            {/* Result Image */}
+            <div className="space-y-6">
+              <h2 className="text-xl font-bold text-gray-900 flex items-center">
+                스타일링 결과
+              </h2>
+              <div className="relative w-full aspect-square rounded-2xl overflow-hidden">
                 <img
-                  src={clothingImage}
-                  alt="Selected clothing"
+                  src={resultImage}
+                  alt="AI Styling Result"
                   className="w-full h-full object-cover"
                 />
-                {selectedProduct && (
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-                    <p className="text-white text-sm font-semibold">
-                      {selectedProduct.name}
-                    </p>
-                  </div>
-                )}
               </div>
-            </div>
-          )}
-        </section>
-
-        {/* AI Styling Button */}
-        <button
-          onClick={handleAIStyling}
-          disabled={!petImage || !clothingImage || isProcessing}
-          className="w-full py-4 bg-[#14314F] text-white font-bold text-lg rounded-xl disabled:bg-gray-300 disabled:cursor-not-allowed active:bg-[#0d1f33] transition-colors flex items-center justify-center gap-2"
-        >
-          {isProcessing ? (
-            <>
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              AI가 스타일링 중...
-            </>
-          ) : (
-            <>
-              <Sparkles className="w-5 h-5" />옷 입혀보기
-            </>
-          )}
-        </button>
-
-        {/* Result */}
-        {resultImage && (
-          <section className="space-y-4 pt-4">
-            <h2 className="text-lg font-bold text-gray-900">
-              ✨ 스타일링 결과
-            </h2>
-            <div className="relative w-full aspect-square rounded-2xl overflow-hidden border-2 border-[#14314F]">
-              <img
-                src={resultImage}
-                alt="AI Styling Result"
-                className="w-full h-full object-cover"
-              />
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-2">
+            <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={handleShare}
-                className="flex-1 py-3 bg-white border-2 border-[#14314F] text-[#14314F] font-semibold rounded-lg active:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                className="py-3 bg-white text-[#14314F] border border-gray-300 font-semibold rounded-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2"
               >
                 <Share2 className="w-4 h-4" />
                 공유하기
               </button>
               <button
                 onClick={handleReset}
-                className="flex-1 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg active:bg-gray-200 transition-colors flex items-center justify-center gap-2"
+                className="py-3 bg-gray-100 text-gray-700 font-semibold rounded-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2"
               >
                 <RotateCcw className="w-4 h-4" />
                 다시하기
@@ -295,38 +453,42 @@ export default function AIStylingPage() {
             {selectedProduct && (
               <button
                 onClick={() => navigate(`/product/${selectedProduct.id}`)}
-                className="w-full py-3 bg-[#14314F] text-white font-semibold rounded-lg active:bg-[#0d1f33] transition-colors"
+                className="w-full text-[#14314F] font-semibold active:scale-[0.98] transition-all flex items-center justify-end gap-1"
               >
-                이 상품 보러가기
+                <span>이 상품 보러가기</span>
+                <ChevronRight className="w-4 h-4" />
               </button>
             )}
 
             {/* Similar Products */}
-            <div className="pt-4 border-t-8 border-gray-100">
+            <div className="pt-6 mt-6 border-t-4 border-gray-100">
               <h3 className="text-base font-bold text-gray-900 mb-4">
-                비슷한 스타일 상품
+                추천 상품
               </h3>
               <ProductGrid
                 products={similarProducts}
                 onProductClick={(product) => navigate(`/product/${product.id}`)}
               />
             </div>
-          </section>
+          </div>
         )}
+
+        {/* Loading Splash Screen */}
+        {isProcessing && <LoadingSplashScreen />}
+
+        {/* Onboarding Modal */}
+        <OnboardingModal
+          isOpen={showOnboarding}
+          onClose={() => setShowOnboarding(false)}
+        />
+
+        {/* Product Selection Modal */}
+        <ProductSelectionModal
+          isOpen={showProductModal}
+          onClose={() => setShowProductModal(false)}
+          onSelect={handleProductSelect}
+        />
       </div>
-
-      {/* Onboarding Modal */}
-      <OnboardingModal
-        isOpen={showOnboarding}
-        onClose={() => setShowOnboarding(false)}
-      />
-
-      {/* Product Selection Modal */}
-      <ProductSelectionModal
-        isOpen={showProductModal}
-        onClose={() => setShowProductModal(false)}
-        onSelect={handleProductSelect}
-      />
     </div>
   );
 }
