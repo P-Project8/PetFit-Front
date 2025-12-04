@@ -81,7 +81,7 @@ export default function LoginPage() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex flex-col justify-center px-6 pb-20">
+      <div className="flex-1 flex flex-col justify-center px-6">
         {/* Logo */}
         <motion.div
           className="flex justify-center mb-10"
