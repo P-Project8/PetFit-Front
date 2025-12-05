@@ -28,7 +28,7 @@ export default function WishPage() {
   });
 
   return (
-    <div className="min-h-screen bg-white pt-12 pb-16">
+    <div className="min-h-screen bg-white pt-12 pb-20">
       <PageHeader title="찜 목록" showBackButton={false} />
       <ProductListHeader
         itemCount={sortedProducts.length}

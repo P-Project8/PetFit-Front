@@ -61,7 +61,7 @@ export default function App() {
   const saleProducts = products.filter((p) => p.isSale).slice(0, 5);
 
   return (
-    <div className="min-h-screen bg-white py-12">
+    <div className="min-h-screen bg-white pt-12 pb-20">
       {/* Carousel Banner */}
       <section
         className="relative w-full h-100 overflow-hidden bg-gray-100"
