@@ -1,7 +1,9 @@
 import { motion } from 'framer-motion';
+import pLogo from '/P.png';
+import fLogo from '/F.png';
 
 const baseBounce = {
-  y: [0, -18, 0], // 통통 튀는 모양
+  y: [0, -10, 0], // 통통 튀는 모양
 };
 
 const baseTransition = {
@@ -20,7 +22,7 @@ export default function LoadingSplashScreen() {
       transition={{ duration: 0.25 }} // 오버레이 페이드인
     >
       <motion.div
-        className="bg-white rounded-2xl py-16 px-8 mx-4 max-w-sm w-full text-center shadow-lg"
+        className="bg-white rounded-2xl py-20 px-8 mx-4 max-w-sm w-full text-center shadow-lg"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.25 }} // 카드 살짝 커지면서 등장
@@ -29,7 +31,7 @@ export default function LoadingSplashScreen() {
         <div className="flex justify-center mb-12 items-end">
           {/* P */}
           <motion.img
-            src="/P.png"
+            src={pLogo}
             alt="P"
             className="inline-block h-12 mb-1"
             animate={baseBounce}
@@ -53,7 +55,7 @@ export default function LoadingSplashScreen() {
 
           {/* F */}
           <motion.img
-            src="/F.png"
+            src={fLogo}
             alt="F"
             className="inline-block h-12 mb-1"
             animate={baseBounce}
@@ -77,7 +79,7 @@ export default function LoadingSplashScreen() {
         </div>
 
         <h2 className="text-xl font-bold text-gray-900 mb-2">
-          AI가 스타일링 중입니다!
+          AI가 스타일링 중입니다
         </h2>
         <p className="text-sm text-gray-600">잠시만 기다려주세요</p>
       </motion.div>

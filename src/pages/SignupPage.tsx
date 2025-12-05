@@ -1,9 +1,8 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { toast } from 'sonner';
 import {
   Form,
   FormControl,
@@ -11,10 +10,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../components/ui/form';
-import { Input } from '../components/ui/input';
-import { Button } from '../components/ui/button';
+  Input,
+  Button,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui';
 import { ChevronLeft } from 'lucide-react';
+import { toast } from 'sonner';
 
 // Step 1: 이메일 인증 스키마
 const emailVerificationSchema = z.object({
@@ -31,7 +36,7 @@ const signupSchema = z.object({
     .max(20, '아이디는 20자 이하여야 합니다.'),
   password: z.string().min(8, '비밀번호는 8자 이상이어야 합니다.'),
   name: z.string().min(2, '이름은 2자 이상이어야 합니다.'),
-  birth: z.string().min(1, '생년월일을 입력해주세요.'),
+  birth: z.string().min(10, '생년월일을 모두 선택해주세요.'),
 });
 
 type EmailVerificationValues = z.infer<typeof emailVerificationSchema>;
@@ -64,6 +69,10 @@ export default function SignupPage() {
       birth: '',
     },
   });
+
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 100 }, (_, i) => currentYear - i); // 올해부터 100년 전까지
+  const months = Array.from({ length: 12 }, (_, i) => i + 1);
 
   async function handleSendCode() {
     const email = emailForm.getValues('email');
@@ -113,6 +122,7 @@ export default function SignupPage() {
       setStep('signup');
       toast.success('이메일 인증이 완료되었습니다.');
     } catch (error) {
+      console.log(error);
       toast.error('이메일 인증에 실패했습니다.');
     } finally {
       setIsLoading(false);
@@ -134,6 +144,7 @@ export default function SignupPage() {
       toast.success('회원가입이 완료되었습니다. 로그인해주세요.');
       navigate('/login');
     } catch (error) {
+      console.log(error);
       toast.error('회원가입에 실패했습니다.');
     } finally {
       setIsLoading(false);
@@ -322,15 +333,123 @@ export default function SignupPage() {
               <FormField
                 control={signupForm.control}
                 name="birth"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>생년월일</FormLabel>
-                    <FormControl>
-                      <Input type="date" disabled={isLoading} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                render={({ field }) => {
+                  // 현재 field.value (YYYY-MM-DD)를 파싱
+                  const [y, m, d] = field.value
+                    ? field.value.split('-')
+                    : ['', '', ''];
+
+                  // [수정] useMemo 제거 -> 일반 변수로 계산
+                  // JS의 Date 연산은 가벼워서 렌더링마다 실행되어도 괜찮습니다.
+                  let daysInMonth = 31;
+                  if (y && m) {
+                    daysInMonth = new Date(
+                      parseInt(y),
+                      parseInt(m),
+                      0
+                    ).getDate();
+                  }
+
+                  const days = Array.from(
+                    { length: daysInMonth },
+                    (_, i) => i + 1
+                  );
+
+                  const handleDateChange = (
+                    type: 'y' | 'm' | 'd',
+                    value: string
+                  ) => {
+                    let newY = y;
+                    let newM = m;
+                    let newD = d;
+
+                    if (type === 'y') newY = value;
+                    if (type === 'm') {
+                      newM = value.padStart(2, '0');
+                      // 월이 변경되었을 때, 현재 일이 그 달의 마지막 날보다 크다면 리셋 또는 조정
+                      const maxDay = new Date(
+                        parseInt(newY || '2000'),
+                        parseInt(newM),
+                        0
+                      ).getDate();
+                      if (parseInt(newD) > maxDay) newD = '';
+                    }
+                    if (type === 'd') newD = value.padStart(2, '0');
+
+                    // 값이 일부만 있어도 저장 (유효성 검사는 zod 스키마가 담당)
+                    field.onChange(`${newY || ''}-${newM || ''}-${newD || ''}`);
+                  };
+
+                  return (
+                    <FormItem>
+                      <FormLabel>생년월일</FormLabel>
+                      <FormControl>
+                        <div className="flex gap-2">
+                          {/* 연도 선택 */}
+                          <Select
+                            onValueChange={(val) => handleDateChange('y', val)}
+                            value={y || undefined}
+                          >
+                            <FormControl>
+                              <SelectTrigger className="flex-1">
+                                <SelectValue placeholder="년도" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="max-h-[200px]">
+                              {years.map((year) => (
+                                <SelectItem key={year} value={year.toString()}>
+                                  {year}년
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+
+                          {/* 월 선택 */}
+                          <Select
+                            onValueChange={(val) => handleDateChange('m', val)}
+                            value={m ? parseInt(m).toString() : undefined}
+                          >
+                            <FormControl>
+                              <SelectTrigger className="flex-1">
+                                <SelectValue placeholder="월" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="max-h-[200px]">
+                              {months.map((month) => (
+                                <SelectItem
+                                  key={month}
+                                  value={month.toString()}
+                                >
+                                  {month}월
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+
+                          {/* 일 선택 */}
+                          <Select
+                            onValueChange={(val) => handleDateChange('d', val)}
+                            value={d ? parseInt(d).toString() : undefined}
+                          >
+                            <FormControl>
+                              <SelectTrigger className="flex-1">
+                                <SelectValue placeholder="일" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="max-h-[200px]">
+                              {days.map((day) => (
+                                <SelectItem key={day} value={day.toString()}>
+                                  {day}일
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
               />
 
               <Button

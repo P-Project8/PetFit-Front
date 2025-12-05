@@ -2,6 +2,8 @@ import type { Product } from '../../data/mockProducts';
 import { Star, Heart } from 'lucide-react';
 import { calculateDiscountedPrice, hasDiscount } from '../../utils/priceUtils';
 import { useProductStore } from '../../store/productStore';
+import { getReviewStats } from '../../data/mockReviews';
+import { getWishCount } from '../../data/mockWishCounts';
 
 interface ProductCardProps {
   product: Product;
@@ -16,6 +18,10 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
     product.price,
     product.discountRate
   );
+
+  // 리뷰 통계 및 위시 카운트 계산
+  const { averageRating, totalReviews } = getReviewStats(product.id);
+  const wishCount = getWishCount(product.id);
 
   function handleWishClick(e: React.MouseEvent) {
     e.stopPropagation();
@@ -65,18 +71,18 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
 
         {/* Rating and Wish Count */}
         <div className="flex items-center gap-2 mt-1 mb-1">
-          {product.rating && product.reviewCount && (
+          {totalReviews > 0 && (
             <div className="flex items-center gap-0.5">
               <Star className="w-3 h-3 fill-yellow-300 text-yellow-300" />
               <span className="text-xs text-gray-400">
-                {product.rating}({product.reviewCount})
+                {averageRating}({totalReviews})
               </span>
             </div>
           )}
-          {product.wishCount && (
+          {wishCount > 0 && (
             <div className="flex items-center gap-0.5">
               <Heart className="w-3 h-3 fill-red-300 text-red-300" />
-              <span className="text-xs text-gray-400">{product.wishCount}</span>
+              <span className="text-xs text-gray-400">{wishCount}</span>
             </div>
           )}
         </div>
