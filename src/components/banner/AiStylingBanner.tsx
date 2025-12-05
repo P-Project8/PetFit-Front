@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router';
-import { ArrowRight, ChevronRight } from 'lucide-react';
+import { ArrowBigRight, ChevronRight } from 'lucide-react';
 import type { Variants } from 'framer-motion';
 import beforeImg from '/images/onboarding1.png';
 import afterImg from '/images/onboarding3.png';
@@ -20,7 +20,7 @@ export default function AiStylingBanner() {
   return (
     <section className="px-4 py-8">
       <div onClick={() => navigate('/ai-styling')} className="cursor-pointer">
-        <div className="relative overflow-hidden rounded-3xl shadow-md">
+        <div className="relative overflow-hidden rounded-3xl">
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-linear-to-br from-[#1E3A5F] to-[#24496D]" />
             <div className="pointer-events-none absolute top-0 right-0 w-32 h-32 bg-white/15 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
@@ -62,7 +62,7 @@ export default function AiStylingBanner() {
               </motion.div>
 
               <motion.div variants={imageVariants} className="text-white/80">
-                <ArrowRight className="w-5 h-5" strokeWidth={2.5} />
+                <ArrowBigRight className="w-5 h-5" strokeWidth={2.5} />
               </motion.div>
 
               <motion.div
