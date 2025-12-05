@@ -111,6 +111,7 @@ export default function AIStylingPage() {
       console.log(error);
     } finally {
       setIsProcessing(false);
+      toast.success('스타일링이 완료되었습니다!');
     }
   }
 
@@ -416,10 +417,10 @@ export default function AIStylingPage() {
 
         {/* Result Section */}
         {resultImage && (
-          <div className="mt-8 space-y-8">
+          <div className="mt-4 space-y-8">
             {/* Result Image */}
             <div className="space-y-6">
-              <h2 className="text-xl font-bold text-gray-900 flex items-center">
+              <h2 className="text-2xl font-bold text-gray-900 flex items-center ml-4">
                 스타일링 결과
               </h2>
               <div className="relative w-full aspect-square rounded-2xl overflow-hidden">

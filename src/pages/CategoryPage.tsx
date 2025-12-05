@@ -50,7 +50,7 @@ export default function CategoryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white pt-12 pb-16">
+    <div className="min-h-screen bg-white pt-12 pb-20">
       <PageHeader title={categoryName} />
 
       {/* Category Tabs */}
