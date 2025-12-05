@@ -36,9 +36,9 @@ export function Header() {
             className="flex items-center select-none text-[#14314F]"
             onClick={() => navigate('/')}
           >
-            <PLogo className="w-5 h-5" />
+            <PLogo className="w-[18px] h-5" />
             <span
-              className={`font-['KaKamora'] text-lg overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out ${
+              className={`font-['KaKamora'] text-lg overflow-hidden mr-px whitespace-nowrap transition-all duration-300 ease-in-out ${
                 isScrolled || !isMainPage
                   ? 'max-w-0 opacity-0 -translate-x-2'
                   : 'max-w-10 opacity-100 translate-x-0'
@@ -47,7 +47,7 @@ export function Header() {
               et
             </span>
 
-            <FLogo className="w-3 h-5" />
+            <FLogo className="w-3.5 h-5" />
             <span
               className={`font-['KaKamora'] text-lg overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out ${
                 isScrolled || !isMainPage

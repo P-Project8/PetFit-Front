@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import onboarding1 from '/images/onboarding1.png';
+import onboarding2 from '/images/onboarding2.png';
+import onboarding3 from '/images/onboarding3.png';
 
 interface OnboardingModalProps {
   isOpen: boolean;
@@ -10,20 +13,20 @@ const slides = [
   {
     title: '반려동물 사진 선택',
     description: '스타일링 하고 싶은 강아지의\n사진을 업로드 해주세요',
-    image: '/images/onboarding1.png',
+    image: onboarding1,
     step: '1/3',
   },
   {
     title: '옷 선택하기',
     description: '입혀볼 옷을 직접 업로드하거나\n상품 목록에서 선택하세요',
-    image: '/images/onboarding2.png',
+    image: onboarding2,
     step: '2/3',
   },
   {
-    title: 'AI 스타일링 완성!',
+    title: '스타일링 완성',
     description:
       'AI가 자동으로 옷을 입혀드려요\n결과를 공유하고 상품도 구매해보세요',
-    image: '/images/onboarding3.png',
+    image: onboarding3,
     step: '3/3',
   },
 ];
