@@ -14,6 +14,7 @@ import {
 } from '../ui/form';
 import { Button } from '../ui/button';
 import { markAsReviewed } from '../../data/mockOrders';
+import { addReview } from '../../data/mockReviews';
 
 const reviewSchema = z.object({
   rating: z.number().min(1, '별점을 선택해주세요.').max(5),
@@ -53,6 +54,9 @@ export default function ReviewWriteModal({
     try {
       // TODO: 실제 API 호출로 대체
       await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // 리뷰를 실제로 추가 (프론트엔드 배열에)
+      addReview(productId, values.rating, values.content);
 
       // 리뷰 작성 완료 표시
       markAsReviewed(productId);
