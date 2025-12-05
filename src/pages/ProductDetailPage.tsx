@@ -20,6 +20,10 @@ export default function ProductDetailPage() {
   const product = getProductById(Number(productId));
   const [showOptionModal, setShowOptionModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviewUpdateKey, setReviewUpdateKey] = useState(0); // 리뷰 업데이트 트리거용
+  const [wishCountState, setWishCountState] = useState(() =>
+    getWishCount(Number(productId))
+  ); // wishCount를 state로 관리
 
   if (!product) {
     return (
@@ -45,10 +49,11 @@ export default function ProductDetailPage() {
 
   // 리뷰 통계 계산
   const { averageRating, totalReviews } = getReviewStats(product.id);
-  const wishCount = getWishCount(product.id);
 
   function handleWishClick(productId: number) {
     toggleLike(productId);
+    // wishCount 즉시 업데이트
+    setWishCountState(getWishCount(productId));
   }
 
   function handleBuyClick() {
@@ -142,7 +147,7 @@ export default function ProductDetailPage() {
             ) : (
               <Heart className="text-[#14314F]" />
             )}
-            {wishCount}
+            {wishCountState}
           </button>
           <button
             onClick={handleAIStyling}
@@ -174,6 +179,10 @@ export default function ProductDetailPage() {
           productId={product.id}
           productName={product.name}
           onClose={() => setShowReviewModal(false)}
+          onSubmit={() => {
+            // 리뷰 작성 후 통계 업데이트
+            setReviewUpdateKey((prev) => prev + 1);
+          }}
         />
       )}
     </div>

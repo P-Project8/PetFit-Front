@@ -725,3 +725,25 @@ export function getReviewStats(productId: number) {
 
   return { averageRating, totalReviews };
 }
+
+// 새 리뷰 추가 (프론트엔드 전용)
+export function addReview(
+  productId: number,
+  rating: number,
+  content: string,
+  userName: string = '익명'
+): Review {
+  const newReview: Review = {
+    id: mockReviews.length + 1, // 간단한 ID 생성
+    productId,
+    userName,
+    rating,
+    date: new Date().toISOString().split('T')[0].replace(/-/g, '.'), // YYYY.MM.DD 형식
+    content,
+  };
+
+  // 배열 맨 앞에 추가 (최신 리뷰가 먼저 보이도록)
+  mockReviews.unshift(newReview);
+
+  return newReview;
+}
