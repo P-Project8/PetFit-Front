@@ -3,7 +3,7 @@ import pLogo from '/P.png';
 import fLogo from '/F.png';
 
 const baseBounce = {
-  y: [0, -18, 0], // 통통 튀는 모양
+  y: [0, -10, 0], // 통통 튀는 모양
 };
 
 const baseTransition = {
@@ -79,7 +79,7 @@ export default function LoadingSplashScreen() {
         </div>
 
         <h2 className="text-xl font-bold text-gray-900 mb-2">
-          AI가 스타일링 중입니다!
+          AI가 스타일링 중입니다
         </h2>
         <p className="text-sm text-gray-600">잠시만 기다려주세요</p>
       </motion.div>

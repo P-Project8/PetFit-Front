@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router';
 import { mockCategories } from './data/mockCategories';
 import ProductSection from './components/product/ProductSection';
 import { useProductStore } from './store/productStore';
+import { motion } from 'framer-motion';
+import type { Variants } from 'framer-motion';
+import AiStylingBanner from './components/banner/AiStylingBanner';
 
 export default function App() {
   const navigate = useNavigate();
@@ -10,6 +13,34 @@ export default function App() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+  const textContainerVariants: Variants = {
+    hidden: { opacity: 0, y: 30, filter: 'blur(6px)' },
+    visible: {
+      opacity: 1,
+      y: 0,
+      filter: 'blur(0px)',
+      transition: {
+        duration: 0.55, // 처음 등장 조금 빠르게
+        ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number],
+        when: 'beforeChildren',
+        staggerChildren: 0.12,
+      },
+    },
+  };
+
+  const textItemVariants: Variants = {
+    hidden: { opacity: 0, y: 30, filter: 'blur(6px)' },
+    visible: {
+      opacity: 1,
+      y: 0,
+      filter: 'blur(0px)',
+      transition: {
+        duration: 0.65,
+        ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number],
+      },
+    },
+  };
 
   // 1. 다음 슬라이드로 이동
   const nextSlide = () => {
@@ -74,7 +105,7 @@ export default function App() {
           className="flex h-full transition-transform duration-500 ease-out"
           style={{ transform: `translateX(-${currentSlide * 100}%)` }}
         >
-          {carouselProducts.map((item) => (
+          {carouselProducts.map((item, index) => (
             <div
               key={item.id}
               className="w-full h-full shrink-0 relative"
@@ -90,14 +121,25 @@ export default function App() {
                 )}
               </div>
 
-              <div className="absolute bottom-0 left-6 right-0 z-10 pb-16">
-                <h2 className="text-white text-3xl font-bold mb-1 drop-shadow-md">
+              <motion.div
+                className="absolute bottom-0 left-6 right-0 z-10 pb-16"
+                variants={textContainerVariants}
+                initial="hidden"
+                animate={index === currentSlide ? 'visible' : 'hidden'}
+              >
+                <motion.h2
+                  variants={textItemVariants}
+                  className="text-white text-3xl font-bold mb-1 drop-shadow-md"
+                >
                   {item.name}
-                </h2>
-                <p className="text-white/90 text-base drop-shadow-md">
+                </motion.h2>
+                <motion.p
+                  variants={textItemVariants}
+                  className="text-white/90 text-base drop-shadow-md"
+                >
                   {item.description}
-                </p>
-              </div>
+                </motion.p>
+              </motion.div>
             </div>
           ))}
         </div>
@@ -119,7 +161,7 @@ export default function App() {
         </div>
       </section>
 
-      <section className="py-6 bg-white">
+      <section className="pt-6 bg-white">
         <div className="px-4">
           <div className="grid grid-cols-4">
             {mockCategories.map((category) => (
@@ -139,6 +181,9 @@ export default function App() {
           </div>
         </div>
       </section>
+
+      {/* AI Styling Banner */}
+      <AiStylingBanner />
 
       {/* Product Sections - Mobile Optimized */}
       <div className="bg-white space-y-8">

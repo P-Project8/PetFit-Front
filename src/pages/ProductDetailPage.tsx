@@ -37,7 +37,7 @@ export default function ProductDetailPage() {
     product.discountRate
   );
 
-  function handleWishClick(productId) {
+  function handleWishClick(productId: number) {
     toggleLike(productId);
   }
 

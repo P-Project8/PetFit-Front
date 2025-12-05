@@ -84,13 +84,9 @@ export default function LoginPage() {
 
       {/* Content */}
       <div className="flex-1 flex flex-col justify-center px-6">
-        {/* Logo */}
-        <div className="flex justify-center mb-10 items-end text-[#14314F]">
-          <PLogo className="w-11 h-12" />
-          <span className="font-['KaKamora'] text-4xl">et</span>
-          <FLogo className="w-8 h-12" />
-          <span className="font-['KaKamora'] text-4xl">it</span>
-        </div>
+        <h1 className="flex text-3xl font-bold justify-center mb-10 items-end text-[#14314F]">
+          로그인
+        </h1>
 
         {/* Form */}
         <Form {...form}>
