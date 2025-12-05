@@ -33,7 +33,7 @@ export function Navbar() {
         <div
           className="
            pointer-events-auto
-          w-full max-w-[400px] h-13
+          w-full max-w-[400px] h-14
           bg-white/50 
           backdrop-blur-lg 
            border border-white/40
@@ -56,7 +56,7 @@ export function Navbar() {
                 {isActive && (
                   <motion.div
                     layoutId="active-pill"
-                    className="absolute w-16 h-11 bg-gray-200/80 rounded-full -z-10"
+                    className="absolute w-16 h-12 bg-gray-200/80 rounded-full -z-10"
                     transition={{
                       type: 'spring',
                       stiffness: 400,
