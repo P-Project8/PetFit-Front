@@ -11,9 +11,6 @@ export interface Product {
   isHot?: boolean;
   isSale?: boolean;
   isLike?: boolean;
-  wishCount?: number;
-  rating?: number;
-  reviewCount?: number;
 }
 
 export const mockProducts: Product[] = [
@@ -26,9 +23,6 @@ export const mockProducts: Product[] = [
     category: 'one-piece',
     isCarousel: true,
     isNew: true,
-    wishCount: 234,
-    rating: 4.8,
-    reviewCount: 89,
   },
   {
     id: 2,
@@ -39,9 +33,6 @@ export const mockProducts: Product[] = [
     category: 'outer',
     isHot: true,
     isCarousel: true,
-    wishCount: 567,
-    rating: 4.9,
-    reviewCount: 142,
   },
   {
     id: 3,
@@ -52,9 +43,6 @@ export const mockProducts: Product[] = [
     category: 'top',
     isCarousel: true,
     isLike: true,
-    wishCount: 189,
-    rating: 4.6,
-    reviewCount: 67,
   },
   {
     id: 4,
@@ -67,9 +55,6 @@ export const mockProducts: Product[] = [
     isCarousel: true,
     isSale: true,
     isLike: true,
-    wishCount: 892,
-    rating: 4.7,
-    reviewCount: 234,
   },
   {
     id: 5,
@@ -81,9 +66,6 @@ export const mockProducts: Product[] = [
     isCarousel: true,
     isHot: true,
     isNew: true,
-    wishCount: 445,
-    rating: 4.5,
-    reviewCount: 98,
   },
   {
     id: 6,
@@ -91,9 +73,6 @@ export const mockProducts: Product[] = [
     price: 18000,
     category: 'muffler',
     isLike: true,
-    wishCount: 123,
-    rating: 4.3,
-    reviewCount: 45,
     discountRate: 30,
     isSale: true,
     isHot: true,
@@ -103,9 +82,6 @@ export const mockProducts: Product[] = [
     name: '방한 부츠',
     price: 59000,
     category: 'shoes',
-    wishCount: 267,
-    rating: 4.4,
-    reviewCount: 78,
     discountRate: 70,
     isSale: true,
     isHot: true,
@@ -116,9 +92,6 @@ export const mockProducts: Product[] = [
     price: 12000,
     category: 'accessory',
     isLike: true,
-    wishCount: 345,
-    rating: 4.7,
-    reviewCount: 123,
   },
   {
     id: 9,
@@ -126,9 +99,6 @@ export const mockProducts: Product[] = [
     price: 52000,
     category: 'one-piece',
     isNew: true,
-    wishCount: 198,
-    rating: 4.6,
-    reviewCount: 56,
   },
   {
     id: 10,
@@ -137,18 +107,12 @@ export const mockProducts: Product[] = [
     category: 'outer',
     isHot: true,
     isLike: true,
-    wishCount: 678,
-    rating: 4.9,
-    reviewCount: 187,
   },
   {
     id: 11,
     name: '니트 스웨터',
     price: 45000,
     category: 'top',
-    wishCount: 234,
-    rating: 4.5,
-    reviewCount: 92,
   },
   {
     id: 12,
@@ -158,9 +122,6 @@ export const mockProducts: Product[] = [
     category: 'outer',
     isSale: true,
     isLike: true,
-    wishCount: 445,
-    rating: 4.6,
-    reviewCount: 134,
   },
   {
     id: 13,
@@ -168,18 +129,12 @@ export const mockProducts: Product[] = [
     price: 33000,
     category: 'top',
     isNew: true,
-    wishCount: 156,
-    rating: 4.4,
-    reviewCount: 67,
   },
   {
     id: 14,
     name: '데님 재킷',
     price: 75000,
     category: 'outer',
-    wishCount: 289,
-    rating: 4.7,
-    reviewCount: 89,
   },
   {
     id: 15,
@@ -188,9 +143,6 @@ export const mockProducts: Product[] = [
     discountRate: 50,
     category: 'outer',
     isSale: true,
-    wishCount: 523,
-    rating: 4.8,
-    reviewCount: 156,
   },
   {
     id: 16,
@@ -198,45 +150,30 @@ export const mockProducts: Product[] = [
     price: 46000,
     category: 'top',
     isHot: true,
-    wishCount: 412,
-    rating: 4.6,
-    reviewCount: 123,
   },
   {
     id: 17,
     name: '캐시미어 목도리',
     price: 22000,
     category: 'muffler',
-    wishCount: 178,
-    rating: 4.5,
-    reviewCount: 54,
   },
   {
     id: 18,
     name: '운동화',
     price: 59000,
     category: 'shoes',
-    wishCount: 345,
-    rating: 4.7,
-    reviewCount: 98,
   },
   {
     id: 19,
     name: '벨벳 리본',
     price: 9000,
     category: 'accessory',
-    wishCount: 267,
-    rating: 4.4,
-    reviewCount: 76,
   },
   {
     id: 20,
     name: '튤 원피스',
     price: 48000,
     category: 'one-piece',
-    wishCount: 234,
-    rating: 4.6,
-    reviewCount: 89,
   },
   {
     id: 21,
@@ -245,9 +182,6 @@ export const mockProducts: Product[] = [
     discountRate: 40,
     category: 'top',
     isSale: true,
-    wishCount: 456,
-    rating: 4.7,
-    reviewCount: 145,
   },
   {
     id: 22,
@@ -256,9 +190,6 @@ export const mockProducts: Product[] = [
     category: 'top',
     isNew: true,
     isLike: true,
-    wishCount: 389,
-    rating: 4.5,
-    reviewCount: 112,
   },
   {
     id: 23,
@@ -266,9 +197,6 @@ export const mockProducts: Product[] = [
     price: 55000,
     category: 'outer',
     isNew: true,
-    wishCount: 198,
-    rating: 4.4,
-    reviewCount: 67,
   },
   {
     id: 24,
@@ -276,18 +204,12 @@ export const mockProducts: Product[] = [
     price: 49000,
     category: 'shoes',
     isLike: true,
-    wishCount: 267,
-    rating: 4.6,
-    reviewCount: 89,
   },
   {
     id: 25,
     name: '모자',
     price: 15000,
     category: 'etc',
-    wishCount: 145,
-    rating: 4.3,
-    reviewCount: 45,
   },
   {
     id: 26,
@@ -295,9 +217,6 @@ export const mockProducts: Product[] = [
     price: 10000,
     category: 'etc',
     isLike: true,
-    wishCount: 234,
-    rating: 4.5,
-    reviewCount: 78,
   },
   {
     id: 27,
@@ -305,8 +224,5 @@ export const mockProducts: Product[] = [
     price: 39000,
     category: 'etc',
     isLike: true,
-    wishCount: 312,
-    rating: 4.6,
-    reviewCount: 92,
   },
 ];

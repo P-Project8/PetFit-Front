@@ -1,11 +1,16 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { Heart } from 'lucide-react';
+import { toast } from 'sonner';
 import { calculateDiscountedPrice, hasDiscount } from '../utils/priceUtils';
 import ProductOptionModal from '../components/product/ProductOptionModal';
 import ReviewList from '../components/product/ReviewList';
+import ReviewWriteModal from '../components/product/ReviewWriteModal';
 import PageHeader from '@/components/layout/PageHeader';
 import { useProductStore } from '../store/productStore';
+import { getReviewStats } from '../data/mockReviews';
+import { getWishCount } from '../data/mockWishCounts';
+import { canWriteReview } from '../data/mockOrders';
 
 export default function ProductDetailPage() {
   const { productId } = useParams<{ productId: string }>();
@@ -14,6 +19,11 @@ export default function ProductDetailPage() {
   const toggleLike = useProductStore((state) => state.toggleLike);
   const product = getProductById(Number(productId));
   const [showOptionModal, setShowOptionModal] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviewUpdateKey, setReviewUpdateKey] = useState(0); // 리뷰 업데이트 트리거용
+  const [wishCountState, setWishCountState] = useState(() =>
+    getWishCount(Number(productId))
+  ); // wishCount를 state로 관리
 
   if (!product) {
     return (
@@ -37,8 +47,13 @@ export default function ProductDetailPage() {
     product.discountRate
   );
 
-  function handleWishClick(productId) {
+  // 리뷰 통계 계산
+  const { averageRating, totalReviews } = getReviewStats(product.id);
+
+  function handleWishClick(productId: number) {
     toggleLike(productId);
+    // wishCount 즉시 업데이트
+    setWishCountState(getWishCount(productId));
   }
 
   function handleBuyClick() {
@@ -47,6 +62,17 @@ export default function ProductDetailPage() {
 
   function handleAIStyling() {
     navigate('/ai-styling', { state: { selectedProduct: product } });
+  }
+
+  function handleWriteReview() {
+    const { canReview, message } = canWriteReview(product.id);
+
+    if (!canReview) {
+      toast.error(message);
+      return;
+    }
+
+    setShowReviewModal(true);
   }
 
   return (
@@ -103,8 +129,9 @@ export default function ProductDetailPage() {
       <div className="border-t-8 border-gray-100 py-6">
         <ReviewList
           productId={product.id}
-          reviewCount={product.reviewCount}
-          rating={product.rating}
+          reviewCount={totalReviews}
+          rating={averageRating}
+          onWriteReview={handleWriteReview}
         />
       </div>
 
@@ -120,7 +147,7 @@ export default function ProductDetailPage() {
             ) : (
               <Heart className="text-[#14314F]" />
             )}
-            {product.wishCount}
+            {wishCountState}
           </button>
           <button
             onClick={handleAIStyling}
@@ -143,6 +170,19 @@ export default function ProductDetailPage() {
         <ProductOptionModal
           product={product}
           onClose={() => setShowOptionModal(false)}
+        />
+      )}
+
+      {/* Review Write Modal */}
+      {showReviewModal && (
+        <ReviewWriteModal
+          productId={product.id}
+          productName={product.name}
+          onClose={() => setShowReviewModal(false)}
+          onSubmit={() => {
+            // 리뷰 작성 후 통계 업데이트
+            setReviewUpdateKey((prev) => prev + 1);
+          }}
         />
       )}
     </div>
