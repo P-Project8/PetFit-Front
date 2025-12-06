@@ -16,7 +16,7 @@ export function Navbar() {
     { id: 'search', icon: Search, label: '검색', location: '/search' },
     { id: 'styling', icon: Shirt, label: '스타일링', location: '/ai-styling' },
     { id: 'wishlist', icon: Heart, label: '찜', location: '/wish' },
-    { id: 'mypage', icon: User, label: '마이페이지', location: '/login' },
+    { id: 'mypage', icon: User, label: '마이페이지', location: '/my' },
   ];
 
   if (hideNavbar) return null;

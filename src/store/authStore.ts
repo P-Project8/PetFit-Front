@@ -9,31 +9,43 @@ export interface User {
 }
 
 interface AuthStore {
-  token: string | null;
+  accessToken: string | null;
+  refreshToken: string | null;
   user: User | null;
   isAuthenticated: boolean;
-  login: (token: string, user: User) => void;
+  login: (accessToken: string, refreshToken: string, user: User) => void;
+  setTokens: (accessToken: string, refreshToken: string) => void;
   logout: () => void;
 }
 
 export const useAuthStore = create<AuthStore>()(
   persist(
     (set) => ({
-      token: null,
+      accessToken: null,
+      refreshToken: null,
       user: null,
       isAuthenticated: false,
 
-      login: (token, user) => {
+      login: (accessToken, refreshToken, user) => {
         set({
-          token,
+          accessToken,
+          refreshToken,
           user,
           isAuthenticated: true,
         });
       },
 
+      setTokens: (accessToken, refreshToken) => {
+        set({
+          accessToken,
+          refreshToken,
+        });
+      },
+
       logout: () => {
         set({
-          token: null,
+          accessToken: null,
+          refreshToken: null,
           user: null,
           isAuthenticated: false,
         });

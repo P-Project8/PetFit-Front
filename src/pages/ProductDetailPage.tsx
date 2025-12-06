@@ -8,6 +8,7 @@ import ReviewList from '../components/product/ReviewList';
 import ReviewWriteModal from '../components/product/ReviewWriteModal';
 import PageHeader from '@/components/layout/PageHeader';
 import { useProductStore } from '../store/productStore';
+import { useAuthStore } from '../store/authStore';
 import { getReviewStats } from '../data/mockReviews';
 import { getWishCount } from '../data/mockWishCounts';
 import { canWriteReview } from '../data/mockOrders';
@@ -17,6 +18,7 @@ export default function ProductDetailPage() {
   const navigate = useNavigate();
   const getProductById = useProductStore((state) => state.getProductById);
   const toggleLike = useProductStore((state) => state.toggleLike);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const product = getProductById(Number(productId));
   const [showOptionModal, setShowOptionModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
@@ -51,16 +53,28 @@ export default function ProductDetailPage() {
   const { averageRating, totalReviews } = getReviewStats(product.id);
 
   function handleWishClick(productId: number) {
+    if (!isAuthenticated) {
+      toast.error('로그인이 필요한 서비스입니다.');
+      return;
+    }
     toggleLike(productId);
     // wishCount 즉시 업데이트
     setWishCountState(getWishCount(productId));
   }
 
   function handleBuyClick() {
+    if (!isAuthenticated) {
+      toast.error('로그인이 필요한 서비스입니다.');
+      return;
+    }
     setShowOptionModal(true);
   }
 
   function handleAIStyling() {
+    if (!isAuthenticated) {
+      toast.error('로그인이 필요한 서비스입니다.');
+      return;
+    }
     navigate('/ai-styling', { state: { selectedProduct: product } });
   }
 

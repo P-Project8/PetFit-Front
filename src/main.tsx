@@ -13,14 +13,9 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import AIStylingPage from './pages/AIStylingPage';
+import MyPage from './pages/MyPage';
 import ScrollToTop from './components/common/ScrollToTop';
-
-// 마이페이지 관련 import
-import MyPageLayout from './pages/MyPage/MyPageLayout';
-import ProfilePage from './pages/MyPage/ProfilePage';
-import OrdersPage from './pages/MyPage/OrdersPage';
-import AiStylingPage from './pages/MyPage/AiStylingPage';
-import SettingsPage from './pages/MyPage/SettingsPage';
+import ProtectedRoute from './components/common/ProtectedRoute';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -42,21 +37,43 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/product/:productId" element={<ProductDetailPage />} />
 
           {/* 장바구니 / 찜 / 검색 */}
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/wish" element={<WishPage />} />
+          <Route
+            path="/cart"
+            element={
+              <ProtectedRoute>
+                <CartPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/wish"
+            element={
+              <ProtectedRoute>
+                <WishPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/search" element={<SearchPage />} />
 
           {/* AI 스타일링 메인 페이지 */}
-          <Route path="/ai-styling" element={<AIStylingPage />} />
+          <Route
+            path="/ai-styling"
+            element={
+              <ProtectedRoute>
+                <AIStylingPage />
+              </ProtectedRoute>
+            }
+          />
 
-          {/* 마이페이지 라우트 */}
-          <Route path="/my" element={<MyPageLayout />}>
-            <Route index element={<ProfilePage />} />
-            <Route path="profile" element={<ProfilePage />} />
-            <Route path="orders" element={<OrdersPage />} />
-            <Route path="ai-styling" element={<AiStylingPage />} />
-            <Route path="settings" element={<SettingsPage />} />
-          </Route>
+          {/* 마이페이지 */}
+          <Route
+            path="/my"
+            element={
+              <ProtectedRoute>
+                <MyPage />
+              </ProtectedRoute>
+            }
+          />
         </Route>
       </Routes>
     </BrowserRouter>
