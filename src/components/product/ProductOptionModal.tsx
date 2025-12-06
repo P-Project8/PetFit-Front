@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { X, Plus, Minus, ChevronDown, ChevronUp } from 'lucide-react';
-import type { Product } from '../../data/mockProducts';
+import type { Product } from '../../data/products';
 import { useCartStore } from '../../store/cartStore';
 import { toast } from 'sonner';
 
@@ -16,9 +16,6 @@ interface SelectedOption {
   quantity: number;
 }
 
-const SIZES = ['S', 'M', 'L', 'XL'];
-const COLORS = ['블랙', '화이트', '베이지', '네이비'];
-
 export default function ProductOptionModal({
   product,
   onClose,
@@ -30,6 +27,8 @@ export default function ProductOptionModal({
   const [isSizeOpen, setIsSizeOpen] = useState(false);
   const [isColorOpen, setIsColorOpen] = useState(false);
   const optionIdCounter = useRef(0);
+  const sizes = product.size;
+  const colors = product.color;
 
   const totalQuantity = options.reduce((sum, opt) => sum + opt.quantity, 0);
 
@@ -153,7 +152,7 @@ export default function ProductOptionModal({
             </button>
             {isSizeOpen && (
               <div className="mt-2 border border-gray-300 rounded-lg bg-white overflow-hidden">
-                {SIZES.map((size) => (
+                {sizes.map((size) => (
                   <button
                     key={size}
                     onClick={() => handleSizeSelect(size)}
@@ -181,7 +180,7 @@ export default function ProductOptionModal({
             </button>
             {isColorOpen && (
               <div className="mt-2 border border-gray-300 rounded-lg bg-white overflow-hidden">
-                {COLORS.map((color) => (
+                {colors.map((color) => (
                   <button
                     key={color}
                     onClick={() => handleColorSelect(color)}
@@ -243,7 +242,7 @@ export default function ProductOptionModal({
           )}
         </div>
 
-        <div className="sticky bottom-0 bg-white border-t border-gray-100 p-4">
+        <div className="sticky bottom-0 bg-white border-t border-gray-100 p-4 pb-[env(safe-area-inset-bottom) + 16px]">
           {/* Total Price */}
           {options.length > 0 && (
             <div className="flex items-center justify-between mb-3">

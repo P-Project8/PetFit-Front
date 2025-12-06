@@ -15,6 +15,7 @@ import {
 import { Button } from '../ui/button';
 import { markAsReviewed } from '../../data/mockOrders';
 import { addReview } from '../../data/mockReviews';
+import { useAuthStore } from '@/store/authStore';
 
 const reviewSchema = z.object({
   rating: z.number().min(1, '별점을 선택해주세요.').max(5),
@@ -36,6 +37,7 @@ export default function ReviewWriteModal({
   onClose,
   onSubmit,
 }: ReviewWriteModalProps) {
+  const { user } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const [hoveredStar, setHoveredStar] = useState<number | null>(null);
 
@@ -56,7 +58,7 @@ export default function ReviewWriteModal({
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // 리뷰를 실제로 추가 (프론트엔드 배열에)
-      addReview(productId, values.rating, values.content);
+      addReview(productId, values.rating, values.content, user?.name);
 
       // 리뷰 작성 완료 표시
       markAsReviewed(productId);

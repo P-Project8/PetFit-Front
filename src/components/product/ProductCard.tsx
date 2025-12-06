@@ -1,9 +1,11 @@
-import type { Product } from '../../data/mockProducts';
+import type { Product } from '../../data/products';
 import { Star, Heart } from 'lucide-react';
 import { calculateDiscountedPrice, hasDiscount } from '../../utils/priceUtils';
 import { useProductStore } from '../../store/productStore';
 import { getReviewStats } from '../../data/mockReviews';
 import { getWishCount } from '../../data/mockWishCounts';
+import { toast } from 'sonner';
+import { useAuthStore } from '@/store/authStore';
 
 interface ProductCardProps {
   product: Product;
@@ -13,6 +15,7 @@ interface ProductCardProps {
 export default function ProductCard({ product, onClick }: ProductCardProps) {
   const toggleLike = useProductStore((state) => state.toggleLike);
   const isDiscounted = hasDiscount(product.discountRate);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   const discountedPrice = calculateDiscountedPrice(
     product.price,
@@ -24,6 +27,11 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
   const wishCount = getWishCount(product.id);
 
   function handleWishClick(e: React.MouseEvent) {
+    if (!isAuthenticated) {
+      e.stopPropagation();
+      toast.error('로그인이 필요한 서비스입니다.');
+      return;
+    }
     e.stopPropagation();
     toggleLike(product.id);
   }
