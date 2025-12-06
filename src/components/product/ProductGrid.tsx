@@ -1,4 +1,4 @@
-import type { Product } from '../../data/mockProducts';
+import type { Product } from '../../data/products';
 import ProductCard from './ProductCard';
 
 interface ProductGridProps {

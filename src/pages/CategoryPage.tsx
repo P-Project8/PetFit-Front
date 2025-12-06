@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router';
 import { useMemo } from 'react';
 import { mockCategories, categoryLabels } from '../data/mockCategories';
+import { mockWishCounts } from '../data/mockWishCounts';
 import ProductGrid from '../components/product/ProductGrid';
 import PageHeader from '../components/layout/PageHeader';
 import ProductListHeader from '../components/product/ProductListHeader';
@@ -19,16 +20,27 @@ export default function CategoryPage() {
   const categoryName = categoryLabels[currentCategoryId] || '전체 카테고리';
 
   // Filter products based on category
-  const filteredProducts = useMemo(
-    () =>
-      products.filter((product) => {
-        if (currentCategoryId === 'new') return product.isNew;
-        if (currentCategoryId === 'hot') return product.isHot;
-        if (currentCategoryId === 'sale') return product.isSale;
-        return product.category === currentCategoryId;
-      }),
-    [currentCategoryId, products]
-  );
+  const filteredProducts = useMemo(() => {
+    if (currentCategoryId === 'hot') {
+      return [...products]
+        .sort(
+          (a, b) => (mockWishCounts[b.id] || 0) - (mockWishCounts[a.id] || 0)
+        )
+        .slice(0, 24);
+    }
+
+    if (currentCategoryId === 'new') {
+      return [...products]
+        .sort((a, b) => b.date.localeCompare(a.date))
+        .slice(0, 24);
+    }
+
+    if (currentCategoryId === 'sale') {
+      return products.filter((product) => product.discountRate > 0);
+    }
+
+    return products.filter((product) => product.category === currentCategoryId);
+  }, [currentCategoryId, products]);
 
   const { sortBy, setSortBy, sortedProducts, sortOptions } =
     useProductSort(filteredProducts);

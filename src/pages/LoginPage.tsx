@@ -16,8 +16,8 @@ import {
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { ChevronLeft } from 'lucide-react';
-import PLogo from '/src/assets/P.svg?react';
-import FLogo from '/src/assets/F.svg?react';
+import { login as apiLogin, getProfile } from '../services/api';
+import type { ApiException } from '../services/api';
 
 const loginSchema = z.object({
   userId: z.string().min(1, '아이디를 입력해주세요.'),
@@ -43,31 +43,31 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      // TODO: 실제 API 호출로 대체
-      // const response = await fetch('/api/auth/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(values),
-      // });
-      // const data = await response.json();
+      const tokens = await apiLogin(values.userId, values.password);
 
-      // 임시 Mock 로그인
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      const mockToken = 'mock-jwt-token-' + Date.now();
-      const mockUser = {
+      // 토큰을 먼저 저장 (프로필 조회 시 필요)
+      login(tokens.accessToken, tokens.refreshToken, {
         userId: values.userId,
-        email: `${values.userId}@example.com`,
-        name: '테스트 유저',
-        birth: '1990-01-01',
-      };
+        email: '',
+        name: '',
+        birth: '',
+      });
 
-      login(mockToken, mockUser);
+      // 프로필 정보 조회
+      try {
+        const userProfile = await getProfile();
+        // 프로필 정보로 업데이트
+        login(tokens.accessToken, tokens.refreshToken, userProfile);
+      } catch (profileError) {
+        console.error('프로필 조회 실패:', profileError);
+        // 프로필 조회 실패해도 로그인은 유지
+      }
+
       toast.success('로그인 되었습니다.');
       navigate('/');
     } catch (error) {
-      console.log(error);
-      toast.error('로그인에 실패했습니다.');
+      const apiError = error as ApiException;
+      toast.error(apiError.message || '로그인에 실패했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -77,7 +77,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-white flex flex-col">
       {/* Header */}
       <div className="px-4 pt-4 pb-3">
-        <button onClick={() => navigate(-1)}>
+        <button onClick={() => navigate('/')}>
           <ChevronLeft />
         </button>
       </div>
@@ -105,7 +105,7 @@ export default function LoginPage() {
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-xs" />
                 </FormItem>
               )}
             />
@@ -125,7 +125,7 @@ export default function LoginPage() {
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-xs" />
                 </FormItem>
               )}
             />

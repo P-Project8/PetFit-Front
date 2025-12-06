@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Product } from '../data/mockProducts';
-import { mockProducts } from '../data/mockProducts';
+import type { Product } from '../data/products';
+import { products } from '../data/products';
 import { toggleWishCount } from '../data/mockWishCounts';
 
 interface ProductStore {
@@ -14,7 +14,7 @@ interface ProductStore {
 export const useProductStore = create<ProductStore>()(
   persist(
     (set, get) => ({
-      products: mockProducts,
+      products: products,
 
       toggleLike: (productId) => {
         set((state) => {

@@ -9,14 +9,15 @@ export function Navbar() {
   const hideNavbar =
     location.pathname.startsWith('/product/') ||
     location.pathname === '/cart' ||
-    location.pathname === '/ai-styling';
+    location.pathname === '/ai-styling' ||
+    location.pathname === '/my';
 
   const navItems = [
     { id: 'home', icon: Home, label: '홈', location: '/' },
     { id: 'search', icon: Search, label: '검색', location: '/search' },
     { id: 'styling', icon: Shirt, label: '스타일링', location: '/ai-styling' },
     { id: 'wishlist', icon: Heart, label: '찜', location: '/wish' },
-    { id: 'mypage', icon: User, label: '마이페이지', location: '/login' },
+    { id: 'mypage', icon: User, label: '마이페이지', location: '/my' },
   ];
 
   if (hideNavbar) return null;

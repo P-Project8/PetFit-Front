@@ -46,9 +46,8 @@ export default function AiStylingBanner() {
             <motion.div
               className="flex items-center gap-2 shrink-0 ml-2"
               initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              transition={{ staggerChildren: 0.1 }}
+              animate="visible"
+              transition={{ staggerChildren: 0.1, delayChildren: 0.2 }}
             >
               <motion.div
                 variants={imageVariants}
