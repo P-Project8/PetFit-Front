@@ -1,342 +1,190 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuthStore } from '../store/authStore';
-import {
-  getProfile,
-  updateProfile,
-  logout as apiLogout,
-} from '../services/api';
-import type { ApiException, UserProfile } from '../services/api';
+import { logout as apiLogout } from '../services/api';
 import { toast } from 'sonner';
 import PageHeader from '../components/layout/PageHeader';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../components/ui/form';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+  ChevronRight,
+  Package,
+  MessageSquare,
+  Bell,
+  HelpCircle,
+  LogOut,
+} from 'lucide-react';
+import OrderHistoryTab from '../components/mypage/OrderHistoryTab';
+import ProfileEditTab from '../components/mypage/ProfileEditTab';
 
-// 프로필 수정 스키마
-const profileSchema = z.object({
-  name: z.string().min(2, '이름은 2자 이상이어야 합니다.'),
-  birth: z.string().min(10, '생년월일을 입력해주세요.'),
-});
-
-// 비밀번호 변경 스키마
-const passwordSchema = z
-  .object({
-    currentPassword: z.string().min(1, '현재 비밀번호를 입력해주세요.'),
-    newPassword: z.string().min(8, '새 비밀번호는 8자 이상이어야 합니다.'),
-    confirmPassword: z.string().min(1, '비밀번호 확인을 입력해주세요.'),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: '비밀번호가 일치하지 않습니다.',
-    path: ['confirmPassword'],
-  });
-
-type ProfileFormValues = z.infer<typeof profileSchema>;
-type PasswordFormValues = z.infer<typeof passwordSchema>;
+type TabType = 'main' | 'orders' | 'profile' | 'faq' | 'notices' | 'inquiries';
 
 export default function MyPage() {
   const navigate = useNavigate();
-  const { user, logout: logoutStore } = useAuthStore();
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [isLoadingProfile, setIsLoadingProfile] = useState(false);
-  const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
-  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const user = useAuthStore((state) => state.user);
+  const [currentTab, setCurrentTab] = useState<TabType>('main');
 
-  const profileForm = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileSchema),
-    defaultValues: {
-      name: '',
-      birth: '',
-    },
-  });
-
-  const passwordForm = useForm<PasswordFormValues>({
-    resolver: zodResolver(passwordSchema),
-    defaultValues: {
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: '',
-    },
-  });
-
-  // 프로필 조회
-  async function fetchProfile() {
-    setIsLoadingProfile(true);
-    try {
-      const data = await getProfile();
-      setProfile(data);
-      profileForm.setValue('name', data.name);
-      profileForm.setValue('birth', data.birth);
-      toast.success('프로필을 불러왔습니다.');
-    } catch (error) {
-      const apiError = error as ApiException;
-      toast.error(apiError.message || '프로필 조회에 실패했습니다.');
-    } finally {
-      setIsLoadingProfile(false);
-    }
-  }
-
-  // 프로필 수정
-  async function onUpdateProfile(values: ProfileFormValues) {
-    setIsUpdatingProfile(true);
-    try {
-      const updated = await updateProfile({
-        name: values.name,
-        birth: values.birth,
-      });
-      setProfile(updated);
-      toast.success('프로필이 수정되었습니다.');
-    } catch (error) {
-      const apiError = error as ApiException;
-      toast.error(apiError.message || '프로필 수정에 실패했습니다.');
-    } finally {
-      setIsUpdatingProfile(false);
-    }
-  }
-
-  // 비밀번호 변경
-  async function onChangePassword(values: PasswordFormValues) {
-    setIsChangingPassword(true);
-    try {
-      await updateProfile({
-        currentPassword: values.currentPassword,
-        newPassword: values.newPassword,
-        passwordChangeValid: true,
-      });
-      toast.success('비밀번호가 변경되었습니다.');
-      passwordForm.reset();
-    } catch (error) {
-      const apiError = error as ApiException;
-      toast.error(apiError.message || '비밀번호 변경에 실패했습니다.');
-    } finally {
-      setIsChangingPassword(false);
-    }
-  }
-
-  // 로그아웃
   async function handleLogout() {
     try {
       await apiLogout();
-      logoutStore();
+      useAuthStore.getState().logout();
       toast.success('로그아웃 되었습니다.');
       navigate('/login');
-    } catch (error) {
-      // API 실패해도 로컬 상태는 초기화
-      logoutStore();
+    } catch {
+      useAuthStore.getState().logout();
       navigate('/login');
     }
   }
 
-  return (
-    <div className="min-h-screen bg-white pb-20">
-      <PageHeader title="마이페이지 (API 테스트)" showBackButton={false} />
+  // 메인 화면
+  if (currentTab === 'main') {
+    return (
+      <div className="min-h-screen bg-gray-50 pt-12 pb-24">
+        <PageHeader title="마이페이지" showBackButton={false} />
 
-      <div className="px-6 py-6 space-y-8">
-        {/* 현재 저장된 사용자 정보 (authStore) */}
-        <section className="bg-gray-50 p-4 rounded-lg">
-          <h2 className="text-lg font-semibold mb-3">
-            현재 저장된 사용자 정보 (authStore)
-          </h2>
-          <div className="space-y-2 text-sm">
-            <p>
-              <span className="font-medium">아이디:</span> {user?.userId || '-'}
-            </p>
-            <p>
-              <span className="font-medium">이메일:</span> {user?.email || '-'}
-            </p>
-            <p>
-              <span className="font-medium">이름:</span> {user?.name || '-'}
-            </p>
-            <p>
-              <span className="font-medium">생년월일:</span>{' '}
-              {user?.birth || '-'}
-            </p>
-          </div>
-        </section>
-
-        {/* 프로필 조회 버튼 */}
-        <section>
-          <Button
-            onClick={fetchProfile}
-            disabled={isLoadingProfile}
-            className="w-full bg-[#14314F] hover:bg-[#0d1f33]"
-          >
-            {isLoadingProfile
-              ? '조회 중...'
-              : '프로필 조회 (GET /api/auth/profile)'}
-          </Button>
-
-          {profile && (
-            <div className="mt-4 bg-green-50 p-4 rounded-lg">
-              <h3 className="text-sm font-semibold mb-2 text-green-800">
-                API 응답 결과:
-              </h3>
-              <div className="space-y-1 text-sm text-green-900">
-                <p>아이디: {profile.userId}</p>
-                <p>이메일: {profile.email}</p>
-                <p>이름: {profile.name}</p>
-                <p>생년월일: {profile.birth}</p>
+        <div className="bg-white">
+          {/* 프로필 섹션 */}
+          <div className="px-6 py-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900 mb-1">
+                  {user?.name || '사용자'}
+                </h2>
+                <p className="text-sm text-gray-500">{user?.email || ''}</p>
               </div>
+              <button
+                onClick={() => setCurrentTab('profile')}
+                className="px-4 py-2 bg-gray-100 text-gray-700 text-sm rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                프로필 수정
+              </button>
             </div>
-          )}
-        </section>
-
-        {/* 프로필 수정 폼 */}
-        <section className="border-t pt-6">
-          <h2 className="text-lg font-semibold mb-4">
-            프로필 수정 (PATCH /api/auth/profile)
-          </h2>
-          <Form {...profileForm}>
-            <form
-              onSubmit={profileForm.handleSubmit(onUpdateProfile)}
-              className="space-y-4"
-            >
-              <FormField
-                control={profileForm.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>이름</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="이름"
-                        disabled={isUpdatingProfile}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={profileForm.control}
-                name="birth"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>생년월일</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="date"
-                        disabled={isUpdatingProfile}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <Button
-                type="submit"
-                disabled={isUpdatingProfile}
-                className="w-full bg-blue-600 hover:bg-blue-700"
+          </div>
+        </div>
+        {/* 메뉴 그리드 */}
+        <div className="mt-2 bg-white">
+          <div className="px-6 py-4">
+            <div className="space-y-1">
+              <button
+                className="w-full flex items-center gap-3 py-3 text-gray-700 hover:text-gray-900"
+                onClick={() => setCurrentTab('orders')}
               >
-                {isUpdatingProfile ? '수정 중...' : '프로필 수정'}
-              </Button>
-            </form>
-          </Form>
-        </section>
-
-        {/* 비밀번호 변경 폼 */}
-        <section className="border-t pt-6">
-          <h2 className="text-lg font-semibold mb-4">
-            비밀번호 변경 (PATCH /api/auth/profile)
-          </h2>
-          <Form {...passwordForm}>
-            <form
-              onSubmit={passwordForm.handleSubmit(onChangePassword)}
-              className="space-y-4"
-            >
-              <FormField
-                control={passwordForm.control}
-                name="currentPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>현재 비밀번호</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="현재 비밀번호"
-                        disabled={isChangingPassword}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={passwordForm.control}
-                name="newPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>새 비밀번호</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="새 비밀번호 (8자 이상)"
-                        disabled={isChangingPassword}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={passwordForm.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>비밀번호 확인</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="비밀번호 확인"
-                        disabled={isChangingPassword}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <Button
-                type="submit"
-                disabled={isChangingPassword}
-                className="w-full bg-purple-600 hover:bg-purple-700"
+                <Package className="w-4 h-4 text-[#14314F]" />
+                <span className="text-base">주문내역</span>
+              </button>
+              <button
+                className="w-full flex items-center gap-3 py-3 text-gray-700 hover:text-gray-900"
+                onClick={() => setCurrentTab('inquiries')}
               >
-                {isChangingPassword ? '변경 중...' : '비밀번호 변경'}
-              </Button>
-            </form>
-          </Form>
-        </section>
+                <MessageSquare className="w-4 h-4 text-[#14314F]" />
+                <span className="text-base">문의내역</span>
+              </button>
+              <button
+                className="w-full flex items-center gap-3 py-3 text-gray-700 hover:text-gray-900"
+                onClick={() => setCurrentTab('faq')}
+              >
+                <HelpCircle className="w-4 h-4 text-[#14314F]" />
+                <span className="text-base">FAQ</span>
+              </button>
+              <button
+                className="w-full flex items-center gap-3 py-3 text-gray-700 hover:text-gray-900"
+                onClick={() => setCurrentTab('notices')}
+              >
+                <Bell className="w-4 h-4 text-[#14314F]" />
+                <span className="text-base">공지사항</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* 기타 메뉴 */}
+        <div className="mt-2 bg-white">
+          <div className="px-6 py-4">
+            <h3 className="text-sm font-semibold text-gray-900 mb-3">
+              서비스 정보
+            </h3>
+            <div className="space-y-1">
+              <button className="w-full flex items-center justify-between py-3 text-gray-700 hover:text-gray-900">
+                <span className="text-sm">이용약관</span>
+                <ChevronRight className="w-5 h-5 text-gray-400" />
+              </button>
+              <button className="w-full flex items-center justify-between py-3 text-gray-700 hover:text-gray-900">
+                <span className="text-sm">개인정보처리방침</span>
+                <ChevronRight className="w-5 h-5 text-gray-400" />
+              </button>
+            </div>
+          </div>
+        </div>
 
         {/* 로그아웃 버튼 */}
-        <section className="border-t pt-6">
-          <Button
+        <div className="mt-2 bg-white px-6 py-2">
+          <button
             onClick={handleLogout}
-            variant="outline"
-            className="w-full border-red-600 text-red-600 hover:bg-red-50"
+            className="w-full py-3 flex items-center gap-3 text-gray-600 hover:text-gray-900 text-sm font-medium"
           >
-            로그아웃 (DELETE /api/auth/logout)
-          </Button>
-        </section>
+            <LogOut className="w-4 h-4 text-[#14314F]" />
+            로그아웃
+          </button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  // 주문내역 탭
+  if (currentTab === 'orders') {
+    return <OrderHistoryTab onBack={() => setCurrentTab('main')} />;
+  }
+
+  // 프로필 수정 탭
+  if (currentTab === 'profile') {
+    return <ProfileEditTab onBack={() => setCurrentTab('main')} />;
+  }
+
+  // FAQ 탭
+  if (currentTab === 'faq') {
+    return (
+      <div className="min-h-screen bg-white pt-12 pb-20">
+        <PageHeader title="FAQ" onBackClick={() => setCurrentTab('main')} />
+        <div className="px-6 py-6">
+          <p className="text-gray-500 text-center py-20">
+            FAQ 컨텐츠 준비 중입니다.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // 공지사항 탭
+  if (currentTab === 'notices') {
+    return (
+      <div className="min-h-screen bg-white pt-12 pb-20">
+        <PageHeader
+          title="공지사항"
+          onBackClick={() => setCurrentTab('main')}
+        />
+        <div className="px-6 py-6">
+          <p className="text-gray-500 text-center py-20">
+            공지사항 컨텐츠 준비 중입니다.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // 문의내역 탭
+  if (currentTab === 'inquiries') {
+    return (
+      <div className="min-h-screen bg-white pt-12 pb-20">
+        <PageHeader
+          title="문의내역"
+          onBackClick={() => setCurrentTab('main')}
+        />
+        <div className="px-6 py-6">
+          <p className="text-gray-500 text-center py-20">
+            문의내역 컨텐츠 준비 중입니다.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
 }

@@ -5,7 +5,6 @@ import { useProductStore } from '../../store/productStore';
 import { getReviewStats } from '../../data/mockReviews';
 import { getWishCount } from '../../data/mockWishCounts';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router';
 import { useAuthStore } from '@/store/authStore';
 
 interface ProductCardProps {

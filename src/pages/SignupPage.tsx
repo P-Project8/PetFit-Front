@@ -26,12 +26,14 @@ import type { ApiException } from '../services/api';
 // Step 1: 이메일 인증 스키마
 const emailVerificationSchema = z.object({
   email: z.email('올바른 이메일 형식이 아닙니다.'),
-  verificationCode: z.string().min(6, '인증 코드는 6자리입니다.'),
+  verificationCode: z
+    .string()
+    .length(6, '인증 코드는 정확히 6자리여야 합니다.'),
 });
 
 // Step 2: 회원가입 스키마
 const signupSchema = z.object({
-  email: z.email(),
+  email: z.email('올바른 이메일 형식이 아닙니다.'),
   userId: z
     .string()
     .min(4, '아이디는 4자 이상이어야 합니다.')
@@ -97,16 +99,20 @@ export default function SignupPage() {
   async function onEmailVerify(values: EmailVerificationValues) {
     setIsLoading(true);
     try {
-      const response = await verifyEmail(values.email, values.verificationCode);
+      const trimmedEmail = values.email.trim();
+      const trimmedCode = values.verificationCode.trim();
+
+      const response = await verifyEmail(trimmedEmail, trimmedCode);
 
       if (response.verified) {
-        signupForm.setValue('email', values.email);
+        signupForm.setValue('email', trimmedEmail);
         setStep('signup');
         toast.success('이메일 인증이 완료되었습니다.');
       } else {
         toast.error('인증 코드가 일치하지 않습니다.');
       }
     } catch (error) {
+      console.error('이메일 인증 에러:', error);
       const apiError = error as ApiException;
       toast.error(apiError.message || '이메일 인증에 실패했습니다.');
     } finally {
@@ -206,6 +212,7 @@ export default function SignupPage() {
                           placeholder="6자리 인증 코드"
                           className="placeholder-gray-400 placeholder:text-sm py-3"
                           disabled={isLoading}
+                          maxLength={6}
                           {...field}
                         />
                       </FormControl>

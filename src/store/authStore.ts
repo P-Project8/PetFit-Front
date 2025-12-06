@@ -15,6 +15,7 @@ interface AuthStore {
   isAuthenticated: boolean;
   login: (accessToken: string, refreshToken: string, user: User) => void;
   setTokens: (accessToken: string, refreshToken: string) => void;
+  updateUser: (user: User) => void;
   logout: () => void;
 }
 
@@ -40,6 +41,13 @@ export const useAuthStore = create<AuthStore>()(
           accessToken,
           refreshToken,
         });
+      },
+
+      updateUser: (user) => {
+        set((state) => ({
+          ...state,
+          user: { ...user }, // 새 객체 생성 강제
+        }));
       },
 
       logout: () => {
