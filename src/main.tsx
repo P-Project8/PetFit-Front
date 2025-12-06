@@ -16,6 +16,7 @@ import AIStylingPage from './pages/AIStylingPage';
 import MyPage from './pages/MyPage';
 import ScrollToTop from './components/common/ScrollToTop';
 import ProtectedRoute from './components/common/ProtectedRoute';
+import { Toaster } from './components/ui';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -76,6 +77,7 @@ createRoot(document.getElementById('root')!).render(
           />
         </Route>
       </Routes>
+      <Toaster position="top-center" />
     </BrowserRouter>
   </StrictMode>
 );

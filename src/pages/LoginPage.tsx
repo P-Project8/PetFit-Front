@@ -77,7 +77,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-white flex flex-col">
       {/* Header */}
       <div className="px-4 pt-4 pb-3">
-        <button onClick={() => navigate(-1)}>
+        <button onClick={() => navigate('/')}>
           <ChevronLeft />
         </button>
       </div>

@@ -1,5 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import type { AxiosInstance } from 'axios';
+import { useAuthStore } from '../store/authStore';
 
 // API Base URL
 export const BASE_URL = 'http://43.200.89.199:8080';
@@ -145,6 +146,8 @@ apiClient.interceptors.response.use(
           const refreshToken = state?.refreshToken;
 
           if (refreshToken) {
+            console.log('토큰 재발급 시도...');
+
             const { data } = await axios.post<
               ApiResponse<ReissueTokenResponse>
             >(`${BASE_URL}/api/auth/reissue`, { refreshToken });
@@ -154,16 +157,10 @@ apiClient.interceptors.response.use(
               refreshToken: newRefreshToken,
             } = data.result;
 
-            // authStore 업데이트
-            const updatedState = {
-              ...state,
-              accessToken: newAccessToken,
-              refreshToken: newRefreshToken,
-            };
-            localStorage.setItem(
-              'auth-storage',
-              JSON.stringify({ state: updatedState, version: 0 })
-            );
+            console.log('토큰 재발급 성공');
+
+            // authStore의 setTokens 사용하여 업데이트
+            useAuthStore.getState().setTokens(newAccessToken, newRefreshToken);
 
             // 원래 요청 재시도
             originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
@@ -172,7 +169,8 @@ apiClient.interceptors.response.use(
         }
       } catch (refreshError) {
         // refresh 실패 → 로그아웃
-        localStorage.removeItem('auth-storage');
+        console.error('❌ 토큰 재발급 실패, 로그아웃 처리:', refreshError);
+        useAuthStore.getState().logout();
         window.location.href = '/login';
         return Promise.reject(refreshError);
       }
@@ -222,7 +220,7 @@ export async function verifyEmail(
     email,
     verificationCode,
   });
-  return data;
+  return data.result;
 }
 
 // ============================================
