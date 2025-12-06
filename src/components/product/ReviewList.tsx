@@ -1,5 +1,7 @@
 import { Star } from 'lucide-react';
 import { getReviewsByProductId } from '../../data/mockReviews';
+import { usePagination } from '@/hooks/usePagination';
+import Pagination from '../common/Pagination';
 
 interface ReviewListProps {
   productId: number;
@@ -34,6 +36,15 @@ export default function ReviewList({
     );
   }
 
+  const {
+    currentPage,
+    totalPages,
+    paginatedItems,
+    goToPage,
+    canGoNext,
+    canGoPrev,
+  } = usePagination({ items: reviews, itemsPerPage: 6 });
+
   return (
     <div className="px-4">
       <div className="flex items-center justify-between mb-4">
@@ -61,7 +72,7 @@ export default function ReviewList({
         </div>
       ) : (
         <div className="space-y-4">
-          {reviews.map((review) => (
+          {paginatedItems.map((review) => (
             <div
               key={review.id}
               className="border-b border-gray-100 pb-4 last:border-b-0"
@@ -94,6 +105,13 @@ export default function ReviewList({
               )}
             </div>
           ))}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={goToPage}
+            canGoNext={canGoNext}
+            canGoPrev={canGoPrev}
+          />
         </div>
       )}
     </div>

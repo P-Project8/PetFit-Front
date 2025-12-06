@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,16 +20,18 @@ import {
 } from '../components/ui';
 import { ChevronLeft } from 'lucide-react';
 import { toast } from 'sonner';
+import { sendVerificationCode, verifyEmail, signup } from '../services/api';
+import type { ApiException } from '../services/api';
 
 // Step 1: 이메일 인증 스키마
 const emailVerificationSchema = z.object({
-  email: z.string().email('올바른 이메일 형식이 아닙니다.'),
+  email: z.email('올바른 이메일 형식이 아닙니다.'),
   verificationCode: z.string().min(6, '인증 코드는 6자리입니다.'),
 });
 
 // Step 2: 회원가입 스키마
 const signupSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
   userId: z
     .string()
     .min(4, '아이디는 4자 이상이어야 합니다.')
@@ -45,7 +47,6 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 export default function SignupPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState<'email' | 'signup'>('email');
-  const [verifiedEmail, setVerifiedEmail] = useState('');
   const [codeSent, setCodeSent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -82,18 +83,12 @@ export default function SignupPage() {
 
     setIsLoading(true);
     try {
-      // TODO: 실제 API 호출로 대체
-      // await fetch('/api/auth/send-verification-code', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email }),
-      // });
-
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await sendVerificationCode(email);
       setCodeSent(true);
       toast.success('인증 코드가 발송되었습니다.');
     } catch (error) {
-      toast.error('인증 코드 발송에 실패했습니다.');
+      const apiError = error as ApiException;
+      toast.error(apiError.message || '인증 코드 발송에 실패했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -102,28 +97,18 @@ export default function SignupPage() {
   async function onEmailVerify(values: EmailVerificationValues) {
     setIsLoading(true);
     try {
-      // TODO: 실제 API 호출로 대체
-      // const response = await fetch('/api/auth/verify-email', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(values),
-      // });
+      const response = await verifyEmail(values.email, values.verificationCode);
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // 임시: 인증 코드 123456으로 고정
-      if (values.verificationCode !== '123456') {
+      if (response.verified) {
+        signupForm.setValue('email', values.email);
+        setStep('signup');
+        toast.success('이메일 인증이 완료되었습니다.');
+      } else {
         toast.error('인증 코드가 일치하지 않습니다.');
-        return;
       }
-
-      setVerifiedEmail(values.email);
-      signupForm.setValue('email', values.email);
-      setStep('signup');
-      toast.success('이메일 인증이 완료되었습니다.');
     } catch (error) {
-      console.log(error);
-      toast.error('이메일 인증에 실패했습니다.');
+      const apiError = error as ApiException;
+      toast.error(apiError.message || '이메일 인증에 실패했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -132,20 +117,19 @@ export default function SignupPage() {
   async function onSignup(values: SignupFormValues) {
     setIsLoading(true);
     try {
-      // TODO: 실제 API 호출로 대체
-      // const response = await fetch('/api/auth/signup', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(values),
-      // });
-
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await signup({
+        email: values.email,
+        userId: values.userId,
+        password: values.password,
+        name: values.name,
+        birth: values.birth,
+      });
 
       toast.success('회원가입이 완료되었습니다. 로그인해주세요.');
       navigate('/login');
     } catch (error) {
-      console.log(error);
-      toast.error('회원가입에 실패했습니다.');
+      const apiError = error as ApiException;
+      toast.error(apiError.message || '회원가입에 실패했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -226,9 +210,6 @@ export default function SignupPage() {
                         />
                       </FormControl>
                       <FormMessage />
-                      <p className="text-xs text-gray-500">
-                        테스트용 인증 코드: 123456
-                      </p>
                     </FormItem>
                   )}
                 />
