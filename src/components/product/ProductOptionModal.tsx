@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { X, Plus, Minus, ChevronDown, ChevronUp } from 'lucide-react';
-import type { Product } from '../../data/mockProducts';
+import type { Product } from '../../data/products';
 import { useCartStore } from '../../store/cartStore';
 import { toast } from 'sonner';
 
@@ -243,7 +243,7 @@ export default function ProductOptionModal({
           )}
         </div>
 
-        <div className="sticky bottom-0 bg-white border-t border-gray-100 p-4">
+        <div className="sticky bottom-0 bg-white border-t border-gray-100 p-4 pb-[env(safe-area-inset-bottom) + 16px]">
           {/* Total Price */}
           {options.length > 0 && (
             <div className="flex items-center justify-between mb-3">

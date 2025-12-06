@@ -10,7 +10,7 @@ import {
   X,
   Shirt, // [변경됨] X 아이콘 임포트
 } from 'lucide-react';
-import type { Product } from '../data/mockProducts';
+import type { Product } from '../data/products';
 import OnboardingModal from '../components/ai/OnboardingModal';
 import ProductSelectionModal from '../components/ai/ProductSelectionModal';
 import PageHeader from '../components/layout/PageHeader';

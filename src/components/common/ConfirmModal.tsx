@@ -23,7 +23,7 @@ export default function ConfirmModal({
     <div className="fixed inset-0 z-50 flex items-end sm:items-center sm:justify-center">
       <div className="absolute inset-0 bg-black/40" onClick={onCancel}></div>
 
-      <div className="relative w-full bg-white rounded-t-2xl sm:rounded-2xl sm:max-w-sm sm:mx-4">
+      <div className="relative w-full bg-white rounded-t-2xl sm:rounded-2xl sm:max-w-sm sm:mx-4 pb-[env(safe-area-inset-bottom)]">
         <div className="px-6 py-6">
           <h3 className="text-lg font-bold text-gray-900 mb-2">{title}</h3>
           <p className="text-sm text-gray-600">{message}</p>

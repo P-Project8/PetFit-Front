@@ -1,4 +1,4 @@
-import type { Product } from '../../data/mockProducts';
+import type { Product } from '../../data/products';
 import { Star, Heart } from 'lucide-react';
 import { calculateDiscountedPrice, hasDiscount } from '../../utils/priceUtils';
 import { useProductStore } from '../../store/productStore';
@@ -16,6 +16,8 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
   const toggleLike = useProductStore((state) => state.toggleLike);
   const isDiscounted = hasDiscount(product.discountRate);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
+  console.log('이미지 URL', product.name, product.imageUrl);
 
   const discountedPrice = calculateDiscountedPrice(
     product.price,

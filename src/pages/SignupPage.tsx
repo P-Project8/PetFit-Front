@@ -195,7 +195,7 @@ export default function SignupPage() {
                         {codeSent ? '발송 완료' : '코드 발송'}
                       </Button>
                     </div>
-                    <FormMessage />
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
@@ -216,7 +216,7 @@ export default function SignupPage() {
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-xs" />
                     </FormItem>
                   )}
                 />
@@ -255,7 +255,7 @@ export default function SignupPage() {
                         className="bg-gray-50 text-gray-400"
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
@@ -274,7 +274,7 @@ export default function SignupPage() {
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
@@ -294,7 +294,7 @@ export default function SignupPage() {
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
@@ -313,7 +313,7 @@ export default function SignupPage() {
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
@@ -434,7 +434,7 @@ export default function SignupPage() {
                           </Select>
                         </div>
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-xs" />
                     </FormItem>
                   );
                 }}

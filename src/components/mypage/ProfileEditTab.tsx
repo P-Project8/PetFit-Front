@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { getProfile, updateProfile } from '../../services/api';
 import type { ApiException } from '../../services/api';
@@ -22,7 +22,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useEffect } from 'react';
+import ConfirmModal from '../common/ConfirmModal';
 
 interface ProfileEditTabProps {
   onBack: () => void;
@@ -84,6 +84,9 @@ export default function ProfileEditTab({ onBack }: ProfileEditTabProps) {
   const updateUser = useAuthStore((state) => state.updateUser);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [pendingFormData, setPendingFormData] =
+    useState<ProfileFormValues | null>(null);
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
@@ -119,19 +122,30 @@ export default function ProfileEditTab({ onBack }: ProfileEditTabProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // 프로필 수정
-  async function onSubmit(values: ProfileFormValues) {
+  // 폼 제출 시 모달 열기
+  function handleSubmitClick(values: ProfileFormValues) {
+    setPendingFormData(values);
+    setConfirmModalOpen(true);
+  }
+
+  // 모달 확인 시 실제 프로필 수정
+  async function confirmUpdate() {
+    if (!pendingFormData) return;
+
+    setConfirmModalOpen(false);
     setIsUpdating(true);
+
     try {
       // 비밀번호 변경 여부 확인
-      const isChangingPassword = values.newPassword && values.currentPassword;
+      const isChangingPassword =
+        pendingFormData.newPassword && pendingFormData.currentPassword;
 
       const requestData = {
-        name: values.name,
-        birth: values.birth,
+        name: pendingFormData.name,
+        birth: pendingFormData.birth,
         ...(isChangingPassword && {
-          currentPassword: values.currentPassword,
-          newPassword: values.newPassword,
+          currentPassword: pendingFormData.currentPassword,
+          newPassword: pendingFormData.newPassword,
           passwordChangeValid: true,
         }),
       };
@@ -159,7 +173,14 @@ export default function ProfileEditTab({ onBack }: ProfileEditTabProps) {
       toast.error(apiError.message || '프로필 수정에 실패했습니다.');
     } finally {
       setIsUpdating(false);
+      setPendingFormData(null);
     }
+  }
+
+  // 모달 취소
+  function cancelUpdate() {
+    setConfirmModalOpen(false);
+    setPendingFormData(null);
   }
 
   return (
@@ -189,7 +210,10 @@ export default function ProfileEditTab({ onBack }: ProfileEditTabProps) {
         <div className="bg-white rounded-xl p-4">
           <h2 className="text-base font-semibold mb-4">프로필 수정</h2>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form
+              onSubmit={form.handleSubmit(handleSubmitClick)}
+              className="space-y-4"
+            >
               {/* 이름 */}
               <FormField
                 control={form.control}
@@ -401,6 +425,17 @@ export default function ProfileEditTab({ onBack }: ProfileEditTabProps) {
           </Form>
         </div>
       </div>
+
+      {/* 프로필 수정 확인 모달 */}
+      <ConfirmModal
+        isOpen={confirmModalOpen}
+        title="프로필 수정"
+        message="프로필 정보를 수정하시겠습니까?"
+        confirmText="수정"
+        cancelText="취소"
+        onConfirm={confirmUpdate}
+        onCancel={cancelUpdate}
+      />
     </div>
   );
 }

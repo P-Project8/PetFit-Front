@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router';
 import { ChevronRight } from 'lucide-react';
-import type { Product } from '../../data/mockProducts';
+import type { Product } from '../../data/products';
 import ProductCard from './ProductCard';
 
 interface ProductSectionProps {
