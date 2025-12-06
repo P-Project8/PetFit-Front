@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router';
 import ConfirmModal from '../components/common/ConfirmModal';
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity } = useCartStore();
+  const { items, removeItem, updateQuantity, product } = useCartStore();
   const navigate = useNavigate();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
@@ -84,7 +84,10 @@ export default function CartPage() {
                   >
                     <div className="flex gap-4">
                       {/* Product Image */}
-                      <div className="w-24 h-24 bg-gray-100 rounded-lg shrink-0 overflow-hidden">
+                      <div
+                        className="w-24 h-24 bg-gray-100 rounded-lg shrink-0 overflow-hidden"
+                        onClick={() => navigate(`/product/${item.product.id}`)}
+                      >
                         {item.product.imageUrl && (
                           <img
                             src={item.product.imageUrl}

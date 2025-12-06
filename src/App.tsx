@@ -7,6 +7,7 @@ import { useProductStore } from './store/productStore';
 import { motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import AiStylingBanner from './components/banner/AiStylingBanner';
+import { mockBanners } from './data/mockBanners';
 
 export default function App() {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ export default function App() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const carouselProducts = mockBanners.slice(0, 5);
 
   const textContainerVariants: Variants = {
     hidden: { opacity: 0, y: 30, filter: 'blur(6px)' },
@@ -87,16 +89,13 @@ export default function App() {
     }
   };
 
-  const carouselProducts = products.filter((p) => p.isCarousel).slice(0, 5);
   const newProducts = [...products]
     .sort((a, b) => b.date.localeCompare(a.date))
     .slice(0, 8);
   const hotProducts = [...products]
     .sort((a, b) => (mockWishCounts[b.id] || 0) - (mockWishCounts[a.id] || 0))
     .slice(0, 8);
-  const saleProducts = products
-    .filter((p) => p.discountRate > 0)
-    .slice(0, 8);
+  const saleProducts = products.filter((p) => p.discountRate > 0).slice(0, 8);
 
   return (
     <div className="min-h-screen bg-white pt-12 pb-20">
@@ -118,31 +117,35 @@ export default function App() {
               className="w-full h-full shrink-0 relative"
               onClick={() => navigate(`/product/${item.id}`)}
             >
+              {/* 1. 배경 이미지 */}
               <div className="w-full h-full bg-gray-800">
                 {item.imageUrl && (
                   <img
                     src={item.imageUrl}
                     alt={item.name}
-                    className="w-full h-full object-cover opacity-80"
+                    className="w-full h-full object-cover"
                   />
                 )}
               </div>
 
+              <div className="absolute bottom-0 left-0 w-full h-3/5 bg-linear-to-t from-black/60 via-black/40 to-transparent pointer-events-none" />
+
+              {/* 3. 텍스트 컨텐츠 */}
               <motion.div
-                className="absolute bottom-0 left-6 right-0 z-10 pb-16"
+                className="absolute bottom-0 left-6 right-6 z-10 pb-16"
                 variants={textContainerVariants}
                 initial="hidden"
                 animate={index === currentSlide ? 'visible' : 'hidden'}
               >
                 <motion.h2
                   variants={textItemVariants}
-                  className="text-white text-3xl font-bold mb-1 drop-shadow-md"
+                  className="text-white text-3xl font-bold mb-2 drop-shadow-lg"
                 >
                   {item.name}
                 </motion.h2>
                 <motion.p
                   variants={textItemVariants}
-                  className="text-white/90 text-base drop-shadow-md"
+                  className="text-white/95 text-base drop-shadow-md leading-relaxed"
                 >
                   {item.description}
                 </motion.p>
