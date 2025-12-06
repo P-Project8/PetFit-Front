@@ -17,8 +17,6 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
   const isDiscounted = hasDiscount(product.discountRate);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
-  console.log('이미지 URL', product.name, product.imageUrl);
-
   const discountedPrice = calculateDiscountedPrice(
     product.price,
     product.discountRate
