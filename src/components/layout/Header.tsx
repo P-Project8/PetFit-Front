@@ -2,8 +2,6 @@ import { ShoppingCart } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useCartStore } from '../../store/cartStore';
-// import pLogo from '/P.png';
-// import fLogo from '/F.png';
 import PLogo from '/src/assets/P.svg?react';
 import FLogo from '/src/assets/F.svg?react';
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { mockCategories } from './data/mockCategories';
+import { mockWishCounts } from './data/mockWishCounts';
 import ProductSection from './components/product/ProductSection';
 import { useProductStore } from './store/productStore';
 import { motion } from 'framer-motion';
@@ -87,9 +88,15 @@ export default function App() {
   };
 
   const carouselProducts = products.filter((p) => p.isCarousel).slice(0, 5);
-  const newProducts = products.filter((p) => p.isNew).slice(0, 5);
-  const hotProducts = products.filter((p) => p.isHot).slice(0, 5);
-  const saleProducts = products.filter((p) => p.isSale).slice(0, 5);
+  const newProducts = [...products]
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, 8);
+  const hotProducts = [...products]
+    .sort((a, b) => (mockWishCounts[b.id] || 0) - (mockWishCounts[a.id] || 0))
+    .slice(0, 8);
+  const saleProducts = products
+    .filter((p) => p.discountRate > 0)
+    .slice(0, 8);
 
   return (
     <div className="min-h-screen bg-white pt-12 pb-20">

@@ -19,6 +19,8 @@ export default function ReviewList({
   // Filter reviews by productId
   const reviews = getReviewsByProductId(productId);
 
+  const maskedName = (name) => name[0] + '*'.repeat(name.length - 1);
+
   function renderStars(rating: number) {
     return (
       <div className="flex gap-px">
@@ -81,7 +83,7 @@ export default function ReviewList({
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-semibold text-gray-900">
-                    {review.userName}
+                    {maskedName(review.userName)}
                   </span>
                   {renderStars(review.rating)}
                 </div>

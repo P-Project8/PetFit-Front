@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import type { Product } from '../data/mockProducts';
+import type { Product } from '../data/products';
 import { calculateDiscountedPrice } from '../utils/priceUtils';
 
 export type SortOption =

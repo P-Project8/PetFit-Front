@@ -9,7 +9,8 @@ export function Navbar() {
   const hideNavbar =
     location.pathname.startsWith('/product/') ||
     location.pathname === '/cart' ||
-    location.pathname === '/ai-styling';
+    location.pathname === '/ai-styling' ||
+    location.pathname === '/my';
 
   const navItems = [
     { id: 'home', icon: Home, label: '홈', location: '/' },
