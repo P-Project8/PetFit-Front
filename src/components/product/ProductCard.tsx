@@ -1,7 +1,11 @@
-import type { Product } from '../../data/mockProducts';
+import type { Product } from '../../data/products';
 import { Star, Heart } from 'lucide-react';
-import { useState } from 'react';
-import { hasDiscount } from '../../utils/priceUtils';
+import { calculateDiscountedPrice, hasDiscount } from '../../utils/priceUtils';
+import { useProductStore } from '../../store/productStore';
+import { getReviewStats } from '../../data/mockReviews';
+import { getWishCount } from '../../data/mockWishCounts';
+import { toast } from 'sonner';
+import { useAuthStore } from '@/store/authStore';
 
 interface ProductCardProps {
   product: Product;
@@ -9,12 +13,27 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, onClick }: ProductCardProps) {
-  const [isWished, setIsWished] = useState(product.isLike || false);
+  const toggleLike = useProductStore((state) => state.toggleLike);
   const isDiscounted = hasDiscount(product.discountRate);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
+  const discountedPrice = calculateDiscountedPrice(
+    product.price,
+    product.discountRate
+  );
+
+  // 리뷰 통계 및 위시 카운트 계산
+  const { averageRating, totalReviews } = getReviewStats(product.id);
+  const wishCount = getWishCount(product.id);
 
   function handleWishClick(e: React.MouseEvent) {
+    if (!isAuthenticated) {
+      e.stopPropagation();
+      toast.error('로그인이 필요한 서비스입니다.');
+      return;
+    }
     e.stopPropagation();
-    setIsWished(!isWished);
+    toggleLike(product.id);
   }
 
   return (
@@ -34,7 +53,7 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
         >
           <Heart
             className={`w-4.5 h-4.5 ${
-              isWished ? 'fill-red-600 text-red-600' : 'fill-white/50'
+              product.isLike ? 'fill-red-600 text-red-600' : 'fill-white/50'
             }`}
           />
         </button>
@@ -48,9 +67,8 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
             <p className="text-sm font-bold text-red-600">
               {product.discountRate}%
             </p>
-
             <p className="text-sm font-bold text-gray-900">
-              {product.price.toLocaleString()}원
+              {discountedPrice.toLocaleString()}원
             </p>
           </div>
         ) : (
@@ -61,18 +79,18 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
 
         {/* Rating and Wish Count */}
         <div className="flex items-center gap-2 mt-1 mb-1">
-          {product.rating && product.reviewCount && (
+          {totalReviews > 0 && (
             <div className="flex items-center gap-0.5">
               <Star className="w-3 h-3 fill-yellow-300 text-yellow-300" />
               <span className="text-xs text-gray-400">
-                {product.rating}({product.reviewCount})
+                {averageRating}({totalReviews})
               </span>
             </div>
           )}
-          {product.wishCount && (
+          {wishCount > 0 && (
             <div className="flex items-center gap-0.5">
               <Heart className="w-3 h-3 fill-red-300 text-red-300" />
-              <span className="text-xs text-gray-400">{product.wishCount}</span>
+              <span className="text-xs text-gray-400">{wishCount}</span>
             </div>
           )}
         </div>
