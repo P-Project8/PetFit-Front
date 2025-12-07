@@ -1,5 +1,3 @@
-import { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router';
 import {
   Upload,
   HelpCircle,
@@ -8,192 +6,40 @@ import {
   Plus,
   ChevronRight,
   X,
-  Shirt, // [변경됨] X 아이콘 임포트
+  Shirt,
+  Download,
 } from 'lucide-react';
-import type { Product } from '../data/products';
 import OnboardingModal from '../components/ai/OnboardingModal';
 import ProductSelectionModal from '../components/ai/ProductSelectionModal';
 import PageHeader from '../components/layout/PageHeader';
-import { toast } from 'sonner';
 import ProductGrid from '../components/product/ProductGrid';
-import { useProductStore } from '../store/productStore';
 import LoadingSplashScreen from '@/components/ai/LoadingSplashScreen';
+import { useAIStyling } from '../hooks/useAIStyling';
 
 export default function AIStylingPage() {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const products = useProductStore((state) => state.products);
-
-  const preSelectedProduct = location.state?.selectedProduct as
-    | Product
-    | undefined;
-
-  const [showOnboarding, setShowOnboarding] = useState(false);
-  const [showProductModal, setShowProductModal] = useState(false);
-
-  const [petImage, setPetImage] = useState<string | null>(null);
-  const [petImageFile, setPetImageFile] = useState<File | null>(null);
-
-  const [clothingImage, setClothingImage] = useState<string | null>(null);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(
-    preSelectedProduct || null
-  );
-
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [resultImage, setResultImage] = useState<string | null>(null);
-
-  // Check if onboarding has been seen
-  useEffect(() => {
-    const hasSeenOnboarding = localStorage.getItem(
-      'ai-styling-onboarding-seen'
-    );
-    if (!hasSeenOnboarding) {
-      setShowOnboarding(true);
-    }
-  }, []);
-
-  // Set clothing image if product is pre-selected
-  useEffect(() => {
-    if (preSelectedProduct?.imageUrl) {
-      setClothingImage(preSelectedProduct.imageUrl);
-      setSelectedProduct(preSelectedProduct);
-    }
-  }, [preSelectedProduct]);
-
-  function handlePetImageChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (file) {
-      setPetImageFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPetImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-
-  function handleClothingImageChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setClothingImage(reader.result as string);
-        setSelectedProduct(null);
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-
-  function handleProductSelect(product: Product) {
-    setSelectedProduct(product);
-    setClothingImage(product.imageUrl || null);
-  }
-
-  async function handleAIStyling() {
-    if (!petImage || !clothingImage) {
-      toast('반려동물 사진과 옷을 모두 선택해주세요.');
-      return;
-    }
-
-    setIsProcessing(true);
-    setResultImage(null);
-
-    try {
-      // TODO: Gemini API 연동
-      // const response = await callGeminiAPI(petImageFile, clothingImage);
-
-      // Mock: 5초 후 결과 표시
-      await new Promise((resolve) => setTimeout(resolve, 5000));
-
-      // Mock result (실제로는 Gemini API 결과)
-      setResultImage(petImage); // 임시로 pet image 표시
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsProcessing(false);
-      toast.success('스타일링이 완료되었습니다!');
-    }
-  }
-
-  function handleReset() {
-    setPetImage(null);
-    setPetImageFile(null);
-    setClothingImage(null);
-    setSelectedProduct(null);
-    setResultImage(null);
-  }
-
-  function handleShare() {
-    if (!resultImage) return;
-
-    // Web Share API
-    if (navigator.share) {
-      navigator
-        .share({
-          title: 'PetFit AI 스타일링',
-          text: '우리 아이 스타일링 결과를 확인해보세요!',
-        })
-        .catch(() => {
-          toast('공유에 실패했습니다.');
-        });
-    } else {
-      toast('공유 기능을 지원하지 않는 브라우저입니다.');
-    }
-  }
-
-  // Get similar products based on selected product
-  function getSimilarProducts() {
-    if (!selectedProduct) {
-      // 선택한 상품이 없으면 인기순으로 4개 반환
-      return products
-        .sort((a, b) => (b.wishCount || 0) - (a.wishCount || 0))
-        .slice(0, 4);
-    }
-
-    // 같은 카테고리의 상품들 필터링
-    const sameCategoryProducts = products.filter(
-      (p) =>
-        p.category === selectedProduct.category && p.id !== selectedProduct.id
-    );
-
-    // 가격 범위 계산 (선택한 상품 가격의 ±40%)
-    const priceMin = selectedProduct.price * 0.6;
-    const priceMax = selectedProduct.price * 1.4;
-
-    // 비슷한 가격대의 상품들
-    const similarPriceProducts = sameCategoryProducts.filter(
-      (p) => p.price >= priceMin && p.price <= priceMax
-    );
-
-    // 비슷한 가격대 상품이 4개 이상이면 그 중에서, 아니면 같은 카테고리에서
-    const candidateProducts =
-      similarPriceProducts.length >= 4
-        ? similarPriceProducts
-        : sameCategoryProducts;
-
-    // 평점과 찜 수를 고려한 정렬
-    const sorted = candidateProducts.sort((a, b) => {
-      const scoreA = (a.rating || 0) * 0.5 + (a.wishCount || 0) * 0.001;
-      const scoreB = (b.rating || 0) * 0.5 + (b.wishCount || 0) * 0.001;
-      return scoreB - scoreA;
-    });
-
-    // 4개 반환, 부족하면 다른 인기 상품으로 채우기
-    const result = sorted.slice(0, 4);
-    if (result.length < 4) {
-      const remainingCount = 4 - result.length;
-      const remainingProducts = products
-        .filter(
-          (p) =>
-            p.id !== selectedProduct.id && !result.some((r) => r.id === p.id)
-        )
-        .sort((a, b) => (b.wishCount || 0) - (a.wishCount || 0))
-        .slice(0, remainingCount);
-      result.push(...remainingProducts);
-    }
-
-    return result;
-  }
+  const {
+    petImage,
+    clothingImage,
+    selectedProduct,
+    isProcessing,
+    resultImage,
+    showOnboarding,
+    showProductModal,
+    setShowOnboarding,
+    setShowProductModal,
+    setPetImage,
+    setClothingImage,
+    setSelectedProduct,
+    handlePetImageChange,
+    handleClothingImageChange,
+    handleProductSelect,
+    handleAIStyling,
+    handleReset,
+    handleShare,
+    handleDownload,
+    getSimilarProducts,
+    navigate,
+  } = useAIStyling();
 
   const similarProducts = getSimilarProducts();
 
@@ -257,13 +103,11 @@ export default function AIStylingPage() {
                             alt="Pet"
                             className="w-full h-full object-cover"
                           />
-                          {/* [변경됨] 반려동물 이미지 삭제 버튼 추가 */}
                           <button
                             onClick={(e) => {
-                              e.preventDefault(); // label 클릭 동작 방지
-                              e.stopPropagation(); // 이벤트 전파 방지
+                              e.preventDefault();
+                              e.stopPropagation();
                               setPetImage(null);
-                              setPetImageFile(null);
                             }}
                             className="absolute top-2 right-2 p-1 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors z-10"
                             aria-label="반려동물 이미지 삭제"
@@ -308,10 +152,9 @@ export default function AIStylingPage() {
                             alt="Selected clothing"
                             className="w-full h-full object-cover"
                           />
-                          {/* [변경됨] 옷 이미지 삭제 버튼 추가 */}
                           <button
                             onClick={(e) => {
-                              e.stopPropagation(); // 모달 열기 방지
+                              e.stopPropagation();
                               setClothingImage(null);
                               setSelectedProduct(null);
                             }}
@@ -333,7 +176,6 @@ export default function AIStylingPage() {
                           )}
                         </div>
 
-                        {/* Upload Option - 높이 유지용 */}
                         <div className="relative">
                           <input
                             type="file"
@@ -430,10 +272,21 @@ export default function AIStylingPage() {
                   className="w-full h-full object-cover"
                 />
               </div>
+              <p className="text-xs text-center text-gray-500 mt-2">
+                * AI가 예측한 스타일링 이미지로, 실제 착용 핏과는 다를 수
+                있습니다
+              </p>
             </div>
 
             {/* Action Buttons */}
             <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={handleDownload}
+                className="py-3 bg-white text-[#14314F] border border-gray-300 font-semibold rounded-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+              >
+                <Download className="w-4 h-4" />
+                저장하기
+              </button>
               <button
                 onClick={handleShare}
                 className="py-3 bg-white text-[#14314F] border border-gray-300 font-semibold rounded-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2"
@@ -443,7 +296,7 @@ export default function AIStylingPage() {
               </button>
               <button
                 onClick={handleReset}
-                className="py-3 bg-gray-100 text-gray-700 font-semibold rounded-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                className="py-3 col-span-2 bg-gray-100 text-gray-700 font-semibold rounded-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2"
               >
                 <RotateCcw className="w-4 h-4" />
                 다시하기

@@ -3,7 +3,9 @@ import type { AxiosInstance } from 'axios';
 import { useAuthStore } from '../store/authStore';
 
 // API Base URL
-export const BASE_URL = 'http://43.200.89.199:8080';
+// API Base URL
+export const BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || 'http://43.200.89.199:8080';
 
 // ============================================
 // Type Definitions
