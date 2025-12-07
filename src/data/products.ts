@@ -16,6 +16,7 @@ export interface Product {
   productUrl?: string;
   // Optional flags for UI features
   isLike?: boolean;
+  wishCount?: number;
   date: string;
 }
 
