@@ -77,7 +77,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-white flex flex-col">
       {/* Header */}
       <div className="px-4 pt-4 pb-3">
-        <button onClick={() => navigate('/')}>
+        <button onClick={() => navigate('/')} className="cursor-pointer">
           <ChevronLeft />
         </button>
       </div>
@@ -133,7 +133,7 @@ export default function LoginPage() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="mt-3 w-full py-3 bg-[#14314F] font-semibold"
+              className="mt-3 w-full py-3 bg-[#14314F] font-semibold cursor-pointer"
             >
               {isLoading ? '로그인 중...' : '로그인'}
             </Button>
@@ -146,7 +146,7 @@ export default function LoginPage() {
             계정이 없으신가요?&nbsp;
             <button
               onClick={() => navigate('/signup')}
-              className="text-[#14314F] font-semibold hover:underline"
+              className="text-[#14314F] font-semibold hover:underline cursor-pointer"
             >
               회원가입
             </button>

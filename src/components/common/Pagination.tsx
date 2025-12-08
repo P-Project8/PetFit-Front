@@ -86,7 +86,7 @@ export default function Pagination({
             <button
               key={page}
               onClick={() => onPageChange(page as number)}
-              className={`min-w-9 h-9 px-3 rounded-lg font-medium text-sm transition-colors ${
+              className={`min-w-9 h-9 px-3 rounded-lg font-medium text-sm transition-colors cursor-pointer ${
                 currentPage === page
                   ? 'bg-[#14314F] text-white'
                   : 'text-gray-700 hover:bg-gray-100'
@@ -102,7 +102,7 @@ export default function Pagination({
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={!canGoNext}
-        className="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        className="p-2 rounded-lg cursor-pointer hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
         aria-label="다음 페이지"
       >
         <ChevronRight className="w-5 h-5 text-gray-700" />
