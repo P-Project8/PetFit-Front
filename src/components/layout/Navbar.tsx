@@ -52,7 +52,7 @@ export function Navbar() {
               <button
                 key={item.id}
                 onClick={() => navigate(item.location)}
-                className="relative flex flex-col items-center justify-center w-full h-full"
+                className="relative flex flex-col items-center justify-center w-full h-full cursor-pointer"
               >
                 {isActive && (
                   <motion.div
