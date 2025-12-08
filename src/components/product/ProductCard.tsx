@@ -59,7 +59,7 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
         </button>
       </div>
       <div className="px-1">
-        <h4 className="font-semibold text-sm text-gray-900 mb-0.5 truncate group-hover:text-indigo-600 transition-colors">
+        <h4 className="font-semibold text-sm text-gray-900 mb-0.5 truncate transition-colors">
           {product.name}
         </h4>
         {isDiscounted ? (

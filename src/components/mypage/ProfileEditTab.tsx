@@ -417,7 +417,7 @@ export default function ProfileEditTab({ onBack }: ProfileEditTabProps) {
               <Button
                 type="submit"
                 disabled={isUpdating || isLoadingProfile}
-                className="w-full bg-[#14314F] hover:bg-[#0d1f33]"
+                className="w-full bg-[#14314F] hover:bg-[#0d1f33] cursor-pointer"
               >
                 {isUpdating ? '수정 중...' : '프로필 수정'}
               </Button>

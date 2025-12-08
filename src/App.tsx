@@ -181,7 +181,7 @@ export default function App() {
                 className="
             text-sm text-[#14314F] font-['Balsamiq'] py-3
             border-r border-gray-200
-            nth-[4n]:border-r-0
+            nth-[4n]:border-r-0 cursor-pointer
             active:bg-gray-50 active:text-gray-900 transition-colors
           "
               >
