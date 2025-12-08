@@ -11,11 +11,25 @@ import {
   Bell,
   HelpCircle,
   LogOut,
+  type LucideIcon,
 } from 'lucide-react';
 import OrderHistoryTab from '../components/mypage/OrderHistoryTab';
 import ProfileEditTab from '../components/mypage/ProfileEditTab';
 
 type TabType = 'main' | 'orders' | 'profile' | 'faq' | 'notices' | 'inquiries';
+
+interface TabItem {
+  key: TabType;
+  label: string;
+  icon: LucideIcon;
+}
+
+const tabs: TabItem[] = [
+  { key: 'orders', label: '주문내역', icon: Package },
+  { key: 'inquiries', label: '문의내역', icon: MessageSquare },
+  { key: 'faq', label: 'FAQ', icon: HelpCircle },
+  { key: 'notices', label: '공지사항', icon: Bell },
+];
 
 export default function MyPage() {
   const navigate = useNavigate();
@@ -52,7 +66,7 @@ export default function MyPage() {
               </div>
               <button
                 onClick={() => setCurrentTab('profile')}
-                className="px-4 py-2 bg-gray-100 text-gray-700 text-sm rounded-lg hover:bg-gray-200 transition-colors"
+                className="px-4 py-2 cursor-pointer bg-gray-100 text-gray-700 text-sm rounded-lg hover:bg-gray-200 transition-colors"
               >
                 프로필 수정
               </button>
@@ -63,34 +77,16 @@ export default function MyPage() {
         <div className="mt-2 bg-white">
           <div className="px-6 py-4">
             <div className="space-y-1">
-              <button
-                className="w-full flex items-center gap-3 py-3 text-gray-700 hover:text-gray-900"
-                onClick={() => setCurrentTab('orders')}
-              >
-                <Package className="w-4 h-4 text-[#14314F]" />
-                <span className="text-base">주문내역</span>
-              </button>
-              <button
-                className="w-full flex items-center gap-3 py-3 text-gray-700 hover:text-gray-900"
-                onClick={() => setCurrentTab('inquiries')}
-              >
-                <MessageSquare className="w-4 h-4 text-[#14314F]" />
-                <span className="text-base">문의내역</span>
-              </button>
-              <button
-                className="w-full flex items-center gap-3 py-3 text-gray-700 hover:text-gray-900"
-                onClick={() => setCurrentTab('faq')}
-              >
-                <HelpCircle className="w-4 h-4 text-[#14314F]" />
-                <span className="text-base">FAQ</span>
-              </button>
-              <button
-                className="w-full flex items-center gap-3 py-3 text-gray-700 hover:text-gray-900"
-                onClick={() => setCurrentTab('notices')}
-              >
-                <Bell className="w-4 h-4 text-[#14314F]" />
-                <span className="text-base">공지사항</span>
-              </button>
+              {tabs.map(({ key, label, icon: Icon }) => (
+                <button
+                  key={key}
+                  className="w-full flex items-center gap-3 py-3 text-gray-700 hover:text-gray-900 cursor-pointer"
+                  onClick={() => setCurrentTab(key)}
+                >
+                  <Icon className="w-4 h-4 text-[#14314F]" />
+                  <span className="text-base">{label}</span>
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -118,7 +114,7 @@ export default function MyPage() {
         <div className="mt-2 bg-white px-6 py-2">
           <button
             onClick={handleLogout}
-            className="w-full py-3 flex items-center gap-3 text-gray-600 hover:text-gray-900 text-sm font-medium"
+            className="w-full py-3 flex cursor-pointer items-center gap-3 text-gray-600 hover:text-gray-900 text-sm font-medium"
           >
             <LogOut className="w-4 h-4 text-[#14314F]" />
             로그아웃

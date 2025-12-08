@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router';
 import ConfirmModal from '../components/common/ConfirmModal';
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, product } = useCartStore();
+  const { items, removeItem, updateQuantity } = useCartStore();
   const navigate = useNavigate();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
@@ -57,7 +57,7 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white py-12">
+    <div className="min-h-screen bg-white pt-12 pb-20">
       <PageHeader title="장바구니" onBackClick={() => navigate(-1)} />
 
       <div className="pt-4 px-4">
@@ -85,7 +85,7 @@ export default function CartPage() {
                     <div className="flex gap-4">
                       {/* Product Image */}
                       <div
-                        className="w-24 h-24 bg-gray-100 rounded-lg shrink-0 overflow-hidden"
+                        className="w-24 h-24 bg-gray-100 rounded-lg cursor-pointer shrink-0 overflow-hidden"
                         onClick={() => navigate(`/product/${item.product.id}`)}
                       >
                         {item.product.imageUrl && (
@@ -105,7 +105,7 @@ export default function CartPage() {
                           </h3>
                           <button
                             onClick={() => handleRemove(item.cartItemId)}
-                            className="text-gray-400 hover:text-gray-600 shrink-0"
+                            className="text-gray-400 cursor-pointer hover:text-gray-600 shrink-0"
                           >
                             <X className="w-4 h-4" />
                           </button>
@@ -123,11 +123,11 @@ export default function CartPage() {
                                 handleQuantityChange(item.cartItemId, -1)
                               }
                               disabled={item.quantity <= 1}
-                              className="disabled:opacity-30"
+                              className="disabled:opacity-30 cursor-pointer"
                             >
                               <Minus className="w-3 h-3 text-gray-700" />
                             </button>
-                            <span className="text-xs text-gray-900 mx-3 min-w-[20px] text-center">
+                            <span className="text-xs text-gray-900 mx-3 min-w-5 text-center">
                               {item.quantity}
                             </span>
                             <button
@@ -135,7 +135,7 @@ export default function CartPage() {
                                 handleQuantityChange(item.cartItemId, 1)
                               }
                               disabled={item.quantity >= 99}
-                              className="disabled:opacity-30"
+                              className="disabled:opacity-30 cursor-pointer"
                             >
                               <Plus className="w-3 h-3 text-gray-700" />
                             </button>
@@ -209,7 +209,7 @@ export default function CartPage() {
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50">
           <button
             onClick={handlePurchase}
-            className="w-full py-3 bg-[#14314F] text-white font-semibold rounded-lg active:bg-[#0d1f33] transition-colors"
+            className="w-full py-3 bg-[#14314F] cursor-pointer text-white font-semibold rounded-lg active:bg-[#0d1f33] transition-colors"
           >
             {totalPrice.toLocaleString()}원 구매하기
           </button>

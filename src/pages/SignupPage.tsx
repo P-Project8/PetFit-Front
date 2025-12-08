@@ -87,10 +87,10 @@ export default function SignupPage() {
     try {
       await sendVerificationCode(email);
       setCodeSent(true);
-      toast.success('인증 코드가 발송되었습니다.');
+      toast.success('인증 번호가 발송되었습니다.');
     } catch (error) {
       const apiError = error as ApiException;
-      toast.error(apiError.message || '인증 코드 발송에 실패했습니다.');
+      toast.error(apiError.message || '인증 번호 발송에 실패했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -109,7 +109,7 @@ export default function SignupPage() {
         setStep('signup');
         toast.success('이메일 인증이 완료되었습니다.');
       } else {
-        toast.error('인증 코드가 일치하지 않습니다.');
+        toast.error('인증 번호가 일치하지 않습니다.');
       }
     } catch (error) {
       console.error('이메일 인증 에러:', error);
@@ -180,7 +180,7 @@ export default function SignupPage() {
                         <Input
                           type="email"
                           className="placeholder-gray-400 placeholder:text-sm"
-                          placeholder="example@email.com"
+                          placeholder="이메일을 입력해주세요."
                           disabled={isLoading || codeSent}
                           {...field}
                         />
@@ -190,9 +190,9 @@ export default function SignupPage() {
                         onClick={handleSendCode}
                         disabled={isLoading || codeSent}
                         variant="outline"
-                        className="shrink-0 h-11"
+                        className="shrink-0 h-11 cursor-pointer"
                       >
-                        {codeSent ? '발송 완료' : '코드 발송'}
+                        {codeSent ? '발송 완료' : '인증번호 받기'}
                       </Button>
                     </div>
                     <FormMessage className="text-xs" />
@@ -209,7 +209,7 @@ export default function SignupPage() {
                       <FormLabel>인증 코드</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="6자리 인증 코드"
+                          placeholder="6자리 인증 번호"
                           className="placeholder-gray-400 placeholder:text-sm py-3"
                           disabled={isLoading}
                           maxLength={6}
@@ -226,7 +226,7 @@ export default function SignupPage() {
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-[#14314F] hover:bg-[#0d1f33] h-11"
+                  className="w-full bg-[#14314F] hover:bg-[#0d1f33] h-11 cursor-pointer"
                 >
                   {isLoading ? '인증 중...' : '인증 확인'}
                 </Button>
