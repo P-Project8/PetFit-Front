@@ -1,6 +1,6 @@
 import { Download, Share2, RotateCcw, ChevronRight } from 'lucide-react';
 import ProductGrid from '../product/ProductGrid';
-import type { Product } from '../../types/product';
+import type { Product } from '../../data/products';
 
 interface ResultSectionProps {
   resultImage: string;
