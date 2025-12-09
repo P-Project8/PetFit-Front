@@ -128,7 +128,7 @@ export default function ReviewWriteModal({
               <FormField
                 control={form.control}
                 name="rating"
-                render={({ field }) => (
+                render={() => (
                   <FormItem>
                     <FormLabel>별점</FormLabel>
                     <FormControl>

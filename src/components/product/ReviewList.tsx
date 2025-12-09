@@ -19,7 +19,7 @@ export default function ReviewList({
   // Filter reviews by productId
   const reviews = getReviewsByProductId(productId);
 
-  const maskedName = (name) => name[0] + '*'.repeat(name.length - 1);
+  const maskedName = (name: string) => name[0] + '*'.repeat(name.length - 1);
 
   function renderStars(rating: number) {
     return (
