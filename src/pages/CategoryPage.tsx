@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router';
+import { useParams, useNavigate, useSearchParams } from 'react-router';
 import { useMemo } from 'react';
 import { mockCategories, categoryLabels } from '../data/mockCategories';
 import { mockWishCounts } from '../data/mockWishCounts';
@@ -14,10 +14,15 @@ import CategoryTabs from '../components/common/CategoryTabs';
 export default function CategoryPage() {
   const { categoryId } = useParams<{ categoryId: string }>();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const products = useProductStore((state) => state.products);
 
   const currentCategoryId = categoryId || 'new';
   const categoryName = categoryLabels[currentCategoryId] || '전체 카테고리';
+
+  // Get initial page from URL query params
+  const pageFromUrl = parseInt(searchParams.get('page') || '1', 10);
+  const initialPage = Math.max(1, pageFromUrl);
 
   // Filter products based on category
   const filteredProducts = useMemo(() => {
@@ -55,10 +60,16 @@ export default function CategoryPage() {
   } = usePagination({
     items: sortedProducts,
     itemsPerPage: 12,
+    initialPage,
   });
 
   function handleCategoryChange(id: string) {
     navigate(`/category/${id}`);
+  }
+
+  function handlePageChange(page: number) {
+    goToPage(page);
+    setSearchParams({ page: page.toString() });
   }
 
   return (
@@ -91,7 +102,7 @@ export default function CategoryPage() {
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
-        onPageChange={goToPage}
+        onPageChange={handlePageChange}
         canGoNext={canGoNext}
         canGoPrev={canGoPrev}
       />
