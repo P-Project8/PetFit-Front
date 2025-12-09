@@ -7,7 +7,7 @@ import { useCartStore } from '../store/cartStore';
 import { useNavigate } from 'react-router';
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, product } = useCartStore();
+  const { items, removeItem, updateQuantity } = useCartStore();
   const navigate = useNavigate();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
@@ -58,7 +58,7 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white py-12">
+    <div className="min-h-screen bg-white pt-12 pb-20">
       <PageHeader title="장바구니" onBackClick={() => navigate(-1)} />
 
       <div className="pt-4 px-4">
@@ -95,7 +95,7 @@ export default function CartPage() {
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50">
           <button
             onClick={handlePurchase}
-            className="w-full py-3 bg-[#14314F] text-white font-semibold rounded-lg active:bg-[#0d1f33] transition-colors"
+            className="w-full py-3 bg-[#14314F] cursor-pointer text-white font-semibold rounded-lg active:bg-[#0d1f33] transition-colors"
           >
             {totalPrice.toLocaleString()}원 구매하기
           </button>

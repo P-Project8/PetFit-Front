@@ -50,7 +50,7 @@ export default function ProductSection({
           {title}
         </h3>
         {categoryId && (
-          <button onClick={handleViewAll}>
+          <button onClick={handleViewAll} className="cursor-pointer">
             <ChevronRight className="text-black" />
           </button>
         )}
