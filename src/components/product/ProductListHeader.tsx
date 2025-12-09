@@ -28,7 +28,7 @@ export default function ProductListHeader({
       <div className="relative">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-0.5 text-xs font-medium text-gray-500 hover:opacity-70 transition-opacity"
+          className="flex items-center gap-0.5 text-xs font-medium text-gray-500 hover:opacity-70 transition-opacity cursor-pointer"
         >
           {sortBy}
           <ChevronDown
@@ -45,7 +45,7 @@ export default function ProductListHeader({
               <button
                 key={option}
                 onClick={() => handleSortSelect(option)}
-                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${
+                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors cursor-pointer ${
                   sortBy === option
                     ? 'text-[#14314F] font-bold'
                     : 'text-gray-400'

@@ -31,7 +31,7 @@ export default function PageHeader({
           <div className="flex items-center h-12">
             <button
               onClick={handleBackClick}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors -ml-2"
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors -ml-2 cursor-pointer"
             >
               <ChevronLeft className="w-5 h-5 text-gray-700" />
             </button>

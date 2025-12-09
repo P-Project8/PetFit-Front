@@ -52,7 +52,7 @@ export default function CategoryTabs({
                 onClick={() => onCategoryChange(category.id)}
                 className={`
                   px-4 py-2 rounded-full text-sm font-['Balsamiq'] whitespace-nowrap
-                  transition-all duration-200 shrink-0
+                  transition-all duration-200 shrink-0 cursor-pointer
                   ${
                     isActive
                       ? 'bg-[#14314F] text-white shadow-md'

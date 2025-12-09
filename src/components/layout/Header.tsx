@@ -29,9 +29,8 @@ export function Header() {
     >
       <div className="px-5 pt-0.5">
         <div className="flex justify-between items-center h-12">
-          {/* items-end로 밑줄 맞춤 */}
           <div
-            className="flex items-center select-none text-[#14314F]"
+            className="flex items-center select-none text-[#14314F] cursor-pointer"
             onClick={() => navigate('/')}
           >
             <PLogo className="w-[18px] h-5" />
@@ -58,7 +57,7 @@ export function Header() {
           </div>
 
           <button
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors relative"
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors relative cursor-pointer"
             onClick={() => navigate('/cart')}
           >
             <ShoppingCart className="w-5 h-5 text-gray-700" />
