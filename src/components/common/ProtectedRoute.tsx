@@ -15,7 +15,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   useEffect(() => {
     if (!isAuthenticated && !toastShownRef.current) {
-      toast.error('로그인이 필요한 서비스입니다.');
+      toast.error('로그인이 필요한 서비스입니다.', { id: 'auth-required' });
       toastShownRef.current = true;
       navigate('/login', { replace: true });
     }

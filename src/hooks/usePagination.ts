@@ -1,8 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 
 interface UsePaginationProps<T> {
   items: T[];
   itemsPerPage?: number;
+  initialPage?: number;
 }
 
 interface UsePaginationReturn<T> {
@@ -19,8 +20,9 @@ interface UsePaginationReturn<T> {
 export function usePagination<T>({
   items,
   itemsPerPage = 12,
+  initialPage = 1,
 }: UsePaginationProps<T>): UsePaginationReturn<T> {
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(initialPage);
 
   const totalPages = Math.ceil(items.length / itemsPerPage);
 
@@ -35,6 +37,12 @@ export function usePagination<T>({
     setCurrentPage(validPage);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  // Reset to page 1 when items change (e.g., category change)
+  useEffect(() => {
+    setCurrentPage(1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [items]);
 
   function nextPage() {
     if (currentPage < totalPages) {
