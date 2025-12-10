@@ -10,7 +10,9 @@ export function Navbar() {
     location.pathname.startsWith('/product/') ||
     location.pathname === '/cart' ||
     location.pathname === '/ai-styling' ||
-    location.pathname === '/my';
+    location.pathname === '/my' ||
+    location.pathname === '/login' ||
+    location.pathname === '/signup';
 
   const navItems = [
     { id: 'home', icon: Home, label: '홈', location: '/' },

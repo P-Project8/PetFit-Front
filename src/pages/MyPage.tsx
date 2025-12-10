@@ -32,7 +32,7 @@ export default function MyPage() {
   if (currentTab === 'main') {
     return (
       <div className="min-h-screen bg-gray-50 pt-12 pb-24">
-        <PageHeader title="마이페이지" showBackButton={false} />
+        <PageHeader title="마이페이지" />
 
         <ProfileSection
           name={user?.name || '사용자'}

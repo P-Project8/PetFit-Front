@@ -19,7 +19,7 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="flex-1 bg-white flex flex-col">
       {/* Header */}
       <div className="px-4 pt-4 pb-3">
         <button onClick={() => navigate(-1)}>

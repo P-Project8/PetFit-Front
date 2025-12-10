@@ -24,14 +24,15 @@ createRoot(document.getElementById('root')!).render(
       <ScrollToTop />
 
       <Routes>
-        {/* Auth pages - without layout */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
 
         {/* Main app - with layout */}
         <Route element={<RootLayout />}>
           {/* 홈 */}
           <Route index element={<App />} />
+
+          {/* Auth pages */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
 
           {/* 카테고리 & 상품 */}
           <Route path="/category/:categoryId" element={<CategoryPage />} />
