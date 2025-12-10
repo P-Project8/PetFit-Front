@@ -5,7 +5,7 @@ import { useMediaQuery } from './hooks/useMediaQuery';
 import ServiceDescription from './components/layout/ServiceDescription';
 
 export default function RootLayout() {
-  const isDesktop = useMediaQuery('(min-width: 1024px)');
+  const isDesktop = useMediaQuery('(min-width: 768px)');
   const mobileWrapperRef = useRef<HTMLDivElement>(null);
   const { pathname } = useLocation();
 
@@ -22,7 +22,7 @@ export default function RootLayout() {
     return (
       <div className="flex h-screen w-screen overflow-hidden bg-[#F8FAFC] items-center justify-center">
         {/* Main Content Container */}
-        <div className="flex w-full max-w-[1200px] h-[90vh] items-center justify-center gap-40">
+        <div className="flex w-full max-w-[1200px] h-[90vh] items-center justify-center gap-10 lg:gap-40">
           {/* Left Side: Service Description */}
           <div className="flex-1 max-w-[280px]">
             <ServiceDescription />
