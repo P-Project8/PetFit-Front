@@ -14,6 +14,7 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import AIStylingPage from './pages/AIStylingPage';
 import MyPage from './pages/MyPage';
+import StyleGuidePage from './pages/StyleGuidePage';
 import ScrollToTop from './components/common/ScrollToTop';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import { Toaster } from './components/ui';
@@ -77,6 +78,8 @@ createRoot(document.getElementById('root')!).render(
             }
           />
         </Route>
+
+        <Route path="/style-guide" element={<StyleGuidePage />} />
       </Routes>
       <Toaster position="top-center" />
     </BrowserRouter>

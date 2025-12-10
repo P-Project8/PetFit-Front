@@ -11,13 +11,11 @@ export default function ServiceDescription() {
         transition={{ duration: 0.8 }}
         className="max-w-xl"
       >
-        <div className="flex items-center mb-16">
-          <PLogo className="w-14 h-16 text-[#14314F] mb-1" />
-          <span className="font-['KaKamora'] text-5xl text-[#14314F] mx-1">
-            et
-          </span>
-          <FLogo className="w-11 h-15 text-[#14314F] ml-2 mb-1" />
-          <span className="font-['KaKamora'] text-5xl text-[#14314F]">it</span>
+        <div className="flex items-center mb-12">
+          <PLogo className="w-11 h-12 text-[#14314F] mb-1" />
+          <span className="font-['KaKamora'] text-4xl text-[#14314F]">et</span>
+          <FLogo className="w-8 h-12 text-[#14314F] ml-2 mb-1" />
+          <span className="font-['KaKamora'] text-4xl text-[#14314F]">it</span>
         </div>
 
         <div className="grid grid-cols-1 gap-6 mb-8">
