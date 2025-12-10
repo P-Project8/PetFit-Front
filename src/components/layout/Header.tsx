@@ -5,7 +5,11 @@ import { useCartStore } from '../../store/cartStore';
 import PLogo from '/src/assets/P.svg?react';
 import FLogo from '/src/assets/F.svg?react';
 
-export function Header() {
+interface HeaderProps {
+  scrollContainer?: React.RefObject<HTMLDivElement | null>;
+}
+
+export function Header({ scrollContainer }: HeaderProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -15,16 +19,22 @@ export function Header() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      if (scrollContainer?.current) {
+        setIsScrolled(scrollContainer.current.scrollTop > 50);
+      } else {
+        setIsScrolled(window.scrollY > 50);
+      }
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+
+    const target = scrollContainer?.current || window;
+    target.addEventListener('scroll', handleScroll);
+    return () => target.removeEventListener('scroll', handleScroll);
+  }, [scrollContainer]);
 
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-100 transition-all duration-500 ${
-        isScrolled ? 'bg-white/60 backdrop-blur-md shadow-sm' : 'bg-white'
+        isScrolled ? 'bg-white/60 backdrop-blur-md shadow-sm' : 'bg-transparent'
       }`}
     >
       <div className="px-5 pt-0.5">

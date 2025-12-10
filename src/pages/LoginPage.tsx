@@ -74,7 +74,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="flex-1 bg-white flex flex-col">
       {/* Header */}
       <div className="px-4 pt-4 pb-3">
         <button onClick={() => navigate('/')} className="cursor-pointer">
