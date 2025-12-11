@@ -1,105 +1,444 @@
-# PetFit - AI-Powered Pet Styling Platform
+# PetFit
 
-PetFit is a graduation project dedicated to solving the challenge of finding the perfect style and fit for pets. By integrating Google Gemini AI, we provide a unique "AI Styling" experience where users can visualize outfits on their pets before purchasing.
+<div align="center">
+    <img src="./public/images/main-banner.png"
+   alt="PetFit 메인 이미지" width="100%" />
+</div>
 
-## Key Features
+## 📖 1. 프로젝트 소개
 
-*   **AI Styling**: Upload a pet's photo and a clothing item to see a realistic AI-generated preview of the fit.
-*   **Smart E-commerce**: Intuitive product browsing with "New", "Hot", and "Sale" categories.
-*   **User Personalization**:
-    *   **Wishlist**: Save favorite items for later.
-    *   **Cart**: Easy management of selected products.
-    *   **My Page**: Track orders and view profile details.
-*   **Responsive Design**: Seamless experience across desktop and mobile devices.
+PetFit은 반려동물 의류 구매 시 "우리 강아지에게 어울릴까?"라는 고민을 해결하기 위해 개발된 **AI 기반 반려동물 의류 전자상거래 플랫폼**입니다. Google Gemini AI를 활용한 **가상 피팅 기능**을 통해 구매 전 반려동물에게 옷을 입힌 모습을 미리 확인할 수 있어, 더 현명한 쇼핑 결정을 도와줍니다.
 
-## Tech Stack
+### 개발 배경
 
-### Frontend
+- 반려동물 의류 시장의 성장과 함께 증가하는 사이즈/스타일 고민
+- 온라인 쇼핑에서 실제 착용 모습을 확인할 수 없는 한계
+- AI 기술을 활용한 새로운 쇼핑 경험 제공의 필요성
+
+## ✨ 2. 주요 기능
+
+### 🤖 AI 가상 피팅
+
+Google Gemini AI를 활용하여 구매 전 반려동물에게 옷을 입힌 모습을 미리 확인할 수 있습니다.
+
+- **2단계 간편 프로세스**
+  - 반려동물 사진 업로드
+  - 착용시킬 의류 선택 (상품 또는 직접 업로드)
+- **실시간 AI 이미지 합성**
+  - Google Gemini 2.5 Flash 모델 사용
+  - 자연스러운 합성 결과 제공
+- **결과 활용**
+  - 생성된 이미지 저장 및 공유
+  - 유사 상품 추천
+
+### 🔍 스마트 상품 탐색
+
+효율적인 상품 검색과 발견을 위한 다양한 기능을 제공합니다.
+
+- **실시간 검색**
+  - 최근 검색어 및 인기 검색어 제공
+- **스마트 정렬**
+  - 최신순, 인기순, 가격순, 리뷰순 정렬
+- **큐레이션 섹션**
+  - 신상품 (New), 인기상품 (Hot), 할인상품 (Sale)
+
+### 🛒 쇼핑 카트
+
+간편하고 직관적인 쇼핑 경험을 제공합니다.
+
+- **장바구니 관리**
+  - 수량 조절, 옵션 변경, 삭제
+  - 선택 구매 및 전체 구매
+  - 실시간 가격 계산
+
+### ⭐ 리뷰 시스템
+
+구매 결정에 도움이 되는 신뢰할 수 있는 리뷰 시스템입니다.
+
+- **리뷰 작성**
+  - 별점 평가 (1-5점)
+  - 구매자 인증 표시
+- **리뷰 확인**
+  - 평균 별점 및 리뷰 개수 표시
+  - 최신순/별점순 정렬
+
+### 👤 사용자 프로필
+
+개인화된 쇼핑 경험을 위한 프로필 관리 기능입니다.
+
+- **회원가입 및 인증**
+  - 이메일 인증 시스템
+  - 비밀번호 강도 체크
+  - 안전한 암호화 저장
+- **프로필 관리**
+  - 개인 정보 수정 (이름, 닉네임, 생년월일)
+- **주문 내역 관리**
+  - 과거 주문 조회
+  - 구매한 상품 후기 등록
+
+## 🛠️ 3. 기술 스택
+
+### 프론트엔드
+
 ![React](https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 
-### Styling & UI
+- **React 19**: 최신 React 기능을 활용한 컴포넌트 기반 UI 구축
+- **TypeScript**: 타입 안정성을 통한 버그 감소 및 개발 생산성 향상
+- **Vite**: 빠른 개발 서버와 최적화된 빌드 프로세스
+
+### 스타일링 & UI
+
 ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![Framer Motion](https://img.shields.io/badge/Framer_Motion-0055FF?style=for-the-badge&logo=framer&logoColor=white)
 ![Radix UI](https://img.shields.io/badge/Radix_UI-161618?style=for-the-badge&logo=radix-ui&logoColor=white)
+![Lucide React](https://img.shields.io/badge/Lucide_React-FF6B6B?style=for-the-badge)
 
-### State Management
+- **Tailwind CSS**: 유틸리티 우선 CSS 프레임워크로 빠른 스타일링
+- **Framer Motion**: 부드러운 애니메이션과 인터랙션 구현
+- **Radix UI**: 접근성을 갖춘 헤드리스 UI 컴포넌트
+- **Lucide React**: 일관된 아이콘 시스템
+
+### 상태 관리
+
 ![Zustand](https://img.shields.io/badge/Zustand-orange?style=for-the-badge)
-*   **Why Zustand?** Chosen for its minimalist API and small bundle size, reducing boilerplate compared to Redux while maintaining scalable state management.
-*   **Stores**:
-    *   `authStore`: Manages user login state and profile data.
-    *   `cartStore`: Handles shopping cart operations (add, remove, update quantities).
-    *   `productStore`: Caches product data and handles filtering.
 
-### AI Integration
+- **주요 스토어**:
+  - `authStore`: 사용자 로그인 상태 및 프로필 데이터
+  - `cartStore`: 장바구니 작업 처리 (추가, 삭제, 수량 변경)
+  - `productStore`: 상품 데이터 캐싱 및 필터링
+
+### AI 통합
+
 ![Google Gemini](https://img.shields.io/badge/Google_Gemini-8E75B2?style=for-the-badge&logo=google&logoColor=white)
-*   Utilizes **Google Gemini API** (specifically `gemini-1.5-flash`) to process image inputs and generate styling previews.
 
-## Major Pages
+- **Google Gemini API** (`gemini-2.5-flash-image` 모델)
+- 이미지 입력 처리 및 스타일링 미리보기 생성
+- 멀티모달 AI를 활용한 자연스러운 이미지 합성
 
-| Page | Description |
-| :--- | :--- |
-| **Home** | Features carousel banners, category links, and curated product sections (New/Hot/Sale). |
-| **Category** | Browse products by specific categories with filtering options. |
-| **AI Styling** | User uploads a pet image and selects a product; AI generates a styling preview. Includes "Magic Wand" visual effects. |
-| **Product Detail** | Detailed view of product info, options to add to cart or wishlist. |
-| **My Page** | Dashboard for user activity, order history, and account settings. |
+## 📱 4. 화면 구성
 
-## User Flow
+### 주요 페이지
 
-The typical user journey in PetFit:
+| 페이지          | 설명                 | 주요 기능                                                  |
+| :-------------- | :------------------- | :--------------------------------------------------------- |
+| **홈**          | 메인 랜딩 페이지     | 캐러셀 배너, 카테고리 링크, 신상품/인기상품/할인상품 섹션  |
+| **카테고리**    | 카테고리별 상품 목록 | 필터링, 검색, 정렬 기능                                    |
+| **AI 스타일링** | 가상 피팅 인터페이스 | 반려동물 사진 업로드, 의류 선택, AI 합성                   |
+| **상품 상세**   | 개별 상품 정보       | 이미지 갤러리, 옵션 선택, 장바구니/찜하기, AI 스타일링 CTA |
+| **장바구니**    | 선택 상품 관리       | 수량 조절, 삭제, 총액 계산                                 |
+| **마이페이지**  | 사용자 대시보드      | 프로필, 주문 내역, 스타일링 갤러리                         |
 
-1.  **Onboarding**: User lands on **Home** -> Browses **New/Hot** items.
-2.  **Discovery**: User searches or clicks a **Category** -> Selects a **Product**.
-3.  **Experience (AI)**: User clicks "AI Styling" on a product -> Uploads pet photo -> Gins preview.
-4.  **Action**: User adds item to **Cart** or **Wishlist**.
-5.  **Checkout**: User proceeds to **Cart** -> Reviews items -> Simulates Purchase.
+### AI 스타일링 플로우
 
-## Project Structure
-
-```bash
-src
-├── components      # Reusable UI components (Layout, Product, AI, etc.)
-├── data            # Mock data (products, categories)
-├── hooks           # Custom React hooks (e.g., useMediaQuery)
-├── pages           # Page-level components (Home, AIStyling, Cart, etc.)
-├── services        # API services (Google Gemini integration)
-├── store           # Zustand state stores
-└── utils           # Helper functions
+```
+1. 상품 상세 페이지에서 "AI 스타일링" 버튼 클릭
+   ↓
+2. 반려동물 사진 선택/업로드
+   ↓
+3. 착용시킬 의류 이미지 선택
+   ↓
+4. AI 합성 중 로딩 상태 표시
+   ↓
+5. 결과 이미지 표시
+   ↓
+6. 저장/공유/유사 상품 추천 옵션 제공
 ```
 
-## Getting Started
+### 사용자 여정
 
-Follow these steps to run the project locally.
+```
+1. 온보딩: 홈 화면 진입 → 신상품/인기 상품 탐색
 
-### Prerequisites
-*   Node.js (v18 or higher)
-*   npm or yarn
+2. 발견: 검색 또는 카테고리 클릭 → 상품 선택
 
-### Installation
+3. 경험: 상품 상세에서 "AI 스타일링" 클릭 → 반려동물 사진 업로드 → 미리보기 생성
 
-1.  **Clone the repository**
-    ```bash
-    git clone https://github.com/your-username/petfit-front.git
-    cd petfit-front
-    ```
+4. 액션: 장바구니 또는 찜하기 추가
 
-2.  **Install dependencies**
-    ```bash
-    npm install
-    ```
+5. 결제: 장바구니 확인 → 주문 완료
+```
 
-3.  **Set up Environment Variables**
-    Create a `.env` file in the root directory and add your Gemini API key:
-    ```env
-    VITE_GEMINI_API_KEY=your_api_key_here
-    ```
+## 🎨 5. 디자인 시스템
 
-4.  **Run Development Server**
-    ```bash
-    npm run dev
-    ```
+### 색상 팔레트
 
----
-*This project was developed as a Graduation Project.*
+- **Primary/Active**: `#14314F` (진한 네이비)
+- **Accent**: 소프트 블루 & 코랄 톤
+- **Concept**: 현대적이고 반려동물 친화적인 감성
+
+### 컴포넌트 아키텍처
+
+- **Header**: 로고, 장바구니 뱃지, 네비게이션
+- **BottomNavbar**: 홈, 검색, AI 스타일링, 찜하기, 마이페이지
+- **재사용 컴포넌트**: 필터, 상품 카드, 모달, 로딩 상태
+
+### 반응형 디자인
+
+- **모바일 우선**: Mobile-first 접근 방식
+- **데스크톱 최적화**: 대형 화면에서도 최적화된 레이아웃
+- **크로스 디바이스**: 모든 기기에서 일관된 사용자 경험
+
+## 📂 6. 프로젝트 구조
+
+```bash
+src/
+├── components/                 # 재사용 가능한 UI 컴포넌트
+│   ├── ai/                    # AI 스타일링 관련 컴포넌트
+│   │   ├── ImageUploadStep.tsx        # 이미지 업로드 단계 컴포넌트
+│   │   ├── LoadingSplashScreen.tsx    # AI 합성 로딩 화면
+│   │   ├── OnboardingModal.tsx        # 온보딩 가이드 모달
+│   │   ├── ProductSelectionModal.tsx  # 상품 선택 모달
+│   │   └── ResultSection.tsx          # 결과 표시 섹션
+│   │
+│   ├── auth/                  # 인증 관련 컴포넌트
+│   │   ├── BirthDatePicker.tsx        # 생년월일 선택기
+│   │   ├── EmailVerificationForm.tsx  # 이메일 인증 폼
+│   │   └── SignupForm.tsx             # 회원가입 폼
+│   │
+│   ├── banner/                # 배너 컴포넌트
+│   │   └── AiStylingBanner.tsx        # AI 스타일링 홍보 배너
+│   │
+│   ├── cart/                  # 장바구니 관련 컴포넌트
+│   │   ├── CartItem.tsx               # 장바구니 아이템 카드
+│   │   ├── PriceSummary.tsx           # 가격 요약 컴포넌트
+│   │   └── QuantityControl.tsx        # 수량 조절 버튼
+│   │
+│   ├── common/                # 공통 컴포넌트
+│   │   ├── CategoryTabs.tsx           # 카테고리 탭 네비게이션
+│   │   ├── ConfirmModal.tsx           # 확인 모달
+│   │   ├── Pagination.tsx             # 페이지네이션
+│   │   ├── ProtectedRoute.tsx         # 인증 라우트 가드
+│   │   └── ScrollToTop.tsx            # 페이지 이동 시 스크롤 최상단 이동
+│   │
+│   ├── layout/                # 레이아웃 컴포넌트
+│   │   ├── Header.tsx                 # 상단 헤더 (로고, 장바구니, 로그인)
+│   │   ├── Navbar.tsx                 # 하단 네비게이션 바 (모바일)
+│   │   ├── PageHeader.tsx             # 페이지 제목 헤더
+│   │   └── ServiceDescription.tsx     # 서비스 설명 섹션
+│   │
+│   ├── mypage/                # 마이페이지 관련 컴포넌트
+│   │   ├── MenuItem.tsx               # 메뉴 아이템
+│   │   ├── MenuList.tsx               # 메뉴 리스트
+│   │   ├── OrderHistoryTab.tsx        # 주문 내역 탭
+│   │   ├── ProfileEditTab.tsx         # 프로필 편집 탭
+│   │   └── ProfileSection.tsx         # 프로필 섹션
+│   │
+│   ├── product/               # 상품 관련 컴포넌트
+│   │   ├── ProductActionBar.tsx       # 상품 액션 버튼 바
+│   │   ├── ProductCard.tsx            # 상품 카드
+│   │   ├── ProductGrid.tsx            # 상품 그리드 레이아웃
+│   │   ├── ProductImageSection.tsx    # 상품 이미지 섹션
+│   │   ├── ProductInfoSection.tsx     # 상품 정보 섹션
+│   │   ├── ProductListHeader.tsx      # 상품 목록 헤더
+│   │   ├── ProductOptionModal.tsx     # 상품 옵션 선택 모달
+│   │   ├── ProductSection.tsx         # 상품 섹션 (New/Hot/Sale)
+│   │   ├── ReviewList.tsx             # 리뷰 목록
+│   │   └── ReviewWriteModal.tsx       # 리뷰 작성 모달
+│   │
+│   ├── search/                # 검색 관련 컴포넌트
+│   │   ├── PopularSearches.tsx        # 인기 검색어
+│   │   ├── RecentSearches.tsx         # 최근 검색어
+│   │   └── SearchInput.tsx            # 검색 입력 필드
+│   │
+│   └── ui/                    # Radix UI 기반 공통 UI 컴포넌트
+│       ├── button.tsx                 # 버튼 컴포넌트
+│       ├── form.tsx                   # 폼 컴포넌트
+│       ├── input.tsx                  # 입력 필드
+│       ├── label.tsx                  # 레이블
+│       ├── select.tsx                 # 셀렉트 박스
+│       └── sonner.tsx                 # 토스트 알림
+│
+├── pages/                     # 페이지 레벨 컴포넌트
+│   ├── AIStylingPage.tsx              # AI 스타일링 페이지
+│   ├── CartPage.tsx                   # 장바구니 페이지
+│   ├── CategoryPage.tsx               # 카테고리 페이지
+│   ├── LoginPage.tsx                  # 로그인 페이지
+│   ├── MyPage.tsx                     # 마이페이지
+│   ├── ProductDetailPage.tsx          # 상품 상세 페이지
+│   ├── SearchPage.tsx                 # 검색 페이지
+│   ├── SignupPage.tsx                 # 회원가입 페이지
+│   ├── StyleGuidePage.tsx             # 홈 페이지
+│   └── WishPage.tsx                   # 찜 목록 페이지
+│
+├── store/                     # Zustand 상태 관리
+│   ├── authStore.ts                   # 인증 상태 (로그인, 사용자 정보)
+│   ├── cartStore.ts                   # 장바구니 상태 (아이템 관리)
+│   └── productStore.ts                # 상품 상태 (필터링, 캐싱)
+│
+├── services/                  # API 서비스 레이어
+│   ├── aiStylingService.ts            # AI 스타일링 API 서비스
+│   ├── api.ts                         # 공통 API 유틸리티
+│   ├── authApi.md                     # 인증 API 문서
+│   └── profileApi.md                  # 프로필 API 문서
+│
+├── hooks/                     # 커스텀 React Hooks
+│   ├── useAIStyling.ts                # AI 스타일링 로직 훅
+│   ├── useDebounce.ts                 # 디바운스 훅
+│   ├── useMediaQuery.ts               # 미디어 쿼리 훅 (반응형)
+│   ├── usePagination.ts               # 페이지네이션 훅
+│   └── useProductSort.ts              # 상품 정렬 훅
+│
+├── utils/                     # 유틸리티 함수
+│   ├── cn.ts                          # Tailwind 클래스 병합 유틸
+│   ├── format.ts                      # 포맷팅 함수 (날짜, 가격 등)
+│   └── validation.ts                  # 유효성 검사 함수
+│
+├── assets/                    # 정적 자산
+│   ├── fonts/                         # 폰트 파일
+│   └── images/                        # 이미지 파일
+│
+├── lib/                       # 외부 라이브러리 설정
+│   └── utils.ts                       # 라이브러리 유틸리티
+│
+├── App.tsx                    # 루트 애플리케이션 컴포넌트
+├── main.tsx                   # 애플리케이션 진입점
+└── index.css                  # 글로벌 스타일 (Tailwind 포함)
+```
+
+### 주요 디렉토리 설명
+
+#### `components/`
+
+도메인별로 분리된 재사용 가능한 컴포넌트들을 포함합니다. 각 하위 디렉토리는 특정 기능 영역을 담당합니다.
+
+#### `pages/`
+
+React Router의 각 라우트에 매핑되는 페이지 컴포넌트들입니다. 각 페이지는 여러 컴포넌트를 조합하여 구성됩니다.
+
+#### `store/`
+
+Zustand를 사용한 전역 상태 관리. 각 스토어는 단일 책임 원칙에 따라 분리되어 있습니다.
+
+#### `services/`
+
+외부 API와의 통신을 담당하는 서비스 레이어입니다. Google Gemini API 호출 로직이 포함됩니다.
+
+#### `hooks/`
+
+재사용 가능한 커스텀 훅들입니다. 비즈니스 로직과 UI 로직을 분리하여 코드 재사용성을 높입니다.
+
+#### `data/`
+
+개발 단계에서 사용하는 Mock 데이터입니다. 추후 백엔드 API 연동 시 제거될 예정입니다.
+
+## 📄 7. 페이지별 상세 기능
+
+### 홈 페이지 (StyleGuidePage.tsx)
+
+- 메인 배너 캐러셀 (AI 스타일링 홍보)
+- 카테고리 네비게이션
+- 신상품/인기상품/할인상품 섹션
+- 서비스 소개
+
+### AI 스타일링 페이지 (AIStylingPage.tsx)
+
+- 온보딩 모달 (최초 방문 시)
+- 2단계 이미지 업로드 (반려동물 → 의류)
+- AI 합성 로딩 애니메이션
+- 결과 확인 및 저장/공유
+
+### 카테고리 페이지 (CategoryPage.tsx)
+
+- 상품 필터링 (카테고리, 사이즈, 가격, 색상)
+- 정렬 기능 (최신순, 인기순, 가격순)
+- 반응형 상품 그리드
+- 페이지네이션
+
+### 상품 상세 페이지 (ProductDetailPage.tsx)
+
+- 상품 이미지 갤러리
+- 옵션 선택 (색상, 사이즈, 수량)
+- AI 스타일링 버튼
+- 장바구니/찜하기/구매 버튼
+- 리뷰 목록
+
+### 검색 페이지 (SearchPage.tsx)
+
+- 실시간 검색 입력
+- 최근 검색어 및 인기 검색어
+- 검색 결과 그리드
+- 필터 및 정렬
+
+### 장바구니 페이지 (CartPage.tsx)
+
+- 장바구니 아이템 목록
+- 수량 조절 및 삭제
+- 가격 요약
+- 주문하기
+
+### 마이페이지 (MyPage.tsx)
+
+- 프로필 정보 표시
+- 프로필 편집 탭
+- 주문 내역 조회
+
+### 회원가입/로그인 (SignupPage.tsx, LoginPage.tsx)
+
+- 이메일 인증 회원가입
+- 비밀번호 강도 체크
+- 로그인 및 자동 로그인
+
+### 찜 목록 페이지 (WishPage.tsx)
+
+- 찜한 상품 목록
+- 장바구니 추가
+- 상품 삭제
+
+## 🚀 8. 시작하기
+
+### 사전 요구사항
+
+- Node.js (v18 이상)
+- npm 또는 yarn
+
+### 설치 및 실행
+
+1. **저장소 클론**
+
+   ```bash
+   git clone https://github.com/P-Project8/PetFit-Front.git
+   cd PetFit-Front
+   ```
+
+2. **의존성 설치**
+
+   ```bash
+   npm install
+   ```
+
+3. **환경 변수 설정**
+
+   프로젝트 루트에 `.env` 파일을 생성하고 Gemini API 키를 추가하세요:
+
+   ```env
+   VITE_GEMINI_API_KEY=your_api_key_here
+   ```
+
+   > Google AI Studio에서 API 키를 발급받을 수 있습니다: https://makersuite.google.com/app/apikey
+
+4. **개발 서버 실행**
+
+   ```bash
+   npm run dev
+   ```
+
+   브라우저에서 `http://localhost:5173`으로 접속하세요.
+
+5. **프로덕션 빌드**
+   ```bash
+   npm run build
+   ```
+
+## 🎬 9. 데모 영상
+
+<div align="center">
+  <a href="https://www.youtube.com/watch?v=gpuLbXqkaqo">
+    <img src="https://img.youtube.com/vi/gpuLbXqkaqo/maxresdefault.jpg" alt="PetFit
+  데모 영상" width="80%"/>
+  </a>
+  <p>
+    클릭하여 데모 영상 보기
+  </p>
+</div>
