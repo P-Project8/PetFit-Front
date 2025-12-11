@@ -269,9 +269,7 @@ src/
 │
 ├── services/                  # API 서비스 레이어
 │   ├── aiStylingService.ts            # AI 스타일링 API 서비스
-│   ├── api.ts                         # 공통 API 유틸리티
-│   ├── authApi.md                     # 인증 API 문서
-│   └── profileApi.md                  # 프로필 API 문서
+│   └── api.ts                         # 공통 API 유틸리티
 │
 ├── hooks/                     # 커스텀 React Hooks
 │   ├── useAIStyling.ts                # AI 스타일링 로직 훅
@@ -318,7 +316,6 @@ Zustand를 사용한 전역 상태 관리. 각 스토어는 단일 책임 원칙
 #### `hooks/`
 
 재사용 가능한 커스텀 훅들입니다. 비즈니스 로직과 UI 로직을 분리하여 코드 재사용성을 높입니다.
-
 
 ## 📄 7. 페이지별 상세 기능
 

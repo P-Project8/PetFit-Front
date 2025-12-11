@@ -24,3 +24,7 @@ CLAUDE.md
 *.sln
 *.sw?
 .env
+
+# API Documentation (contains sensitive information)
+src/services/authApi.md
+src/services/profileApi.md
