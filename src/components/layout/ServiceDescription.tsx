@@ -1,6 +1,4 @@
 import { motion } from 'framer-motion';
-import PLogo from '/src/assets/P.svg?react';
-import FLogo from '/src/assets/F.svg?react';
 
 export default function ServiceDescription() {
   return (
@@ -12,10 +10,7 @@ export default function ServiceDescription() {
         className="max-w-xl"
       >
         <div className="flex items-center mb-12">
-          <PLogo className="w-11 h-12 text-[#14314F] mb-1" />
-          <span className="font-['KaKamora'] text-4xl text-[#14314F]">et</span>
-          <FLogo className="w-8 h-12 text-[#14314F] ml-2 mb-1" />
-          <span className="font-['KaKamora'] text-4xl text-[#14314F]">it</span>
+          <img src="/Logo.png" alt="@LOGO" className="w-40" />
         </div>
 
         <div className="grid grid-cols-1 gap-6 mb-8">
