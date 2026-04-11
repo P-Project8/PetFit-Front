@@ -2,10 +2,8 @@ import axios, { AxiosError } from 'axios';
 import type { AxiosInstance } from 'axios';
 import { useAuthStore } from '../store/authStore';
 
-// API Base URL
-// API Base URL
-export const BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'http://43.200.89.199:8080';
+// API Base URL (.env의 VITE_API_BASE_URL에서 읽어옴)
+export const BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
 // ============================================
 // Type Definitions
@@ -64,8 +62,8 @@ export interface UserProfile {
 
 // 프로필 수정 요청
 export interface UpdateProfileRequest {
-  name?: string;
-  birth?: string;
+  name: string; // 필수
+  birth: string; // 필수
   currentPassword?: string;
   newPassword?: string;
   passwordChangeValid?: boolean;
@@ -85,7 +83,7 @@ export function createApiException(
   code: string,
   message: string,
   timestamp: string,
-  result?: string
+  result?: string,
 ): ApiException {
   const error = new Error(message) as ApiException;
   error.name = 'ApiException';
@@ -123,7 +121,7 @@ apiClient.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Response Interceptor - 에러 처리
@@ -185,12 +183,12 @@ apiClient.interceptors.response.use(
         apiError.code || 'UNKNOWN_ERROR',
         apiError.message || '요청에 실패했습니다.',
         apiError.timestamp || new Date().toISOString(),
-        apiError.result
+        apiError.result,
       );
     }
 
     throw error;
-  }
+  },
 );
 
 // ============================================
@@ -202,7 +200,7 @@ apiClient.interceptors.response.use(
  * POST /api/email/verification/send
  */
 export async function sendVerificationCode(
-  email: string
+  email: string,
 ): Promise<ApiResponse> {
   const { data } = await apiClient.post('/api/email/verification/send', {
     email,
@@ -216,12 +214,12 @@ export async function sendVerificationCode(
  */
 export async function verifyEmail(
   email: string,
-  verificationCode: string
+  verificationCode: string,
 ): Promise<VerifyEmailResponse> {
-  const { data } = await apiClient.post('/api/email/verification/verify', {
-    email,
-    verificationCode,
-  });
+  const { data } = await apiClient.post<ApiResponse<VerifyEmailResponse>>(
+    '/api/email/verification/verify',
+    { email, verificationCode },
+  );
   return data.result;
 }
 
@@ -244,11 +242,11 @@ export async function signup(requestData: SignupRequest): Promise<ApiResponse> {
  */
 export async function login(
   userId: string,
-  password: string
+  password: string,
 ): Promise<LoginResponse> {
   const { data } = await apiClient.post<ApiResponse<LoginResponse>>(
     '/api/auth/login',
-    { userId, password }
+    { userId, password },
   );
   return data.result;
 }
@@ -258,11 +256,11 @@ export async function login(
  * POST /api/auth/reissue
  */
 export async function reissueToken(
-  refreshToken: string
+  refreshToken: string,
 ): Promise<ReissueTokenResponse> {
   const { data } = await apiClient.post<ApiResponse<ReissueTokenResponse>>(
     '/api/auth/reissue',
-    { refreshToken }
+    { refreshToken },
   );
   return data.result;
 }
@@ -294,9 +292,8 @@ export async function verifyAuth(): Promise<ApiResponse> {
  * GET /api/auth/profile
  */
 export async function getProfile(): Promise<UserProfile> {
-  const { data } = await apiClient.get<ApiResponse<UserProfile>>(
-    '/api/auth/profile'
-  );
+  const { data } =
+    await apiClient.get<ApiResponse<UserProfile>>('/api/auth/profile');
   return data.result;
 }
 
@@ -305,13 +302,13 @@ export async function getProfile(): Promise<UserProfile> {
  * PATCH /api/auth/profile
  */
 export async function updateProfile(
-  requestData: UpdateProfileRequest
+  requestData: UpdateProfileRequest,
 ): Promise<UserProfile> {
-  const { data } = await apiClient.patch<UserProfile>(
+  const { data } = await apiClient.patch<ApiResponse<UserProfile>>(
     '/api/auth/profile',
-    requestData
+    requestData,
   );
-  return data;
+  return data.result;
 }
 
 // ============================================

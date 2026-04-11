@@ -17,71 +17,76 @@ import MyPage from './pages/MyPage';
 import StyleGuidePage from './pages/StyleGuidePage';
 import ScrollToTop from './components/common/ScrollToTop';
 import ProtectedRoute from './components/common/ProtectedRoute';
+import AuthBootstrap from './components/common/AuthBootstrap';
 import { Toaster } from './components/ui';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
-      <ScrollToTop />
+      <AuthBootstrap>
+        <ScrollToTop />
 
-      <Routes>
+        <Routes>
+          {/* Main app - with layout */}
+          <Route element={<RootLayout />}>
+            {/* 홈 */}
+            <Route index element={<App />} />
 
-        {/* Main app - with layout */}
-        <Route element={<RootLayout />}>
-          {/* 홈 */}
-          <Route index element={<App />} />
+            {/* Auth pages */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
 
-          {/* Auth pages */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
+            {/* 카테고리 & 상품 */}
+            <Route path="/category/:categoryId" element={<CategoryPage />} />
+            <Route
+              path="/product/:productId"
+              element={<ProductDetailPage />}
+            />
 
-          {/* 카테고리 & 상품 */}
-          <Route path="/category/:categoryId" element={<CategoryPage />} />
-          <Route path="/product/:productId" element={<ProductDetailPage />} />
+            {/* 장바구니 / 찜 / 검색 */}
+            <Route
+              path="/cart"
+              element={
+                <ProtectedRoute>
+                  <CartPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/wish"
+              element={
+                <ProtectedRoute>
+                  <WishPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/search" element={<SearchPage />} />
 
-          {/* 장바구니 / 찜 / 검색 */}
-          <Route
-            path="/cart"
-            element={
-              <ProtectedRoute>
-                <CartPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/wish"
-            element={
-              <ProtectedRoute>
-                <WishPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/search" element={<SearchPage />} />
+            {/* AI 스타일링 메인 페이지 */}
+            <Route
+              path="/ai-styling"
+              element={
+                <ProtectedRoute>
+                  <AIStylingPage />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* AI 스타일링 메인 페이지 */}
-          <Route
-            path="/ai-styling"
-            element={
-              <ProtectedRoute>
-                <AIStylingPage />
-              </ProtectedRoute>
-            }
-          />
+            {/* 마이페이지 */}
+            <Route
+              path="/my"
+              element={
+                <ProtectedRoute>
+                  <MyPage />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
 
-          {/* 마이페이지 */}
-          <Route
-            path="/my"
-            element={
-              <ProtectedRoute>
-                <MyPage />
-              </ProtectedRoute>
-            }
-          />
-        </Route>
-
-        <Route path="/style-guide" element={<StyleGuidePage />} />
-      </Routes>
-      <Toaster position="top-center" />
+          <Route path="/style-guide" element={<StyleGuidePage />} />
+        </Routes>
+        <Toaster position="top-center" />
+      </AuthBootstrap>
     </BrowserRouter>
   </StrictMode>
 );
