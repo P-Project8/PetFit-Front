@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { calculateDiscountedPrice, hasDiscount } from '../utils/priceUtils';
@@ -10,21 +10,42 @@ import ReviewList from '../components/product/ReviewList';
 import PageHeader from '@/components/layout/PageHeader';
 import { useProductStore } from '../store/productStore';
 import { useAuthStore } from '../store/authStore';
-import { getReviewStats } from '../data/mockReviews';
-import { getWishCount } from '../data/mockWishCounts';
-import { categoryLabels } from '../data/mockCategories';
+import { getProductById, type ProductDetail } from '../services/api';
 
 export default function ProductDetailPage() {
   const { productId } = useParams<{ productId: string }>();
   const navigate = useNavigate();
-  const getProductById = useProductStore((state) => state.getProductById);
   const toggleLike = useProductStore((state) => state.toggleLike);
+  const isLiked = useProductStore((state) => state.isLiked);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const product = getProductById(Number(productId));
+
+  const [product, setProduct] = useState<ProductDetail | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [showOptionModal, setShowOptionModal] = useState(false);
-  const [wishCountState, setWishCountState] = useState(() =>
-    getWishCount(Number(productId))
-  );
+
+  useEffect(function fetchProduct() {
+    async function load() {
+      if (!productId) return;
+      setIsLoading(true);
+      try {
+        const result = await getProductById(Number(productId));
+        setProduct(result);
+      } catch {
+        toast.error('상품 정보를 불러오지 못했습니다.');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    load();
+  }, [productId]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <p className="text-gray-400 text-sm">상품 정보를 불러오는 중...</p>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -43,22 +64,15 @@ export default function ProductDetailPage() {
   }
 
   const isDiscounted = hasDiscount(product.discountRate);
-  const discountedPrice = calculateDiscountedPrice(
-    product.price,
-    product.discountRate
-  );
+  const discountedPrice = calculateDiscountedPrice(product.price, product.discountRate);
+  const liked = isLiked(product.id);
 
-  // 리뷰 통계 계산
-  const { averageRating, totalReviews } = getReviewStats(product.id);
-
-  function handleWishClick(productId: number) {
+  function handleWishClick(id: number) {
     if (!isAuthenticated) {
       toast.error('로그인이 필요한 서비스입니다.');
       return;
     }
-    toggleLike(productId);
-    // wishCount 즉시 업데이트
-    setWishCountState(getWishCount(productId));
+    toggleLike(id);
   }
 
   function handleBuyClick() {
@@ -81,16 +95,14 @@ export default function ProductDetailPage() {
     <div className="min-h-screen bg-white pt-12 pb-24">
       <PageHeader title="상품 정보" onBackClick={() => navigate(-1)} />
 
-      {/* Product Image */}
       <ProductImageSection
-        imageUrl={product.imageUrl}
+        imageUrl={product.thumbnailUrl}
         productName={product.name}
         productUrl={product.productUrl}
       />
 
-      {/* Product Info */}
       <ProductInfoSection
-        category={categoryLabels[product.category]}
+        category={product.categoryName}
         name={product.name}
         price={product.price}
         discountRate={product.discountRate}
@@ -99,25 +111,22 @@ export default function ProductDetailPage() {
         isDiscounted={isDiscounted}
       />
 
-      {/* Reviews */}
       <div className="border-t-8 border-gray-100 py-6">
         <ReviewList
           productId={product.id}
-          reviewCount={totalReviews}
-          rating={averageRating}
+          reviewCount={product.reviewCount}
+          rating={product.avgRating}
         />
       </div>
 
-      {/* Product Action Bar */}
       <ProductActionBar
-        isLike={product.isLike}
-        wishCount={wishCountState}
+        isLike={liked}
+        wishCount={0}
         onWishClick={() => handleWishClick(product.id)}
         onAIStyling={handleAIStyling}
         onBuyClick={handleBuyClick}
       />
 
-      {/* Option Modal */}
       {showOptionModal && (
         <ProductOptionModal
           product={product}

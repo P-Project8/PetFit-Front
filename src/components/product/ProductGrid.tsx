@@ -1,9 +1,9 @@
-import type { Product } from '../../data/products';
+import type { ProductListItem } from '../../services/api';
 import ProductCard from './ProductCard';
 
 interface ProductGridProps {
-  products: Product[];
-  onProductClick?: (product: Product) => void;
+  products: ProductListItem[];
+  onProductClick?: (product: ProductListItem) => void;
 }
 
 export default function ProductGrid({

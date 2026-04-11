@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import type { Product } from '../data/products';
+import type { ProductListItem } from '../services/api';
 import { calculateDiscountedPrice } from '../utils/priceUtils';
 
 export type SortOption =
@@ -20,19 +20,13 @@ export const SORT_OPTIONS: SortOption[] = [
 interface UseProductSortReturn {
   sortBy: SortOption;
   setSortBy: (option: SortOption) => void;
-  sortedProducts: Product[];
+  sortedProducts: ProductListItem[];
   sortOptions: SortOption[];
 }
 
-/**
- * 제품 목록 정렬을 관리하는 커스텀 훅
- * @param products 정렬할 제품 목록
- * @param defaultSort 기본 정렬 옵션 (기본값: '인기순')
- * @returns 정렬 상태와 정렬된 제품 목록
- */
 export function useProductSort(
-  products: Product[],
-  defaultSort: SortOption = '인기순'
+  products: ProductListItem[],
+  defaultSort: SortOption = '인기순',
 ): UseProductSortReturn {
   const [sortBy, setSortBy] = useState<SortOption>(defaultSort);
 
@@ -55,18 +49,15 @@ export function useProductSort(
         });
 
       case '후기순':
-        return sorted.sort(
-          (a, b) => (b.reviewCount || 0) - (a.reviewCount || 0)
-        );
+        return sorted.sort((a, b) => (b.reviewCount || 0) - (a.reviewCount || 0));
 
       case '별점순':
-        return sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+        return sorted.sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0));
 
       case '인기순':
       default:
-        return sorted.sort(
-          (a, b) => (b.wishCount || 0) - (a.wishCount || 0)
-        );
+        // 인기순 = 리뷰 수 기준 (위시리스트 API 연동 전 임시)
+        return sorted.sort((a, b) => (b.reviewCount || 0) - (a.reviewCount || 0));
     }
   }, [products, sortBy]);
 

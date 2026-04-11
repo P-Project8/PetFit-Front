@@ -1,50 +1,28 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import type { Product } from '../data/products';
-import { products } from '../data/products';
-import { toggleWishCount } from '../data/mockWishCounts';
 
+// Phase 2에서 위시리스트 API로 교체 예정
+// 현재는 로컬 UI 상태로만 관리 (앱 재시작 시 초기화됨)
 interface ProductStore {
-  products: Product[];
+  likedProductIds: number[];
   toggleLike: (productId: number) => void;
-  getProductById: (productId: number) => Product | undefined;
-  getWishedProducts: () => Product[];
+  isLiked: (productId: number) => boolean;
 }
 
-export const useProductStore = create<ProductStore>()(
-  persist(
-    (set, get) => ({
-      products: products,
+export const useProductStore = create<ProductStore>()((set, get) => ({
+  likedProductIds: [],
 
-      toggleLike: (productId) => {
-        set((state) => {
-          const product = state.products.find((p) => p.id === productId);
-          if (product) {
-            // wishCount도 함께 업데이트
-            const isAdding = !product.isLike; // 찜하기면 true, 취소면 false
-            toggleWishCount(productId, isAdding);
-          }
+  toggleLike: (productId) => {
+    set((state) => {
+      const isLiked = state.likedProductIds.includes(productId);
+      return {
+        likedProductIds: isLiked
+          ? state.likedProductIds.filter((id) => id !== productId)
+          : [...state.likedProductIds, productId],
+      };
+    });
+  },
 
-          return {
-            products: state.products.map((product) =>
-              product.id === productId
-                ? { ...product, isLike: !product.isLike }
-                : product
-            ),
-          };
-        });
-      },
-
-      getProductById: (productId) => {
-        return get().products.find((product) => product.id === productId);
-      },
-
-      getWishedProducts: () => {
-        return get().products.filter((product) => product.isLike);
-      },
-    }),
-    {
-      name: 'product-storage',
-    }
-  )
-);
+  isLiked: (productId) => {
+    return get().likedProductIds.includes(productId);
+  },
+}));

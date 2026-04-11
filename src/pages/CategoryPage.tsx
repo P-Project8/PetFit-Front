@@ -1,67 +1,84 @@
 import { useParams, useNavigate, useSearchParams } from 'react-router';
-import { useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { mockCategories, categoryLabels } from '../data/mockCategories';
-import { mockWishCounts } from '../data/mockWishCounts';
 import ProductGrid from '../components/product/ProductGrid';
 import PageHeader from '../components/layout/PageHeader';
 import ProductListHeader from '../components/product/ProductListHeader';
 import { useProductSort } from '../hooks/useProductSort';
-import { useProductStore } from '../store/productStore';
 import { usePagination } from '../hooks/usePagination';
 import Pagination from '../components/common/Pagination';
 import CategoryTabs from '../components/common/CategoryTabs';
+import {
+  getProducts,
+  getPopularProducts,
+  filterProducts,
+  type ProductListItem,
+} from '../services/api';
+
+// 탭 ID → 백엔드 categoryId 매핑
+const CATEGORY_ID_MAP: Record<string, number> = {
+  outer: 1,
+  top: 2,
+  'one-piece': 3,
+  muffler: 4,
+  shoes: 5,
+  accessory: 6,
+  etc: 7,
+};
 
 export default function CategoryPage() {
   const { categoryId } = useParams<{ categoryId: string }>();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const products = useProductStore((state) => state.products);
 
   const currentCategoryId = categoryId || 'new';
   const categoryName = categoryLabels[currentCategoryId] || '전체 카테고리';
 
-  // Get initial page from URL query params
+  const [products, setProducts] = useState<ProductListItem[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
   const pageFromUrl = parseInt(searchParams.get('page') || '1', 10);
   const initialPage = Math.max(1, pageFromUrl);
 
-  // Filter products based on category
-  const filteredProducts = useMemo(() => {
-    if (currentCategoryId === 'hot') {
-      return [...products]
-        .sort(
-          (a, b) => (mockWishCounts[b.id] || 0) - (mockWishCounts[a.id] || 0)
-        )
-        .slice(0, 24);
+  const fetchProducts = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      let result;
+
+      if (currentCategoryId === 'hot') {
+        result = await getPopularProducts({ size: 48 });
+      } else if (currentCategoryId === 'new') {
+        result = await getProducts({ size: 48, sort: 'createdAt,desc' });
+      } else if (currentCategoryId === 'sale') {
+        // sale 전용 엔드포인트 없음 — 전체 조회 후 isSale로 필터
+        const all = await getProducts({ size: 200 });
+        setProducts(all.content.filter((p) => p.isSale));
+        return;
+      } else {
+        const backendCategoryId = CATEGORY_ID_MAP[currentCategoryId];
+        if (backendCategoryId) {
+          result = await filterProducts({ categoryId: backendCategoryId, size: 48 });
+        } else {
+          result = await getProducts({ size: 48 });
+        }
+      }
+
+      setProducts(result.content);
+    } catch {
+      setProducts([]);
+    } finally {
+      setIsLoading(false);
     }
+  }, [currentCategoryId]);
 
-    if (currentCategoryId === 'new') {
-      return [...products]
-        .sort((a, b) => b.date.localeCompare(a.date))
-        .slice(0, 24);
-    }
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
-    if (currentCategoryId === 'sale') {
-      return products.filter((product) => product.discountRate > 0);
-    }
+  const { sortBy, setSortBy, sortedProducts, sortOptions } = useProductSort(products);
 
-    return products.filter((product) => product.category === currentCategoryId);
-  }, [currentCategoryId, products]);
-
-  const { sortBy, setSortBy, sortedProducts, sortOptions } =
-    useProductSort(filteredProducts);
-
-  const {
-    currentPage,
-    totalPages,
-    paginatedItems,
-    goToPage,
-    canGoNext,
-    canGoPrev,
-  } = usePagination({
-    items: sortedProducts,
-    itemsPerPage: 12,
-    initialPage,
-  });
+  const { currentPage, totalPages, paginatedItems, goToPage, canGoNext, canGoPrev } =
+    usePagination({ items: sortedProducts, itemsPerPage: 12, initialPage });
 
   function handleCategoryChange(id: string) {
     navigate(`/category/${id}`);
@@ -76,7 +93,6 @@ export default function CategoryPage() {
     <div className="min-h-screen bg-white pt-12 pb-20">
       <PageHeader title={categoryName} />
 
-      {/* Category Tabs */}
       <CategoryTabs
         categories={mockCategories}
         activeCategory={currentCategoryId}
@@ -84,7 +100,6 @@ export default function CategoryPage() {
         className="mt-1"
       />
 
-      {/* Product List Header */}
       <ProductListHeader
         itemCount={sortedProducts.length}
         sortBy={sortBy}
@@ -92,20 +107,25 @@ export default function CategoryPage() {
         onSortChange={setSortBy}
       />
 
-      {/* Product Grid */}
-      <ProductGrid
-        products={paginatedItems}
-        onProductClick={(product) => navigate(`/product/${product.id}`)}
-      />
-
-      {/* Pagination */}
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-        canGoNext={canGoNext}
-        canGoPrev={canGoPrev}
-      />
+      {isLoading ? (
+        <div className="flex justify-center items-center py-20">
+          <p className="text-gray-400 text-sm">상품을 불러오는 중...</p>
+        </div>
+      ) : (
+        <>
+          <ProductGrid
+            products={paginatedItems}
+            onProductClick={(product) => navigate(`/product/${product.id}`)}
+          />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            canGoNext={canGoNext}
+            canGoPrev={canGoPrev}
+          />
+        </>
+      )}
     </div>
   );
 }

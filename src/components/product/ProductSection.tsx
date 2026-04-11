@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router';
 import { ChevronRight } from 'lucide-react';
-import type { Product } from '../../data/products';
+import type { ProductListItem } from '../../services/api';
 import ProductCard from './ProductCard';
 
 interface ProductSectionProps {
   title: string;
-  products: Product[];
+  products: ProductListItem[];
   categoryId?: string;
 }
 

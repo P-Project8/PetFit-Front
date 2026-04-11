@@ -57,9 +57,11 @@ export default function ProductInfoSection({
             !isDescriptionExpanded ? 'max-h-32 overflow-hidden' : ''
           }`}
         >
-          {description.split('. ').join('.\n\n')}
+          {description
+            ? description.split('. ').join('.\n\n')
+            : '상품 설명이 없습니다.'}
         </div>
-        {!isDescriptionExpanded && (
+        {!isDescriptionExpanded && description && (
           <div className="absolute bottom-0 left-0 right-0 h-12 bg-linear-to-t from-white to-transparent" />
         )}
       </div>

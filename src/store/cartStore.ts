@@ -1,10 +1,10 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Product } from '../data/products';
+import type { ProductListItem } from '../services/api';
 
 export interface CartItem {
   cartItemId: string;
-  product: Product;
+  product: ProductListItem;
   size: string;
   color: string;
   quantity: number;
@@ -12,7 +12,7 @@ export interface CartItem {
 
 interface CartStore {
   items: CartItem[];
-  addItem: (product: Product, size: string, color: string, quantity: number) => void;
+  addItem: (product: ProductListItem, size: string, color: string, quantity: number) => void;
   removeItem: (cartItemId: string) => void;
   updateQuantity: (cartItemId: string, quantity: number) => void;
   clearCart: () => void;

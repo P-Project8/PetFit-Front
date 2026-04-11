@@ -1,11 +1,11 @@
 import { useState, useRef } from 'react';
 import { X, Plus, Minus, ChevronDown, ChevronUp } from 'lucide-react';
-import type { Product } from '../../data/products';
+import type { ProductDetail } from '../../services/api';
 import { useCartStore } from '../../store/cartStore';
 import { toast } from 'sonner';
 
 interface ProductOptionModalProps {
-  product: Product;
+  product: ProductDetail;
   onClose: () => void;
 }
 
@@ -27,8 +27,9 @@ export default function ProductOptionModal({
   const [isSizeOpen, setIsSizeOpen] = useState(false);
   const [isColorOpen, setIsColorOpen] = useState(false);
   const optionIdCounter = useRef(0);
-  const sizes = product.size;
-  const colors = product.color;
+  // options[] 배열에서 중복 없는 사이즈/색상 추출
+  const sizes = [...new Set(product.options.map((o) => o.size))];
+  const colors = [...new Set(product.options.map((o) => o.color))];
 
   const totalQuantity = options.reduce((sum, opt) => sum + opt.quantity, 0);
 

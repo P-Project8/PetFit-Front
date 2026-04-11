@@ -13,6 +13,7 @@ dist-ssr
 *.local
 CLAUDE.md
 .claude
+api.json
 
 # Editor directories and files
 .vscode/*

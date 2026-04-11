@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { mockCategories } from './data/mockCategories';
-import { mockWishCounts } from './data/mockWishCounts';
 import ProductSection from './components/product/ProductSection';
-import { useProductStore } from './store/productStore';
 import { motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import AiStylingBanner from './components/banner/AiStylingBanner';
 import { mockBanners } from './data/mockBanners';
+import { getProducts, getPopularProducts, type ProductListItem } from './services/api';
 
 export default function App() {
   const navigate = useNavigate();
-  const products = useProductStore((state) => state.products);
+  const [newProducts, setNewProducts] = useState<ProductListItem[]>([]);
+  const [hotProducts, setHotProducts] = useState<ProductListItem[]>([]);
+  const [saleProducts, setSaleProducts] = useState<ProductListItem[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
@@ -63,9 +64,28 @@ export default function App() {
       nextSlide();
     }, 5000);
     return () => clearInterval(timer);
-  }, [currentSlide]); // currentSlide가 바뀔 때마다 타이머 초기화 (터치 충돌 방지)
+  }, [currentSlide]);
 
-  // 4. 터치 이벤트 핸들러
+  // 4. 홈 화면 상품 섹션 데이터 로드
+  useEffect(function fetchHomeSections() {
+    async function load() {
+      try {
+        const [newResult, hotResult, allResult] = await Promise.all([
+          getProducts({ size: 8, sort: 'createdAt,desc' }),
+          getPopularProducts({ size: 8 }),
+          getProducts({ size: 100 }),
+        ]);
+        setNewProducts(newResult.content);
+        setHotProducts(hotResult.content);
+        setSaleProducts(allResult.content.filter((p) => p.isSale).slice(0, 8));
+      } catch {
+        // 로드 실패 시 빈 배열 유지
+      }
+    }
+    load();
+  }, []);
+
+  // 5. 터치 이벤트 핸들러
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null); // 초기화
     setTouchStart(e.targetTouches[0].clientX);
@@ -88,14 +108,6 @@ export default function App() {
       prevSlide();
     }
   };
-
-  const newProducts = [...products]
-    .sort((a, b) => b.date.localeCompare(a.date))
-    .slice(0, 8);
-  const hotProducts = [...products]
-    .sort((a, b) => (mockWishCounts[b.id] || 0) - (mockWishCounts[a.id] || 0))
-    .slice(0, 8);
-  const saleProducts = products.filter((p) => p.discountRate > 0).slice(0, 8);
 
   return (
     <div className="min-h-screen bg-white pt-12 pb-20">
