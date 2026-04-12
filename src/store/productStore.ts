@@ -1,28 +1,11 @@
 import { create } from 'zustand';
 
-// Phase 2에서 위시리스트 API로 교체 예정
-// 현재는 로컬 UI 상태로만 관리 (앱 재시작 시 초기화됨)
+// Phase 2에서 위시리스트 기능을 wishlistStore로 분리함
+// 향후 상품 관련 전역 상태가 필요할 경우 여기에 추가
 interface ProductStore {
-  likedProductIds: number[];
-  toggleLike: (productId: number) => void;
-  isLiked: (productId: number) => boolean;
+  _placeholder: null;
 }
 
-export const useProductStore = create<ProductStore>()((set, get) => ({
-  likedProductIds: [],
-
-  toggleLike: (productId) => {
-    set((state) => {
-      const isLiked = state.likedProductIds.includes(productId);
-      return {
-        likedProductIds: isLiked
-          ? state.likedProductIds.filter((id) => id !== productId)
-          : [...state.likedProductIds, productId],
-      };
-    });
-  },
-
-  isLiked: (productId) => {
-    return get().likedProductIds.includes(productId);
-  },
+export const useProductStore = create<ProductStore>()(() => ({
+  _placeholder: null,
 }));

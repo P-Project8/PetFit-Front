@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuthStore } from '../store/authStore';
+import { useWishlistStore } from '../store/wishlistStore';
+import { useCartStore } from '../store/cartStore';
 import { logout as apiLogout } from '../services/api';
 import { toast } from 'sonner';
 import PageHeader from '../components/layout/PageHeader';
@@ -19,10 +21,14 @@ export default function MyPage() {
   async function handleLogout() {
     try {
       await apiLogout();
+      useWishlistStore.getState().reset();
+      useCartStore.getState().reset();
       useAuthStore.getState().logout();
       toast.success('로그아웃 되었습니다.');
       navigate('/login');
     } catch {
+      useWishlistStore.getState().reset();
+      useCartStore.getState().reset();
       useAuthStore.getState().logout();
       navigate('/login');
     }

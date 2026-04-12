@@ -7,22 +7,20 @@ import { useCartStore } from '../store/cartStore';
 import { useNavigate } from 'react-router';
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity } = useCartStore();
+  const { items, removeItem, updateQuantity, isLoading } = useCartStore();
   const navigate = useNavigate();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<number | null>(null);
 
-  const totalPrice = items.reduce((sum, item) => {
-    const price = item.product.discountRate
-      ? item.product.price * (1 - item.product.discountRate / 100)
-      : item.product.price;
-    return sum + price * item.quantity;
-  }, 0);
-
+  // 실제 단가 = 기본가격 + 옵션추가가격
+  const totalPrice = items.reduce(
+    (sum, item) => sum + (item.price + item.additionalPrice) * item.quantity,
+    0,
+  );
   const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
 
-  function handleQuantityChange(cartItemId: string, delta: number) {
-    const item = items.find((item) => item.cartItemId === cartItemId);
+  function handleQuantityChange(cartItemId: number, delta: number) {
+    const item = items.find((i) => i.id === cartItemId);
     if (!item) return;
 
     const newQuantity = item.quantity + delta;
@@ -31,13 +29,13 @@ export default function CartPage() {
     }
   }
 
-  function handleRemove(cartItemId: string) {
+  function handleRemove(cartItemId: number) {
     setItemToDelete(cartItemId);
     setDeleteModalOpen(true);
   }
 
   function confirmDelete() {
-    if (itemToDelete) {
+    if (itemToDelete !== null) {
       removeItem(itemToDelete);
     }
     setDeleteModalOpen(false);
@@ -57,6 +55,14 @@ export default function CartPage() {
     alert('구매하기 기능은 준비 중입니다.');
   }
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-white pt-12 pb-20 flex items-center justify-center">
+        <p className="text-gray-400 text-sm">불러오는 중...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white pt-12 pb-20">
       <PageHeader title="장바구니" onBackClick={() => navigate(-1)} />
@@ -64,18 +70,15 @@ export default function CartPage() {
       <div className="pt-4 px-4">
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-10">
-            <p className="text-gray-400 text-lg mb-2">
-              장바구니가 비어있습니다
-            </p>
+            <p className="text-gray-400 text-lg mb-2">장바구니가 비어있습니다</p>
             <p className="text-gray-300 text-base">상품을 담아주세요</p>
           </div>
         ) : (
           <>
-            {/* Cart Items */}
             <div className="space-y-4 mb-6">
               {items.map((item) => (
                 <CartItem
-                  key={item.cartItemId}
+                  key={item.id}
                   item={item}
                   onQuantityChange={handleQuantityChange}
                   onRemove={handleRemove}
@@ -84,13 +87,11 @@ export default function CartPage() {
               ))}
             </div>
 
-            {/* Price Summary */}
             <PriceSummary totalQuantity={totalQuantity} totalPrice={totalPrice} />
           </>
         )}
       </div>
 
-      {/* Fixed Bottom Button */}
       {items.length > 0 && (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50">
           <button
@@ -102,7 +103,6 @@ export default function CartPage() {
         </div>
       )}
 
-      {/* Delete Confirm Modal */}
       <ConfirmModal
         isOpen={deleteModalOpen}
         title="상품 삭제"

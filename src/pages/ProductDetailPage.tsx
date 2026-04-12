@@ -8,15 +8,15 @@ import ProductInfoSection from '../components/product/ProductInfoSection';
 import ProductActionBar from '../components/product/ProductActionBar';
 import ReviewList from '../components/product/ReviewList';
 import PageHeader from '@/components/layout/PageHeader';
-import { useProductStore } from '../store/productStore';
+import { useWishlistStore } from '../store/wishlistStore';
 import { useAuthStore } from '../store/authStore';
 import { getProductById, type ProductDetail } from '../services/api';
 
 export default function ProductDetailPage() {
   const { productId } = useParams<{ productId: string }>();
   const navigate = useNavigate();
-  const toggleLike = useProductStore((state) => state.toggleLike);
-  const isLiked = useProductStore((state) => state.isLiked);
+  const toggleWishlist = useWishlistStore((state) => state.toggleWishlist);
+  const wishedProductIds = useWishlistStore((state) => state.wishedProductIds);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   const [product, setProduct] = useState<ProductDetail | null>(null);
@@ -65,14 +65,14 @@ export default function ProductDetailPage() {
 
   const isDiscounted = hasDiscount(product.discountRate);
   const discountedPrice = calculateDiscountedPrice(product.price, product.discountRate);
-  const liked = isLiked(product.id);
+  const liked = wishedProductIds.includes(product.id);
 
   function handleWishClick(id: number) {
     if (!isAuthenticated) {
       toast.error('로그인이 필요한 서비스입니다.');
       return;
     }
-    toggleLike(id);
+    toggleWishlist(id);
   }
 
   function handleBuyClick() {

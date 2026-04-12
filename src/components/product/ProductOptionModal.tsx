@@ -98,18 +98,21 @@ export default function ProductOptionModal({
     setOptions(options.filter((opt) => opt.id !== id));
   }
 
-  function handleAddToCart() {
+  async function handleAddToCart() {
     if (options.length === 0) {
       toast('옵션을 선택해주세요.');
       return;
     }
 
-    // 선택한 모든 옵션을 장바구니에 추가
-    options.forEach((option) => {
-      addItem(product, option.size, option.color, option.quantity);
-    });
+    // 선택한 모든 옵션을 순차적으로 장바구니에 추가
+    // product.options에서 size+color가 일치하는 항목을 찾아 productOptionId를 같이 전달
+    for (const option of options) {
+      const matched = product.options.find(
+        (o) => o.size === option.size && o.color === option.color,
+      );
+      await addItem(product.id, matched?.id, option.quantity);
+    }
 
-    toast.success('장바구니에 추가되었습니다.');
     onClose();
   }
 
@@ -119,7 +122,7 @@ export default function ProductOptionModal({
       return;
     }
 
-    // TODO: 구매하기 로직
+    // Phase 5 (주문 API 연동) 때 구현 예정
     alert('구매하기 기능은 준비 중입니다.');
     onClose();
   }

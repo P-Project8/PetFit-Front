@@ -481,6 +481,133 @@ export async function getCategories(): Promise<Category[]> {
 }
 
 // ============================================
+// Cart Types
+// ============================================
+
+// 장바구니 아이템 (GET /api/cart, POST /api/cart 응답)
+export interface CartResponse {
+  id: number;
+  productId: number;
+  productName: string;
+  thumbnailUrl: string;
+  productOptionId: number;
+  size: string;
+  color: string;
+  price: number;           // 상품 기본 가격
+  additionalPrice: number; // 옵션 추가 가격
+  quantity: number;
+}
+
+// 장바구니 추가 요청
+export interface AddToCartRequest {
+  productId: number;
+  productOptionId?: number;
+  quantity: number;
+}
+
+// ============================================
+// Cart API
+// ============================================
+
+/**
+ * 장바구니 조회
+ * GET /api/cart
+ */
+export async function getCart(): Promise<CartResponse[]> {
+  const { data } = await apiClient.get<ApiResponse<CartResponse[]>>('/api/cart');
+  return data.result;
+}
+
+/**
+ * 장바구니 추가
+ * POST /api/cart
+ */
+export async function addToCart(request: AddToCartRequest): Promise<CartResponse> {
+  const { data } = await apiClient.post<ApiResponse<CartResponse>>('/api/cart', request);
+  return data.result;
+}
+
+/**
+ * 장바구니 수량 변경
+ * PATCH /api/cart/{id}
+ */
+export async function updateCartQuantity(
+  cartItemId: number,
+  quantity: number,
+): Promise<CartResponse> {
+  const { data } = await apiClient.patch<ApiResponse<CartResponse>>(
+    `/api/cart/${cartItemId}`,
+    { quantity },
+  );
+  return data.result;
+}
+
+/**
+ * 장바구니 아이템 삭제
+ * DELETE /api/cart/{id}
+ */
+export async function deleteCartItem(cartItemId: number): Promise<void> {
+  await apiClient.delete(`/api/cart/${cartItemId}`);
+}
+
+// ============================================
+// Wishlist Types
+// ============================================
+
+// 찜 목록 아이템 (GET /api/wishlist, POST /api/wishlist)
+export interface WishlistItem {
+  id: number;
+  productId: number;
+  productName: string;
+  price: number;
+  thumbnailUrl: string;
+}
+
+// ============================================
+// Wishlist API
+// ============================================
+
+/**
+ * 찜 목록 조회
+ * GET /api/wishlist
+ */
+export async function getWishlist(): Promise<WishlistItem[]> {
+  const { data } = await apiClient.get<ApiResponse<WishlistItem[]>>('/api/wishlist');
+  return data.result;
+}
+
+/**
+ * 찜 추가
+ * POST /api/wishlist
+ */
+export async function addWishlist(productId: number): Promise<WishlistItem> {
+  const { data } = await apiClient.post<ApiResponse<WishlistItem>>('/api/wishlist', {
+    productId,
+  });
+  return data.result;
+}
+
+/**
+ * 찜 해제
+ * DELETE /api/wishlist/{productId}
+ */
+export async function removeWishlist(productId: number): Promise<void> {
+  await apiClient.delete(`/api/wishlist/${productId}`);
+}
+
+/**
+ * 상품별 찜 수 조회
+ * GET /api/wishlist/counts
+ * 반환 예시: { "1": 5, "2": 12 } (key: productId 문자열, value: 찜 수)
+ */
+export async function getWishlistCounts(): Promise<Record<string, number>> {
+  const { data } = await apiClient.get<ApiResponse<Record<string, number>>>(
+    '/api/wishlist/counts',
+  );
+  return data.result;
+}
+
+// ============================================
 // Export axios instance (필요시 사용)
 // ============================================
 

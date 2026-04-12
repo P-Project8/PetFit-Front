@@ -1,7 +1,7 @@
 import type { ProductListItem } from '../../services/api';
 import { Star, Heart } from 'lucide-react';
 import { calculateDiscountedPrice, hasDiscount } from '../../utils/priceUtils';
-import { useProductStore } from '../../store/productStore';
+import { useWishlistStore } from '../../store/wishlistStore';
 import { toast } from 'sonner';
 import { useAuthStore } from '@/store/authStore';
 
@@ -11,13 +11,15 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, onClick }: ProductCardProps) {
-  const toggleLike = useProductStore((state) => state.toggleLike);
-  const isLiked = useProductStore((state) => state.isLiked);
+  const toggleWishlist = useWishlistStore((state) => state.toggleWishlist);
+  // wishedProductIds를 직접 구독해야 값 변경 시 즉시 리렌더됨
+  // isWishlisted 함수를 구독하면 함수 레퍼런스는 불변이라 리렌더가 안 됨
+  const wishedProductIds = useWishlistStore((state) => state.wishedProductIds);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   const isDiscounted = hasDiscount(product.discountRate);
   const discountedPrice = calculateDiscountedPrice(product.price, product.discountRate);
-  const liked = isLiked(product.id);
+  const liked = wishedProductIds.includes(product.id);
 
   function handleWishClick(e: React.MouseEvent) {
     e.stopPropagation();
@@ -25,7 +27,7 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
       toast.error('로그인이 필요한 서비스입니다.');
       return;
     }
-    toggleLike(product.id);
+    toggleWishlist(product.id);
   }
 
   return (
@@ -41,7 +43,7 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
         <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity" />
         <button
           onClick={handleWishClick}
-          className="absolute right-2 bottom-2 text-white"
+          className="absolute right-2 bottom-2 text-white cursor-pointer"
         >
           <Heart
             className={`w-4.5 h-4.5 ${liked ? 'fill-red-600 text-red-600' : 'fill-white/50'}`}
