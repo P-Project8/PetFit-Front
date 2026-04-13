@@ -13,9 +13,7 @@ import {
   FormMessage,
 } from '../ui/form';
 import { Button } from '../ui/button';
-import { markAsReviewed } from '../../data/mockOrders';
-import { addReview } from '../../data/mockReviews';
-import { useAuthStore } from '@/store/authStore';
+import { createReview } from '../../services/api';
 
 const reviewSchema = z.object({
   rating: z.number().min(1, '별점을 선택해주세요.').max(5),
@@ -26,18 +24,19 @@ type ReviewFormValues = z.infer<typeof reviewSchema>;
 
 interface ReviewWriteModalProps {
   productId: number;
+  orderId: number;
   productName: string;
   onClose: () => void;
-  onSubmit?: (data: ReviewFormValues) => void;
+  onSuccess?: () => void;
 }
 
 export default function ReviewWriteModal({
   productId,
+  orderId,
   productName,
   onClose,
-  onSubmit,
+  onSuccess,
 }: ReviewWriteModalProps) {
-  const { user } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const [hoveredStar, setHoveredStar] = useState<number | null>(null);
 
@@ -54,20 +53,16 @@ export default function ReviewWriteModal({
   async function handleSubmit(values: ReviewFormValues) {
     setIsLoading(true);
     try {
-      // TODO: 실제 API 호출로 대체
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // 리뷰를 실제로 추가 (프론트엔드 배열에)
-      addReview(productId, values.rating, values.content, user?.name);
-
-      // 리뷰 작성 완료 표시
-      markAsReviewed(productId);
-
+      await createReview({
+        productId,
+        orderId,
+        rating: values.rating,
+        content: values.content,
+      });
       toast.success('리뷰가 등록되었습니다.');
-      onSubmit?.(values);
+      onSuccess?.();
       onClose();
-    } catch (error) {
-      console.log(error);
+    } catch {
       toast.error('리뷰 등록에 실패했습니다.');
     } finally {
       setIsLoading(false);
@@ -76,9 +71,7 @@ export default function ReviewWriteModal({
 
   function renderStarButton(starNumber: number) {
     const isFilled =
-      hoveredStar !== null
-        ? starNumber <= hoveredStar
-        : starNumber <= currentRating;
+      hoveredStar !== null ? starNumber <= hoveredStar : starNumber <= currentRating;
 
     return (
       <button
@@ -100,7 +93,6 @@ export default function ReviewWriteModal({
   return (
     <div className="fixed inset-0 bg-black/50 z-100 flex items-end sm:items-center justify-center">
       <div className="bg-white w-full sm:max-w-md sm:rounded-t-2xl rounded-t-2xl max-h-screen overflow-y-auto">
-        {/* Header */}
         <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">리뷰 작성</h2>
           <button
@@ -111,20 +103,14 @@ export default function ReviewWriteModal({
           </button>
         </div>
 
-        {/* Content */}
         <div className="px-4 py-6">
-          {/* Product Name */}
           <div className="mb-6">
             <p className="text-sm text-gray-600">상품</p>
             <p className="text-base font-medium text-gray-900">{productName}</p>
           </div>
 
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(handleSubmit)}
-              className="space-y-6"
-            >
-              {/* Rating */}
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
                 name="rating"
@@ -141,7 +127,6 @@ export default function ReviewWriteModal({
                 )}
               />
 
-              {/* Content */}
               <FormField
                 control={form.control}
                 name="content"
@@ -161,7 +146,6 @@ export default function ReviewWriteModal({
                 )}
               />
 
-              {/* Submit Button */}
               <Button
                 type="submit"
                 disabled={isLoading}

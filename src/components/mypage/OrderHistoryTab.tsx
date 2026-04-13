@@ -16,6 +16,7 @@ export default function OrderHistoryTab({ onBack }: OrderHistoryTabProps) {
   const orders = getUserOrders();
   const [selectedProductForReview, setSelectedProductForReview] = useState<{
     productId: number;
+    orderId: number;
     productName: string;
   } | null>(null);
 
@@ -24,8 +25,8 @@ export default function OrderHistoryTab({ onBack }: OrderHistoryTabProps) {
       new Date(b.purchaseDate).getTime() - new Date(a.purchaseDate).getTime()
   );
 
-  function handleWriteReview(productId: number, productName: string) {
-    setSelectedProductForReview({ productId, productName });
+  function handleWriteReview(productId: number, orderId: number, productName: string) {
+    setSelectedProductForReview({ productId, orderId, productName });
   }
 
   return (
@@ -114,7 +115,7 @@ export default function OrderHistoryTab({ onBack }: OrderHistoryTabProps) {
                     ) : (
                       <button
                         onClick={() =>
-                          handleWriteReview(product.id, product.name)
+                          handleWriteReview(product.id, order.orderId, product.name)
                         }
                         className="w-full py-2.5 bg-[#14314F] text-white text-sm font-medium rounded-lg hover:bg-[#0d1f33] transition-colors"
                       >
@@ -133,12 +134,10 @@ export default function OrderHistoryTab({ onBack }: OrderHistoryTabProps) {
       {selectedProductForReview && (
         <ReviewWriteModal
           productId={selectedProductForReview.productId}
+          orderId={selectedProductForReview.orderId}
           productName={selectedProductForReview.productName}
           onClose={() => setSelectedProductForReview(null)}
-          onSubmit={() => {
-            setSelectedProductForReview(null);
-            // 리뷰 작성 후 주문 목록 새로고침 (상태 업데이트는 markAsReviewed에서 처리됨)
-          }}
+          onSuccess={() => setSelectedProductForReview(null)}
         />
       )}
     </div>

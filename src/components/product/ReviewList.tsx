@@ -1,6 +1,7 @@
+import { useEffect, useState, useCallback } from 'react';
 import { Star } from 'lucide-react';
-import { getReviewsByProductId } from '../../data/mockReviews';
-import { usePagination } from '@/hooks/usePagination';
+import { getProductReviews } from '../../services/api';
+import type { ReviewItem } from '../../services/api';
 import Pagination from '../common/Pagination';
 
 interface ReviewListProps {
@@ -16,19 +17,55 @@ export default function ReviewList({
   rating = 0,
   onWriteReview,
 }: ReviewListProps) {
-  // Filter reviews by productId
-  const reviews = getReviewsByProductId(productId);
+  const [reviews, setReviews] = useState<ReviewItem[]>([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const maskedName = (name: string) => name[0] + '*'.repeat(name.length - 1);
+  const fetchReviews = useCallback(
+    async (page: number) => {
+      setIsLoading(true);
+      try {
+        const result = await getProductReviews(productId, { page, size: 6 });
+        setReviews(result.content);
+        setTotalPages(result.totalPages);
+      } catch {
+        setReviews([]);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [productId],
+  );
 
-  function renderStars(rating: number) {
+  useEffect(() => {
+    fetchReviews(0);
+  }, [fetchReviews]);
+
+  function handlePageChange(page: number) {
+    setCurrentPage(page);
+    fetchReviews(page);
+  }
+
+  // userId를 마스킹: 앞 1자 + * 반복
+  function maskUserId(userId: string) {
+    if (userId.length <= 1) return userId;
+    return userId[0] + '*'.repeat(userId.length - 1);
+  }
+
+  // "2024-11-01T12:00:00" → "2024.11.01"
+  function formatDate(createdAt: string) {
+    return createdAt.slice(0, 10).replace(/-/g, '.');
+  }
+
+  function renderStars(starRating: number) {
     return (
       <div className="flex gap-px">
         {Array.from({ length: 5 }).map((_, index) => (
           <Star
             key={index}
             className={`w-3 h-3 ${
-              index < rating
+              index < starRating
                 ? 'fill-yellow-300 text-yellow-300'
                 : 'fill-gray-200 text-gray-200'
             }`}
@@ -37,15 +74,6 @@ export default function ReviewList({
       </div>
     );
   }
-
-  const {
-    currentPage,
-    totalPages,
-    paginatedItems,
-    goToPage,
-    canGoNext,
-    canGoPrev,
-  } = usePagination({ items: reviews, itemsPerPage: 6 });
 
   return (
     <div className="px-4">
@@ -65,37 +93,34 @@ export default function ReviewList({
         )}
       </div>
 
-      {reviewCount === 0 ? (
+      {isLoading ? (
+        <div className="text-center py-12">
+          <p className="text-gray-400 text-sm">리뷰를 불러오는 중...</p>
+        </div>
+      ) : reviewCount === 0 || reviews.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-gray-400 text-sm">아직 리뷰가 없습니다.</p>
-          <p className="text-gray-400 text-sm mt-1">
-            첫 번째 리뷰를 작성해보세요!
-          </p>
+          <p className="text-gray-400 text-sm mt-1">첫 번째 리뷰를 작성해보세요!</p>
         </div>
       ) : (
         <div className="space-y-4">
-          {paginatedItems.map((review) => (
+          {reviews.map((review) => (
             <div
               key={review.id}
               className="border-b border-gray-100 pb-4 last:border-b-0"
             >
-              {/* Review Header */}
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-semibold text-gray-900">
-                    {maskedName(review.userName)}
+                    {maskUserId(review.userId)}
                   </span>
                   {renderStars(review.rating)}
                 </div>
-                <span className="text-xs text-gray-400">{review.date}</span>
+                <span className="text-xs text-gray-400">{formatDate(review.createdAt)}</span>
               </div>
 
-              {/* Review Content */}
-              <p className="text-sm text-gray-700 leading-relaxed">
-                {review.content}
-              </p>
+              <p className="text-sm text-gray-700 leading-relaxed">{review.content}</p>
 
-              {/* Review Image (optional) */}
               {review.imageUrl && (
                 <div className="mt-3">
                   <img
@@ -107,13 +132,15 @@ export default function ReviewList({
               )}
             </div>
           ))}
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={goToPage}
-            canGoNext={canGoNext}
-            canGoPrev={canGoPrev}
-          />
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              canGoNext={currentPage < totalPages - 1}
+              canGoPrev={currentPage > 0}
+            />
+          )}
         </div>
       )}
     </div>
