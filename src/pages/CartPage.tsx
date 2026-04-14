@@ -3,6 +3,7 @@ import PageHeader from '../components/layout/PageHeader';
 import CartItem from '../components/cart/CartItem';
 import PriceSummary from '../components/cart/PriceSummary';
 import ConfirmModal from '../components/common/ConfirmModal';
+import CheckoutModal from '../components/order/CheckoutModal';
 import { useCartStore } from '../store/cartStore';
 import { useNavigate } from 'react-router';
 
@@ -11,6 +12,7 @@ export default function CartPage() {
   const navigate = useNavigate();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   // 실제 단가 = 기본가격 + 옵션추가가격
   const totalPrice = items.reduce(
@@ -48,11 +50,8 @@ export default function CartPage() {
   }
 
   function handlePurchase() {
-    if (items.length === 0) {
-      alert('장바구니가 비어있습니다.');
-      return;
-    }
-    alert('구매하기 기능은 준비 중입니다.');
+    if (items.length === 0) return;
+    setCheckoutOpen(true);
   }
 
   if (isLoading) {
@@ -112,6 +111,13 @@ export default function CartPage() {
         onConfirm={confirmDelete}
         onCancel={cancelDelete}
       />
+
+      {checkoutOpen && (
+        <CheckoutModal
+          onClose={() => setCheckoutOpen(false)}
+          onSuccess={() => setCheckoutOpen(false)}
+        />
+      )}
     </div>
   );
 }

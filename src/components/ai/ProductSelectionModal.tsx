@@ -1,18 +1,29 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-import { useProductStore } from '../../store/productStore';
 import ProductGrid from '../product/ProductGrid';
 import CategoryTabs from '../common/CategoryTabs';
 import { productCategories } from '../../data/mockCategories';
-import type { Product } from '../../data/products';
+import type { ProductListItem } from '../../services/api';
+import { getProducts, filterProducts } from '../../services/api';
 import { usePagination } from '@/hooks/usePagination';
 import Pagination from '../common/Pagination';
 
 interface ProductSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelect: (product: Product) => void;
+  onSelect: (product: ProductListItem) => void;
 }
+
+// 탭 ID → 백엔드 categoryId 매핑 (CategoryPage와 동일)
+const CATEGORY_ID_MAP: Record<string, number> = {
+  outer: 1,
+  top: 2,
+  'one-piece': 3,
+  muffler: 4,
+  shoes: 5,
+  accessory: 6,
+  etc: 7,
+};
 
 // 전체 카테고리 추가
 const categoriesWithAll = [{ id: 'all', label: 'All' }, ...productCategories];
@@ -22,16 +33,44 @@ export default function ProductSelectionModal({
   onClose,
   onSelect,
 }: ProductSelectionModalProps) {
-  const products = useProductStore((state) => state.products);
+  const [products, setProducts] = useState<ProductListItem[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
 
-  // 카테고리별 필터링
-  const filteredProducts = useMemo(() => {
-    if (selectedCategory === 'all') {
-      return products;
+  // 모달이 열리거나 카테고리가 바뀔 때 상품 조회
+  useEffect(() => {
+    if (!isOpen) return;
+
+    async function fetchProducts() {
+      setIsLoading(true);
+      try {
+        let result;
+        if (selectedCategory === 'all') {
+          result = await getProducts({ size: 48 });
+        } else {
+          const categoryId = CATEGORY_ID_MAP[selectedCategory];
+          result = categoryId
+            ? await filterProducts({ categoryId, size: 48 })
+            : await getProducts({ size: 48 });
+        }
+        setProducts(result.content);
+      } catch (error) {
+        console.error('상품 로드 실패:', error);
+        setProducts([]);
+      } finally {
+        setIsLoading(false);
+      }
     }
-    return products.filter((product) => product.category === selectedCategory);
-  }, [products, selectedCategory]);
+
+    fetchProducts();
+  }, [isOpen, selectedCategory]);
+
+  // 모달 닫힐 때 카테고리 초기화
+  useEffect(() => {
+    if (!isOpen) {
+      setSelectedCategory('all');
+    }
+  }, [isOpen]);
 
   const {
     currentPage,
@@ -41,13 +80,13 @@ export default function ProductSelectionModal({
     canGoNext,
     canGoPrev,
   } = usePagination({
-    items: filteredProducts,
+    items: products,
     itemsPerPage: 12,
   });
 
   if (!isOpen) return null;
 
-  function handleProductClick(product: Product) {
+  function handleProductClick(product: ProductListItem) {
     onSelect(product);
     onClose();
   }
@@ -82,17 +121,25 @@ export default function ProductSelectionModal({
 
         {/* Product Grid */}
         <div className="flex-1 overflow-y-auto p-4">
-          <ProductGrid
-            products={paginatedItems}
-            onProductClick={handleProductClick}
-          />
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={goToPage}
-            canGoNext={canGoNext}
-            canGoPrev={canGoPrev}
-          />
+          {isLoading ? (
+            <div className="flex items-center justify-center py-20">
+              <p className="text-gray-400 text-sm">상품을 불러오는 중...</p>
+            </div>
+          ) : (
+            <>
+              <ProductGrid
+                products={paginatedItems}
+                onProductClick={handleProductClick}
+              />
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={goToPage}
+                canGoNext={canGoNext}
+                canGoPrev={canGoPrev}
+              />
+            </>
+          )}
         </div>
       </div>
       {/* Custom Scrollbar Hide */}

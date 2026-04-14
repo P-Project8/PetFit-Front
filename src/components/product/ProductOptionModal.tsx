@@ -3,6 +3,7 @@ import { X, Plus, Minus, ChevronDown, ChevronUp } from 'lucide-react';
 import type { ProductDetail } from '../../services/api';
 import { useCartStore } from '../../store/cartStore';
 import { toast } from 'sonner';
+import CheckoutModal from '../order/CheckoutModal';
 
 interface ProductOptionModalProps {
   product: ProductDetail;
@@ -26,6 +27,7 @@ export default function ProductOptionModal({
   const [options, setOptions] = useState<SelectedOption[]>([]);
   const [isSizeOpen, setIsSizeOpen] = useState(false);
   const [isColorOpen, setIsColorOpen] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(false);
   const optionIdCounter = useRef(0);
   // options[] 배열에서 중복 없는 사이즈/색상 추출
   const sizes = [...new Set(product.options.map((o) => o.size))];
@@ -116,15 +118,21 @@ export default function ProductOptionModal({
     onClose();
   }
 
-  function handlePurchase() {
+  async function handlePurchase() {
     if (options.length === 0) {
       toast('옵션을 선택해주세요.');
       return;
     }
 
-    // Phase 5 (주문 API 연동) 때 구현 예정
-    alert('구매하기 기능은 준비 중입니다.');
-    onClose();
+    // 선택한 옵션을 장바구니에 담은 후 체크아웃 진행
+    for (const option of options) {
+      const matched = product.options.find(
+        (o) => o.size === option.size && o.color === option.color,
+      );
+      await addItem(product.id, matched?.id, option.quantity);
+    }
+
+    setShowCheckout(true);
   }
 
   const totalPrice = options.reduce(
@@ -133,6 +141,7 @@ export default function ProductOptionModal({
   );
 
   return (
+    <>
     <div className="fixed inset-0 z-50 flex items-end">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/40" onClick={onClose}></div>
@@ -286,5 +295,13 @@ export default function ProductOptionModal({
         </div>
       </div>
     </div>
+
+    {showCheckout && (
+      <CheckoutModal
+        onClose={() => setShowCheckout(false)}
+        onSuccess={onClose}
+      />
+    )}
+    </>
   );
 }

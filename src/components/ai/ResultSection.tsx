@@ -1,15 +1,15 @@
 import { Download, Share2, RotateCcw, ChevronRight } from 'lucide-react';
 import ProductGrid from '../product/ProductGrid';
-import type { Product } from '../../data/products';
+import type { ProductListItem } from '../../services/api';
 
 interface ResultSectionProps {
   resultImage: string;
   selectedProduct: { id: number; name: string } | null;
-  similarProducts: Product[];
+  similarProducts: ProductListItem[];
   onDownload: () => void;
   onShare: () => void;
   onReset: () => void;
-  onProductClick: (product: Product) => void;
+  onProductClick: (product: ProductListItem) => void;
   onGoToProduct: () => void;
 }
 

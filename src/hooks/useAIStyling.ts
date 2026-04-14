@@ -1,17 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { toast } from 'sonner';
-import type { Product } from '../data/products';
-import { useProductStore } from '../store/productStore';
+import type { ProductListItem } from '../services/api';
+import { getProducts, filterProducts } from '../services/api';
 import { generateStylingImage } from '../services/aiStylingService';
 
 export function useAIStyling() {
   const location = useLocation();
   const navigate = useNavigate();
-  const products = useProductStore((state) => state.products);
 
   const preSelectedProduct = location.state?.selectedProduct as
-    | Product
+    | ProductListItem
     | undefined;
 
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -19,12 +18,13 @@ export function useAIStyling() {
 
   const [petImage, setPetImage] = useState<string | null>(null);
   const [clothingImage, setClothingImage] = useState<string | null>(null);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(
+  const [selectedProduct, setSelectedProduct] = useState<ProductListItem | null>(
     preSelectedProduct || null
   );
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
+  const [similarProducts, setSimilarProducts] = useState<ProductListItem[]>([]);
 
   // Check if onboarding has been seen
   useEffect(() => {
@@ -38,11 +38,43 @@ export function useAIStyling() {
 
   // Set clothing image if product is pre-selected
   useEffect(() => {
-    if (preSelectedProduct?.imageUrl) {
-      setClothingImage(preSelectedProduct.imageUrl);
+    if (preSelectedProduct?.thumbnailUrl) {
+      setClothingImage(preSelectedProduct.thumbnailUrl);
       setSelectedProduct(preSelectedProduct);
     }
   }, [preSelectedProduct]);
+
+  // 결과가 생성되면 유사 상품 조회
+  useEffect(() => {
+    if (!resultImage) return;
+
+    async function fetchSimilarProducts() {
+      try {
+        let result;
+        if (selectedProduct) {
+          // 같은 카테고리에서 우선 조회
+          const CATEGORY_ID_MAP: Record<string, number> = {
+            outer: 1, top: 2, 'one-piece': 3, muffler: 4,
+            shoes: 5, accessory: 6, etc: 7,
+          };
+          const categoryId = CATEGORY_ID_MAP[selectedProduct.categoryName?.toLowerCase() ?? ''];
+          result = categoryId
+            ? await filterProducts({ categoryId, size: 8 })
+            : await getProducts({ size: 8 });
+        } else {
+          result = await getProducts({ size: 8, sort: 'reviewCount,desc' });
+        }
+        const filtered = result.content
+          .filter((p) => p.id !== selectedProduct?.id)
+          .slice(0, 4);
+        setSimilarProducts(filtered);
+      } catch {
+        setSimilarProducts([]);
+      }
+    }
+
+    fetchSimilarProducts();
+  }, [resultImage, selectedProduct]);
 
   function handlePetImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -67,9 +99,9 @@ export function useAIStyling() {
     }
   }
 
-  function handleProductSelect(product: Product) {
+  function handleProductSelect(product: ProductListItem) {
     setSelectedProduct(product);
-    setClothingImage(product.imageUrl || null);
+    setClothingImage(product.thumbnailUrl || null);
   }
 
   async function handleAIStyling() {
@@ -114,6 +146,7 @@ export function useAIStyling() {
     setClothingImage(null);
     setSelectedProduct(null);
     setResultImage(null);
+    setSimilarProducts([]);
   }
 
   function handleShare() {
@@ -137,45 +170,31 @@ export function useAIStyling() {
     if (!resultImage) return;
 
     try {
-      // 1. Fetch the image and convert to Blob
-      // resultImage can be a base64 string or a remote URL
       const response = await fetch(resultImage);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
 
-      // 2. Create download link
       const link = document.createElement('a');
       link.href = url;
       link.download = `petfit-styling-${Date.now()}.png`;
       document.body.appendChild(link);
-      
-      // 3. Trigger download
       link.click();
-      
-      // 4. Cleanup
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-      
+
       toast.success('이미지가 저장되었습니다!');
     } catch (error) {
       console.error('Download failed:', error);
-      
-      // Fallback: Try to share if download fails (common in social browsers)
+
       if (navigator.share) {
         try {
-            // Need to create a file object for sharing
-             const response = await fetch(resultImage); // Re-fetch or reuse blob? Better clean
-             const blob = await response.blob();
-             const file = new File([blob], `petfit-styling-${Date.now()}.png`, { type: blob.type });
-
-            await navigator.share({
-                files: [file],
-                title: 'PetFit 스타일링',
-                text: '우리 아이 AI 스타일링 결과'
-            });
-            return;
-        } catch (shareError) {
-             // Share also failed or user cancelled
+          const response = await fetch(resultImage);
+          const blob = await response.blob();
+          const file = new File([blob], `petfit-styling-${Date.now()}.png`, { type: blob.type });
+          await navigator.share({ files: [file], title: 'PetFit 스타일링', text: '우리 아이 AI 스타일링 결과' });
+          return;
+        } catch {
+          // 공유도 실패한 경우
         }
       }
 
@@ -184,49 +203,7 @@ export function useAIStyling() {
   }
 
   function getSimilarProducts() {
-    if (!selectedProduct) {
-      return products
-        .sort((a, b) => (b.wishCount || 0) - (a.wishCount || 0))
-        .slice(0, 4);
-    }
-
-    const sameCategoryProducts = products.filter(
-      (p) =>
-        p.category === selectedProduct.category && p.id !== selectedProduct.id
-    );
-
-    const priceMin = selectedProduct.price * 0.6;
-    const priceMax = selectedProduct.price * 1.4;
-
-    const similarPriceProducts = sameCategoryProducts.filter(
-      (p) => p.price >= priceMin && p.price <= priceMax
-    );
-
-    const candidateProducts =
-      similarPriceProducts.length >= 4
-        ? similarPriceProducts
-        : sameCategoryProducts;
-
-    const sorted = candidateProducts.sort((a, b) => {
-      const scoreA = (a.rating || 0) * 0.5 + (a.wishCount || 0) * 0.001;
-      const scoreB = (b.rating || 0) * 0.5 + (b.wishCount || 0) * 0.001;
-      return scoreB - scoreA;
-    });
-
-    const result = sorted.slice(0, 4);
-    if (result.length < 4) {
-      const remainingCount = 4 - result.length;
-      const remainingProducts = products
-        .filter(
-          (p) =>
-            p.id !== selectedProduct.id && !result.some((r) => r.id === p.id)
-        )
-        .sort((a, b) => (b.wishCount || 0) - (a.wishCount || 0))
-        .slice(0, remainingCount);
-      result.push(...remainingProducts);
-    }
-
-    return result;
+    return similarProducts;
   }
 
   return {
