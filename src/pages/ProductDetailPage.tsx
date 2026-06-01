@@ -7,6 +7,7 @@ import ProductImageSection from '../components/product/ProductImageSection';
 import ProductInfoSection from '../components/product/ProductInfoSection';
 import ProductActionBar from '../components/product/ProductActionBar';
 import ReviewList from '../components/product/ReviewList';
+import SizeRecommendModal from '../components/product/SizeRecommendModal';
 import PageHeader from '@/components/layout/PageHeader';
 import { useWishlistStore } from '../store/wishlistStore';
 import { useAuthStore } from '../store/authStore';
@@ -22,6 +23,7 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState<ProductDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showOptionModal, setShowOptionModal] = useState(false);
+  const [showSizeRecommendModal, setShowSizeRecommendModal] = useState(false);
 
   useEffect(
     function fetchProduct() {
@@ -117,6 +119,22 @@ export default function ProductDetailPage() {
         isDiscounted={isDiscounted}
       />
 
+      {/* 사이즈 추천 진입 */}
+      <div className="px-4 py-3">
+        <button
+          onClick={() => {
+            if (!isAuthenticated) {
+              toast.error('로그인이 필요한 서비스입니다.');
+              return;
+            }
+            setShowSizeRecommendModal(true);
+          }}
+          className="w-full py-3 border border-[#14314F] text-[#14314F] font-semibold text-sm rounded-xl flex items-center justify-center gap-2 hover:bg-blue-50 transition-colors active:scale-[0.98]"
+        >
+          🐾 우리 아이 사이즈 추천받기
+        </button>
+      </div>
+
       <div className="border-t-8 border-gray-100 py-6">
         <ReviewList
           productId={product.id}
@@ -139,6 +157,13 @@ export default function ProductDetailPage() {
           onClose={() => setShowOptionModal(false)}
         />
       )}
+
+      <SizeRecommendModal
+        isOpen={showSizeRecommendModal}
+        onClose={() => setShowSizeRecommendModal(false)}
+        productId={product.id}
+        productName={product.name}
+      />
     </div>
   );
 }

@@ -5,9 +5,11 @@ import {
   HelpCircle,
   Bell,
   LogOut,
+  PawPrint,
 } from 'lucide-react';
 
 interface MenuListProps {
+  onPetsClick: () => void;
   onOrdersClick: () => void;
   onInquiriesClick: () => void;
   onFaqClick: () => void;
@@ -16,6 +18,7 @@ interface MenuListProps {
 }
 
 export default function MenuList({
+  onPetsClick,
   onOrdersClick,
   onInquiriesClick,
   onFaqClick,
@@ -28,6 +31,7 @@ export default function MenuList({
       <div className="mt-2 bg-white">
         <div className="px-6 py-4">
           <div className="space-y-1">
+            <MenuItem icon={PawPrint} label="내 반려견" onClick={onPetsClick} />
             <MenuItem icon={Package} label="주문내역" onClick={onOrdersClick} />
             <MenuItem
               icon={MessageSquare}

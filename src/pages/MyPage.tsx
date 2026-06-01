@@ -10,8 +10,9 @@ import ProfileSection from '../components/mypage/ProfileSection';
 import MenuList from '../components/mypage/MenuList';
 import OrderHistoryTab from '../components/mypage/OrderHistoryTab';
 import ProfileEditTab from '../components/mypage/ProfileEditTab';
+import PetListTab from '../components/mypage/PetListTab';
 
-type TabType = 'main' | 'orders' | 'profile' | 'faq' | 'notices' | 'inquiries';
+type TabType = 'main' | 'orders' | 'profile' | 'faq' | 'notices' | 'inquiries' | 'pets';
 
 export default function MyPage() {
   const navigate = useNavigate();
@@ -47,6 +48,7 @@ export default function MyPage() {
         />
 
         <MenuList
+          onPetsClick={() => setCurrentTab('pets')}
           onOrdersClick={() => setCurrentTab('orders')}
           onInquiriesClick={() => setCurrentTab('inquiries')}
           onFaqClick={() => setCurrentTab('faq')}
@@ -55,6 +57,11 @@ export default function MyPage() {
         />
       </div>
     );
+  }
+
+  // 반려견 탭
+  if (currentTab === 'pets') {
+    return <PetListTab onBack={() => setCurrentTab('main')} />;
   }
 
   // 주문내역 탭

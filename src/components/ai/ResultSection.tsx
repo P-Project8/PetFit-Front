@@ -1,11 +1,15 @@
 import { Download, Share2, RotateCcw, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router';
 import ProductGrid from '../product/ProductGrid';
+import SimilarPetCurationSection from '../mypage/SimilarPetCurationSection';
 import type { ProductListItem } from '../../services/api';
+import type { SimilarPetCurationResponse } from '../../types/pet';
 
 interface ResultSectionProps {
   resultImage: string;
   selectedProduct: { id: number; name: string } | null;
   similarProducts: ProductListItem[];
+  curationData?: SimilarPetCurationResponse;
   onDownload: () => void;
   onShare: () => void;
   onReset: () => void;
@@ -17,12 +21,14 @@ export default function ResultSection({
   resultImage,
   selectedProduct,
   similarProducts,
+  curationData,
   onDownload,
   onShare,
   onReset,
   onProductClick,
   onGoToProduct,
 }: ResultSectionProps) {
+  const navigate = useNavigate();
   return (
     <div className="mt-4 space-y-8">
       {/* Result Image */}
@@ -76,6 +82,17 @@ export default function ResultSection({
           <span>이 상품 보러가기</span>
           <ChevronRight className="w-4 h-4" />
         </button>
+      )}
+
+      {/* 체형 맞춤 큐레이션 */}
+      {curationData && (
+        <div className="pt-6 mt-6 border-t-4 border-gray-100">
+          <h3 className="text-base font-bold text-gray-900 mb-2">체형 맞춤 추천</h3>
+          <SimilarPetCurationSection
+            data={curationData}
+            onProductClick={(productId) => navigate(`/product/${productId}`)}
+          />
+        </div>
       )}
 
       {/* Similar Products */}
