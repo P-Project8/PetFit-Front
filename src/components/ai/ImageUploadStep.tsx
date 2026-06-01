@@ -1,4 +1,13 @@
-import { Upload, X, Plus, Shirt, HelpCircle } from 'lucide-react';
+import {
+  Upload,
+  X,
+  Plus,
+  Shirt,
+  HelpCircle,
+  PawPrint,
+  CircleCheckBig,
+} from 'lucide-react';
+import type { PetResponse } from '../../types/pet';
 
 interface ImageUploadStepProps {
   petImage: string | null;
@@ -6,6 +15,8 @@ interface ImageUploadStepProps {
   selectedProduct: { id: number; name: string } | null;
   isProcessing: boolean;
   resultImage: string | null;
+  myPets: PetResponse[];
+  selectedPetProfile: PetResponse | null;
   onPetImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onClothingImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onPetImageRemove: () => void;
@@ -13,6 +24,7 @@ interface ImageUploadStepProps {
   onShowProductModal: () => void;
   onShowOnboarding: () => void;
   onAIStyling: () => void;
+  onPetProfileSelect: (pet: PetResponse | null) => void;
 }
 
 export default function ImageUploadStep({
@@ -21,6 +33,8 @@ export default function ImageUploadStep({
   selectedProduct,
   isProcessing,
   resultImage,
+  myPets,
+  selectedPetProfile,
   onPetImageChange,
   onClothingImageChange,
   onPetImageRemove,
@@ -28,6 +42,7 @@ export default function ImageUploadStep({
   onShowProductModal,
   onShowOnboarding,
   onAIStyling,
+  onPetProfileSelect,
 }: ImageUploadStepProps) {
   return (
     <>
@@ -42,25 +57,19 @@ export default function ImageUploadStep({
         </button>
       </div>
 
-      {/* Steps Container */}
       <div
-        className={`space-y-4 mb-6 ${
-          resultImage ? 'pointer-events-none opacity-40' : ''
-        }`}
+        className={`space-y-4 mb-6 ${resultImage ? 'pointer-events-none opacity-40' : ''}`}
       >
         {/* Step Cards Row */}
         <div className="grid grid-cols-2 gap-3">
-          {/* Step 1: Pet Image Card */}
+          {/* Step 1: Pet Image */}
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 rounded-full bg-[#14314F] text-white flex items-center justify-center text-xs font-bold">
                 1
               </div>
-              <h3 className="text-sm font-semibold text-gray-900">
-                반려동물
-              </h3>
+              <h3 className="text-sm font-semibold text-gray-900">반려동물</h3>
             </div>
-
             <div className="relative">
               <input
                 type="file"
@@ -91,11 +100,9 @@ export default function ImageUploadStep({
                         onPetImageRemove();
                       }}
                       className="absolute top-2 right-2 p-1 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors z-10"
-                      aria-label="반려동물 이미지 삭제"
                     >
                       <X className="w-4 h-4" />
                     </button>
-
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
                       <Plus className="w-8 h-8 text-white" />
                     </div>
@@ -112,7 +119,7 @@ export default function ImageUploadStep({
             </div>
           </div>
 
-          {/* Step 2: Clothing Card */}
+          {/* Step 2: Clothing */}
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 rounded-full bg-[#14314F] text-white flex items-center justify-center text-xs font-bold">
@@ -120,7 +127,6 @@ export default function ImageUploadStep({
               </div>
               <h3 className="text-sm font-semibold text-gray-900">옷</h3>
             </div>
-
             <div className="relative space-y-2">
               {clothingImage ? (
                 <>
@@ -139,11 +145,9 @@ export default function ImageUploadStep({
                         onClothingImageRemove();
                       }}
                       className="absolute top-2 right-2 p-1 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors z-10"
-                      aria-label="옷 이미지 삭제"
                     >
                       <X className="w-4 h-4" />
                     </button>
-
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
                       <Plus className="w-8 h-8 text-white" />
                     </div>
@@ -155,7 +159,6 @@ export default function ImageUploadStep({
                       </div>
                     )}
                   </div>
-
                   <div className="relative">
                     <input
                       type="file"
@@ -175,7 +178,6 @@ export default function ImageUploadStep({
                 </>
               ) : (
                 <>
-                  {/* Product Selection Button */}
                   <button
                     onClick={onShowProductModal}
                     className="w-full aspect-3/4 rounded-xl border-2 border-dashed border-gray-300 bg-white hover:border-[#14314F] hover:shadow-sm transition-all"
@@ -185,8 +187,6 @@ export default function ImageUploadStep({
                       <p className="text-xs font-medium">상품 선택</p>
                     </div>
                   </button>
-
-                  {/* Upload Option */}
                   <div className="relative">
                     <input
                       type="file"
@@ -209,17 +209,59 @@ export default function ImageUploadStep({
           </div>
         </div>
 
+        {/* 반려견 프로필 선택 */}
+        {myPets.length > 0 && (
+          <div className="bg-blue-50 rounded-2xl px-4 py-3">
+            <div className="flex items-center gap-1.5 mb-2.5">
+              <CircleCheckBig className="w-4 h-4" color="#14314F" />
+              <p className="text-base font-semibold text-[#14314F]">
+                반려견 프로필 연동
+              </p>
+              <span className="text-xs text-gray-400 ml-1">
+                체형 데이터로 AI 정확도 향상
+              </span>
+            </div>
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+              {myPets.map((pet) => {
+                const isSelected = selectedPetProfile?.id === pet.id;
+                return (
+                  <button
+                    key={pet.id}
+                    onClick={() => onPetProfileSelect(isSelected ? null : pet)}
+                    className={`shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl border-2 transition-all ${
+                      isSelected
+                        ? 'border-[#14314F] bg-[#14314F] text-white'
+                        : 'border-gray-200 bg-white text-gray-700 hover:border-[#14314F]'
+                    }`}
+                  >
+                    <div className="w-6 h-6 rounded-full overflow-hidden bg-gray-200 shrink-0 flex items-center justify-center">
+                      {pet.imageUrl ? (
+                        <img
+                          src={pet.imageUrl}
+                          alt={pet.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <PawPrint className="w-3 h-3 text-gray-400" />
+                      )}
+                    </div>
+                    <span className="text-xs font-semibold whitespace-nowrap">
+                      {pet.name}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Progress Indicator */}
         <div className="flex items-center justify-center gap-2 py-2">
           <div
-            className={`h-1.5 w-8 rounded-full transition-colors ${
-              petImage ? 'bg-[#14314F]' : 'bg-gray-200'
-            }`}
+            className={`h-1.5 w-8 rounded-full transition-colors ${petImage ? 'bg-[#14314F]' : 'bg-gray-200'}`}
           />
           <div
-            className={`h-1.5 w-8 rounded-full transition-colors ${
-              clothingImage ? 'bg-[#14314F]' : 'bg-gray-200'
-            }`}
+            className={`h-1.5 w-8 rounded-full transition-colors ${clothingImage ? 'bg-[#14314F]' : 'bg-gray-200'}`}
           />
         </div>
 

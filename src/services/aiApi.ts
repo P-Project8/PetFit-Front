@@ -5,18 +5,38 @@ import type { ApiResponse } from './client';
 // AI Styling API
 // ============================================
 
-/**
- * AI 스타일링 이미지 생성
- * POST /api/ai/styling
- * 백엔드가 Gemini를 호출하고 결과 이미지를 base64로 반환
- */
+export interface AIStylingResult {
+  stylingId: number;
+  resultImageUrl: string;
+  resultImageBase64: string;
+}
+
+export interface StylingHistoryItem {
+  id: number;
+  petImageUrl: string;
+  clothImageUrl: string;
+  productId: number;
+  resultImageUrl: string;
+  status: string;
+  createdAt: string;
+}
+
 export async function generateAIStyling(
   petImageBase64: string,
   clothImageBase64: string,
-): Promise<string> {
-  const { data } = await apiClient.post<ApiResponse<{ resultImageBase64: string }>>(
+  productId?: number,
+  petProfileId?: number,
+): Promise<AIStylingResult> {
+  const { data } = await apiClient.post<ApiResponse<AIStylingResult>>(
     '/api/ai/styling',
-    { petImageBase64, clothImageBase64 },
+    { petImageBase64, clothImageBase64, productId, petProfileId },
   );
-  return data.result.resultImageBase64;
+  return data.result;
+}
+
+export async function getStylingHistory(): Promise<StylingHistoryItem[]> {
+  const { data } = await apiClient.get<ApiResponse<StylingHistoryItem[]>>(
+    '/api/ai/styling/history',
+  );
+  return data.result;
 }

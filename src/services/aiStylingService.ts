@@ -1,15 +1,19 @@
 import { generateAIStyling } from './api';
+import type { AIStylingResult } from './aiApi';
 
-// data URL 또는 원격 URL을 순수 base64 문자열로 변환
+export interface StylingResult {
+  stylingId: number;
+  resultImageUrl: string;
+  resultImageBase64: string; // data URL 형태 "data:image/png;base64,..."
+}
+
 async function toBase64(imageUrl: string): Promise<string> {
-  // 이미 data URL인 경우: "data:image/jpeg;base64,/9j/..." 형태에서 base64 부분만 추출
   if (imageUrl.startsWith('data:')) {
     const match = imageUrl.match(/^data:.+;base64,(.+)$/);
     if (!match) throw new Error('Invalid data URL');
     return match[1];
   }
 
-  // 원격 URL인 경우: fetch로 가져와서 base64로 변환
   const response = await fetch(imageUrl);
   const blob = await response.blob();
 
@@ -29,12 +33,22 @@ async function toBase64(imageUrl: string): Promise<string> {
 export async function generateStylingImage(
   petImage: string,
   clothingImage: string,
-): Promise<string> {
+  productId?: number,
+  petProfileId?: number,
+): Promise<StylingResult> {
   const petImageBase64 = await toBase64(petImage);
   const clothImageBase64 = await toBase64(clothingImage);
 
-  const resultBase64 = await generateAIStyling(petImageBase64, clothImageBase64);
+  const result: AIStylingResult = await generateAIStyling(
+    petImageBase64,
+    clothImageBase64,
+    productId,
+    petProfileId,
+  );
 
-  // 백엔드가 순수 base64만 반환한다고 가정하고 data URL로 감싸서 반환
-  return `data:image/png;base64,${resultBase64}`;
+  return {
+    stylingId: result.stylingId,
+    resultImageUrl: result.resultImageUrl,
+    resultImageBase64: `data:image/png;base64,${result.resultImageBase64}`,
+  };
 }

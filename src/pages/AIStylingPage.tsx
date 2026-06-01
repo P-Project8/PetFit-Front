@@ -11,6 +11,8 @@ export default function AIStylingPage() {
     petImage,
     clothingImage,
     selectedProduct,
+    selectedPetProfile,
+    myPets,
     isProcessing,
     resultImage,
     showOnboarding,
@@ -20,6 +22,7 @@ export default function AIStylingPage() {
     setPetImage,
     setClothingImage,
     setSelectedProduct,
+    setSelectedPetProfile,
     handlePetImageChange,
     handleClothingImageChange,
     handleProductSelect,
@@ -45,6 +48,8 @@ export default function AIStylingPage() {
             selectedProduct={selectedProduct}
             isProcessing={isProcessing}
             resultImage={resultImage}
+            myPets={myPets}
+            selectedPetProfile={selectedPetProfile}
             onPetImageChange={handlePetImageChange}
             onClothingImageChange={handleClothingImageChange}
             onPetImageRemove={() => setPetImage(null)}
@@ -55,6 +60,7 @@ export default function AIStylingPage() {
             onShowProductModal={() => setShowProductModal(true)}
             onShowOnboarding={() => setShowOnboarding(true)}
             onAIStyling={handleAIStyling}
+            onPetProfileSelect={setSelectedPetProfile}
           />
         )}
 
@@ -71,16 +77,13 @@ export default function AIStylingPage() {
           />
         )}
 
-        {/* Loading Splash Screen */}
         {isProcessing && <LoadingSplashScreen />}
 
-        {/* Onboarding Modal */}
         <OnboardingModal
           isOpen={showOnboarding}
           onClose={() => setShowOnboarding(false)}
         />
 
-        {/* Product Selection Modal */}
         <ProductSelectionModal
           isOpen={showProductModal}
           onClose={() => setShowProductModal(false)}
