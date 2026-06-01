@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import ProductGrid from '../product/ProductGrid';
 import CategoryTabs from '../common/CategoryTabs';
-import { productCategories } from '../../data/mockCategories';
+import { productCategoryTabs, CATEGORY_ID_MAP } from '../../constants/categories';
 import type { ProductListItem } from '../../services/api';
 import { getProducts, filterProducts } from '../../services/api';
 import { usePagination } from '@/hooks/usePagination';
@@ -14,19 +14,8 @@ interface ProductSelectionModalProps {
   onSelect: (product: ProductListItem) => void;
 }
 
-// 탭 ID → 백엔드 categoryId 매핑 (CategoryPage와 동일)
-const CATEGORY_ID_MAP: Record<string, number> = {
-  outer: 1,
-  top: 2,
-  'one-piece': 3,
-  muffler: 4,
-  shoes: 5,
-  accessory: 6,
-  etc: 7,
-};
-
 // 전체 카테고리 추가
-const categoriesWithAll = [{ id: 'all', label: 'All' }, ...productCategories];
+const categoriesWithAll = [{ id: 'all', label: 'All' }, ...productCategoryTabs];
 
 export default function ProductSelectionModal({
   isOpen,

@@ -23,21 +23,24 @@ export default function ProductDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [showOptionModal, setShowOptionModal] = useState(false);
 
-  useEffect(function fetchProduct() {
-    async function load() {
-      if (!productId) return;
-      setIsLoading(true);
-      try {
-        const result = await getProductById(Number(productId));
-        setProduct(result);
-      } catch {
-        toast.error('상품 정보를 불러오지 못했습니다.');
-      } finally {
-        setIsLoading(false);
+  useEffect(
+    function fetchProduct() {
+      async function load() {
+        if (!productId) return;
+        setIsLoading(true);
+        try {
+          const result = await getProductById(Number(productId));
+          setProduct(result);
+        } catch {
+          toast.error('상품 정보를 불러오지 못했습니다.');
+        } finally {
+          setIsLoading(false);
+        }
       }
-    }
-    load();
-  }, [productId]);
+      load();
+    },
+    [productId],
+  );
 
   if (isLoading) {
     return (
@@ -64,7 +67,10 @@ export default function ProductDetailPage() {
   }
 
   const isDiscounted = hasDiscount(product.discountRate);
-  const discountedPrice = calculateDiscountedPrice(product.price, product.discountRate);
+  const discountedPrice = calculateDiscountedPrice(
+    product.price,
+    product.discountRate,
+  );
   const liked = wishedProductIds.includes(product.id);
 
   function handleWishClick(id: number) {

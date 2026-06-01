@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Home,
   Search,
@@ -37,15 +37,27 @@ import CategoryTabs from '../components/common/CategoryTabs';
 import PageHeader from '../components/layout/PageHeader';
 import { Navbar } from '../components/layout/Navbar';
 import AiStylingBanner from '../components/banner/AiStylingBanner';
-import { products } from '../data/products';
-import { mockCategories } from '../data/mockCategories';
+import { allCategoryTabs } from '../constants/categories';
+import { getProducts, type ProductListItem } from '../services/api';
 
 export default function StyleGuidePage() {
   const [activeTab, setActiveTab] = useState('new');
+  const [sampleProduct1, setSampleProduct1] = useState<ProductListItem | null>(null);
+  const [sampleProduct2, setSampleProduct2] = useState<ProductListItem | null>(null);
 
-  // Sample products for display
-  const sampleProduct1 = products[0];
-  const sampleProduct2 = products.find((p) => p.discountRate > 0) || products[1];
+  useEffect(function fetchSampleProducts() {
+    async function load() {
+      try {
+        const result = await getProducts({ size: 8 });
+        const items = result.content;
+        setSampleProduct1(items[0] ?? null);
+        setSampleProduct2(items.find((p) => p.discountRate > 0) ?? items[1] ?? null);
+      } catch {
+        // 로드 실패 시 null 유지
+      }
+    }
+    load();
+  }, []);
 
   return (
     <div className="min-h-screen bg-white pb-244">
@@ -128,7 +140,7 @@ export default function StyleGuidePage() {
           <h2 className="text-xl font-bold mb-4 text-[#14314F]">4. Navigation Tabs</h2>
           <div className="border border-gray-100 p-4 rounded-xl bg-white shadow-sm">
             <CategoryTabs
-              categories={mockCategories}
+              categories={allCategoryTabs}
               activeCategory={activeTab}
               onCategoryChange={setActiveTab}
             />
@@ -141,11 +153,11 @@ export default function StyleGuidePage() {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <p className="text-sm text-gray-500 mb-2">기본 상품</p>
-              <ProductCard product={sampleProduct1} />
+              {sampleProduct1 && <ProductCard product={sampleProduct1} />}
             </div>
             <div className="space-y-2">
               <p className="text-sm text-gray-500 mb-2">할인 상품</p>
-              <ProductCard product={sampleProduct2} />
+              {sampleProduct2 && <ProductCard product={sampleProduct2} />}
             </div>
           </div>
         </section>

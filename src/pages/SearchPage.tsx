@@ -16,8 +16,12 @@ import {
   removeRecentSearch,
   clearRecentSearches,
 } from '../utils/recentSearches';
-import { getPopularSearches } from '../data/mockPopularSearches';
 import { searchProducts, type ProductListItem } from '../services/api';
+
+const POPULAR_SEARCHES = [
+  '겨울 패딩', '강아지 한복', '레인코트', '니트', '후드티',
+  '방한 부츠', '목도리', '원피스', '액세서리', '조끼',
+];
 
 export default function SearchPage() {
   const navigate = useNavigate();
@@ -26,7 +30,7 @@ export default function SearchPage() {
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [searchResults, setSearchResults] = useState<ProductListItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const popularSearches = getPopularSearches();
+  const popularSearches = POPULAR_SEARCHES;
 
   useEffect(function loadRecentSearches() {
     setRecentSearches(getRecentSearches());

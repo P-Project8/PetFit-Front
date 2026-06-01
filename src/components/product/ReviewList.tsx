@@ -25,6 +25,7 @@ export default function ReviewList({
   const fetchReviews = useCallback(
     async (page: number) => {
       setIsLoading(true);
+      setReviews([]);
       try {
         const result = await getProductReviews(productId, { page, size: 6 });
         setReviews(result.content);
@@ -39,6 +40,7 @@ export default function ReviewList({
   );
 
   useEffect(() => {
+    setCurrentPage(0);
     fetchReviews(0);
   }, [fetchReviews]);
 
@@ -97,7 +99,7 @@ export default function ReviewList({
         <div className="text-center py-12">
           <p className="text-gray-400 text-sm">리뷰를 불러오는 중...</p>
         </div>
-      ) : reviewCount === 0 || reviews.length === 0 ? (
+      ) : reviewCount === 0 ? (
         <div className="text-center py-12">
           <p className="text-gray-400 text-sm">아직 리뷰가 없습니다.</p>
           <p className="text-gray-400 text-sm mt-1">첫 번째 리뷰를 작성해보세요!</p>
@@ -134,9 +136,9 @@ export default function ReviewList({
           ))}
           {totalPages > 1 && (
             <Pagination
-              currentPage={currentPage}
+              currentPage={currentPage + 1}
               totalPages={totalPages}
-              onPageChange={handlePageChange}
+              onPageChange={(page) => handlePageChange(page - 1)}
               canGoNext={currentPage < totalPages - 1}
               canGoPrev={currentPage > 0}
             />

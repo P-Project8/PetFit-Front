@@ -1,12 +1,55 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { mockCategories } from './data/mockCategories';
+import { allCategoryTabs } from './constants/categories';
 import ProductSection from './components/product/ProductSection';
 import { motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import AiStylingBanner from './components/banner/AiStylingBanner';
-import { mockBanners } from './data/mockBanners';
-import { getProducts, getPopularProducts, type ProductListItem } from './services/api';
+import {
+  getProducts,
+  getPopularProducts,
+  type ProductListItem,
+} from './services/api';
+
+interface CarouselSlide {
+  id: number;
+  imageUrl: string;
+  title: string;
+  description: string;
+}
+
+const CAROUSEL_SLIDES: CarouselSlide[] = [
+  {
+    id: 1,
+    imageUrl: '/images/products/acc_images/006.jpg',
+    title: '썸머 오렌지 선햇',
+    description: '강렬한 햇살도 문제없어요 — 우리 아이 여름 필수템',
+  },
+  {
+    id: 2,
+    imageUrl: '/images/products/outer_images/006.jpg',
+    title: '핑크 레이스 아우터',
+    description: '사랑스러움이 넘쳐흘러요, 한 번 입히면 멈출 수 없는 귀여움',
+  },
+  {
+    id: 3,
+    imageUrl: '/images/products/muffler_images/006.jpg',
+    title: '클래식 체크 머플러',
+    description: '포근함과 스타일을 한 번에 — 쌀쌀한 날엔 역시 체크',
+  },
+  {
+    id: 4,
+    imageUrl: '/images/products/shoes_images/002.png',
+    title: '아웃도어 나일론 슈즈',
+    description: '어떤 길도 거뜬해요, 산책이 더 즐거워지는 기능성 신발',
+  },
+  {
+    id: 5,
+    imageUrl: '/images/products/top_images/006.png',
+    title: '화이트 드레스 탑',
+    description: '깨끗하고 단아한 무드, 특별한 날을 더 빛나게',
+  },
+];
 
 export default function App() {
   const navigate = useNavigate();
@@ -16,7 +59,6 @@ export default function App() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
-  const carouselProducts = mockBanners.slice(0, 5);
 
   const textContainerVariants: Variants = {
     hidden: { opacity: 0, y: 30, filter: 'blur(6px)' },
@@ -48,13 +90,13 @@ export default function App() {
 
   // 1. 다음 슬라이드로 이동
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % carouselProducts.length);
+    setCurrentSlide((prev) => (prev + 1) % CAROUSEL_SLIDES.length);
   };
 
   // 2. 이전 슬라이드로 이동
   const prevSlide = () => {
     setCurrentSlide((prev) =>
-      prev === 0 ? carouselProducts.length - 1 : prev - 1
+      prev === 0 ? CAROUSEL_SLIDES.length - 1 : prev - 1,
     );
   };
 
@@ -123,26 +165,18 @@ export default function App() {
           className="flex h-full transition-transform duration-500 ease-out"
           style={{ transform: `translateX(-${currentSlide * 100}%)` }}
         >
-          {carouselProducts.map((item, index) => (
-            <div
-              key={item.id}
-              className="w-full h-full shrink-0 relative"
-              onClick={() => navigate(`/product/${item.id}`)}
-            >
-              {/* 1. 배경 이미지 */}
+          {CAROUSEL_SLIDES.map((slide, index) => (
+            <div key={slide.id} className="w-full h-full shrink-0 relative">
               <div className="w-full h-full bg-gray-800">
-                {item.imageUrl && (
-                  <img
-                    src={item.imageUrl}
-                    alt={item.name}
-                    className="w-full h-full object-cover"
-                  />
-                )}
+                <img
+                  src={slide.imageUrl}
+                  alt={slide.title}
+                  className="w-full h-full object-cover"
+                />
               </div>
 
               <div className="absolute bottom-0 left-0 w-full h-3/5 bg-linear-to-t from-black/60 via-black/40 to-transparent pointer-events-none" />
 
-              {/* 3. 텍스트 컨텐츠 */}
               <motion.div
                 className="absolute bottom-0 left-6 right-6 z-10 pb-16"
                 variants={textContainerVariants}
@@ -153,13 +187,13 @@ export default function App() {
                   variants={textItemVariants}
                   className="text-white text-3xl font-bold mb-2 drop-shadow-lg"
                 >
-                  {item.name}
+                  {slide.title}
                 </motion.h2>
                 <motion.p
                   variants={textItemVariants}
                   className="text-white/95 text-base drop-shadow-md leading-relaxed"
                 >
-                  {item.description}
+                  {slide.description}
                 </motion.p>
               </motion.div>
             </div>
@@ -168,7 +202,7 @@ export default function App() {
 
         {/* Dots Indicator */}
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 z-20">
-          {carouselProducts.map((_, index) => (
+          {CAROUSEL_SLIDES.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentSlide(index)}
@@ -186,7 +220,7 @@ export default function App() {
       <section className="pt-6 bg-white">
         <div className="px-4">
           <div className="grid grid-cols-4">
-            {mockCategories.map((category) => (
+            {allCategoryTabs.map((category) => (
               <button
                 key={category.label}
                 onClick={() => navigate(`/category/${category.id}`)}
@@ -217,7 +251,6 @@ export default function App() {
           categoryId="sale"
         />
       </div>
-
     </div>
   );
 }

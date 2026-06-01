@@ -1,6 +1,6 @@
 import { useParams, useNavigate, useSearchParams } from 'react-router';
 import { useState, useEffect, useCallback } from 'react';
-import { mockCategories, categoryLabels } from '../data/mockCategories';
+import { allCategoryTabs, categoryLabels, CATEGORY_ID_MAP } from '../constants/categories';
 import ProductGrid from '../components/product/ProductGrid';
 import PageHeader from '../components/layout/PageHeader';
 import ProductListHeader from '../components/product/ProductListHeader';
@@ -15,16 +15,6 @@ import {
   type ProductListItem,
 } from '../services/api';
 
-// 탭 ID → 백엔드 categoryId 매핑
-const CATEGORY_ID_MAP: Record<string, number> = {
-  outer: 1,
-  top: 2,
-  'one-piece': 3,
-  muffler: 4,
-  shoes: 5,
-  accessory: 6,
-  etc: 7,
-};
 
 export default function CategoryPage() {
   const { categoryId } = useParams<{ categoryId: string }>();
@@ -94,7 +84,7 @@ export default function CategoryPage() {
       <PageHeader title={categoryName} />
 
       <CategoryTabs
-        categories={mockCategories}
+        categories={allCategoryTabs}
         activeCategory={currentCategoryId}
         onCategoryChange={handleCategoryChange}
         className="mt-1"
