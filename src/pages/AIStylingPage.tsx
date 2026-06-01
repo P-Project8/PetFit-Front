@@ -28,9 +28,9 @@ export default function AIStylingPage() {
     handleProductSelect,
     handleAIStyling,
     handleReset,
-    handleShare,
     handleDownload,
     getSimilarProducts,
+    resultImageUrl,
     navigate,
   } = useAIStyling();
 
@@ -67,10 +67,10 @@ export default function AIStylingPage() {
         {resultImage && (
           <ResultSection
             resultImage={resultImage}
+            resultImageUrl={resultImageUrl ?? undefined}
             selectedProduct={selectedProduct}
             similarProducts={similarProducts}
             onDownload={handleDownload}
-            onShare={handleShare}
             onReset={handleReset}
             onProductClick={(product) => navigate(`/product/${product.id}`)}
             onGoToProduct={() => navigate(`/product/${selectedProduct?.id}`)}

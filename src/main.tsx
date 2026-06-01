@@ -14,6 +14,9 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import AIStylingPage from './pages/AIStylingPage';
 import MyPage from './pages/MyPage';
+import GalleryPage from './pages/GalleryPage';
+import GalleryDetailPage from './pages/GalleryDetailPage';
+import CheckoutPage from './pages/CheckoutPage';
 import StyleGuidePage from './pages/StyleGuidePage';
 import ScrollToTop from './components/common/ScrollToTop';
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -53,6 +56,14 @@ createRoot(document.getElementById('root')!).render(
               }
             />
             <Route
+              path="/checkout"
+              element={
+                <ProtectedRoute>
+                  <CheckoutPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/wish"
               element={
                 <ProtectedRoute>
@@ -71,6 +82,10 @@ createRoot(document.getElementById('root')!).render(
                 </ProtectedRoute>
               }
             />
+
+            {/* 갤러리 */}
+            <Route path="/gallery" element={<GalleryPage />} />
+            <Route path="/gallery/:galleryId" element={<GalleryDetailPage />} />
 
             {/* 마이페이지 */}
             <Route

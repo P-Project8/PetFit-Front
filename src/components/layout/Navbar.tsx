@@ -1,4 +1,4 @@
-import { Home, Search, Shirt, Heart, User } from 'lucide-react';
+import { Home, Images, Shirt, Heart, User } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -16,7 +16,7 @@ export function Navbar() {
 
   const navItems = [
     { id: 'home', icon: Home, label: '홈', location: '/' },
-    { id: 'search', icon: Search, label: '검색', location: '/search' },
+    { id: 'gallery', icon: Images, label: '갤러리', location: '/gallery' },
     { id: 'styling', icon: Shirt, label: '스타일링', location: '/ai-styling' },
     { id: 'wishlist', icon: Heart, label: '찜', location: '/wish' },
     { id: 'mypage', icon: User, label: '마이페이지', location: '/my' },

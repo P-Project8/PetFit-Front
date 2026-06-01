@@ -131,7 +131,7 @@ export default function ProductDetailPage() {
           }}
           className="w-full py-3 border border-[#14314F] text-[#14314F] font-semibold text-sm rounded-xl flex items-center justify-center gap-2 hover:bg-blue-50 transition-colors active:scale-[0.98]"
         >
-          🐾 우리 아이 사이즈 추천받기
+          맞춤 사이즈 추천받기
         </button>
       </div>
 

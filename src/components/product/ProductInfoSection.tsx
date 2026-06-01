@@ -21,6 +21,8 @@ export default function ProductInfoSection({
   isDiscounted,
 }: ProductInfoSectionProps) {
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const DESCRIPTION_THRESHOLD = 100;
+  const needsExpansion = description.length > DESCRIPTION_THRESHOLD;
 
   return (
     <div className="px-4 py-4">
@@ -54,32 +56,34 @@ export default function ProductInfoSection({
       <div className="relative">
         <div
           className={`text-sm text-gray-600 leading-7 whitespace-pre-wrap ${
-            !isDescriptionExpanded ? 'max-h-32 overflow-hidden' : ''
+            needsExpansion && !isDescriptionExpanded ? 'max-h-32 overflow-hidden' : ''
           }`}
         >
           {description
             ? description.split('. ').join('.\n\n')
             : '상품 설명이 없습니다.'}
         </div>
-        {!isDescriptionExpanded && description && (
+        {needsExpansion && !isDescriptionExpanded && description && (
           <div className="absolute bottom-0 left-0 right-0 h-12 bg-linear-to-t from-white to-transparent" />
         )}
       </div>
 
-      <button
-        onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
-        className="w-full flex items-center justify-center gap-1 mt-4 text-sm text-gray-500 hover:text-gray-700 font-medium"
-      >
-        {isDescriptionExpanded ? (
-          <>
-            접기 <ChevronUp className="w-4 h-4" />
-          </>
-        ) : (
-          <>
-            더보기 <ChevronDown className="w-4 h-4" />
-          </>
-        )}
-      </button>
+      {needsExpansion && (
+        <button
+          onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+          className="w-full flex items-center justify-center gap-1 mt-4 text-sm text-gray-500 hover:text-gray-700 font-medium"
+        >
+          {isDescriptionExpanded ? (
+            <>
+              접기 <ChevronUp className="w-4 h-4" />
+            </>
+          ) : (
+            <>
+              더보기 <ChevronDown className="w-4 h-4" />
+            </>
+          )}
+        </button>
+      )}
     </div>
   );
 }

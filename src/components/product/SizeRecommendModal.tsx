@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
-import { X, Ruler, ChevronRight, PawPrint } from 'lucide-react';
+import { X, ChevronRight, PawPrint } from 'lucide-react';
 import { toast } from 'sonner';
 import { getMyPets, getSizeRecommendation } from '../../services/petApi';
 import type { PetResponse, SizeRecommendationResponse } from '../../types/pet';
 
 const FIT_COLORS: Record<string, string> = {
   '딱 맞음': 'bg-green-100 text-green-700',
-  '여유있음': 'bg-blue-100 text-blue-700',
-  '타이트': 'bg-orange-100 text-orange-700',
+  여유있음: 'bg-blue-100 text-blue-700',
+  타이트: 'bg-orange-100 text-orange-700',
 };
 
 interface SizeRecommendModalProps {
@@ -83,9 +83,10 @@ export default function SizeRecommendModal({
       <div className="relative w-full bg-white rounded-t-2xl pb-[env(safe-area-inset-bottom)]">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <div className="flex items-center gap-2">
-            <Ruler className="w-5 h-5 text-[#14314F]" />
-            <h2 className="text-lg font-bold text-gray-900">우리 아이 사이즈 추천</h2>
+          <div className="flex items-center">
+            <h2 className="text-lg font-bold text-gray-900">
+              맞춤 사이즈 추천
+            </h2>
           </div>
           <button
             onClick={handleClose}
@@ -100,7 +101,10 @@ export default function SizeRecommendModal({
           {step === 'select' && (
             <div>
               <p className="text-sm text-gray-500 mb-4">
-                <span className="font-semibold text-gray-800">{productName}</span>의 사이즈를 추천받을 반려견을 선택하세요
+                <span className="font-semibold text-gray-800">
+                  {productName}
+                </span>
+                의 사이즈를 추천받을 반려견을 선택하세요
               </p>
 
               {isPetsLoading ? (
@@ -110,8 +114,12 @@ export default function SizeRecommendModal({
               ) : pets.length === 0 ? (
                 <div className="text-center py-8">
                   <PawPrint className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-                  <p className="text-gray-500 text-sm font-medium">등록된 반려견이 없어요</p>
-                  <p className="text-xs text-gray-400 mt-1">마이페이지에서 반려견을 먼저 등록해주세요</p>
+                  <p className="text-gray-500 text-sm font-medium">
+                    등록된 반려견이 없어요
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    마이페이지에서 반려견을 먼저 등록해주세요
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -124,13 +132,19 @@ export default function SizeRecommendModal({
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-full overflow-hidden bg-gray-100 shrink-0 flex items-center justify-center">
                           {pet.imageUrl ? (
-                            <img src={pet.imageUrl} alt={pet.name} className="w-full h-full object-cover" />
+                            <img
+                              src={pet.imageUrl}
+                              alt={pet.name}
+                              className="w-full h-full object-cover"
+                            />
                           ) : (
                             <PawPrint className="w-4 h-4 text-gray-300" />
                           )}
                         </div>
                         <div>
-                          <p className="font-semibold text-gray-900 text-sm">{pet.name}</p>
+                          <p className="font-semibold text-gray-900 text-sm">
+                            {pet.name}
+                          </p>
                           <p className="text-xs text-gray-400 mt-0.5">
                             {pet.breed} · 가슴 {pet.chestSize}cm
                           </p>
@@ -161,10 +175,14 @@ export default function SizeRecommendModal({
               <div className="flex items-center gap-4 bg-[#14314F] text-white rounded-2xl px-5 py-4 mb-5">
                 <div>
                   <p className="text-xs opacity-70 mb-0.5">추천 사이즈</p>
-                  <p className="text-4xl font-black">{result.recommendedSize}</p>
+                  <p className="text-4xl font-black">
+                    {result.recommendedSize}
+                  </p>
                 </div>
                 <div className="flex-1">
-                  <p className="text-xs opacity-80 leading-relaxed">{result.reasoning}</p>
+                  <p className="text-xs opacity-80 leading-relaxed">
+                    {result.reasoning}
+                  </p>
                 </div>
               </div>
 
@@ -173,9 +191,15 @@ export default function SizeRecommendModal({
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="bg-gray-50">
-                      <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500">사이즈</th>
-                      <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500">핏</th>
-                      <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500">설명</th>
+                      <th className="px-3 py-2.5 text-left text-xs font-semibold text-gray-500 w-16">
+                        사이즈
+                      </th>
+                      <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-500">
+                        핏
+                      </th>
+                      <th className="px-3 py-2.5 text-left text-xs font-semibold text-gray-500">
+                        설명
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -184,18 +208,19 @@ export default function SizeRecommendModal({
                         key={option.size}
                         className={`border-t border-gray-100 ${option.size === result.recommendedSize ? 'bg-blue-50' : ''}`}
                       >
-                        <td className="px-4 py-3 font-bold text-gray-800">
+                        <td className="px-3 py-3 font-bold text-gray-800">
                           {option.size}
-                          {option.size === result.recommendedSize && (
-                            <span className="ml-1 text-[10px] text-[#14314F]">추천</span>
-                          )}
                         </td>
-                        <td className="px-4 py-3">
-                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${FIT_COLORS[option.fit] ?? 'bg-gray-100 text-gray-600'}`}>
+                        <td className="px-3 py-3">
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-xs font-medium ${FIT_COLORS[option.fit] ?? 'bg-gray-100 text-gray-600'}`}
+                          >
                             {option.fit}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-xs text-gray-500">{option.description}</td>
+                        <td className="px-3 py-3 text-xs text-gray-500">
+                          {option.description}
+                        </td>
                       </tr>
                     ))}
                   </tbody>

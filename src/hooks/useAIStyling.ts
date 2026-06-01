@@ -217,6 +217,7 @@ export function useAIStyling() {
     myPets,
     isProcessing,
     resultImage,
+    resultImageUrl,
     showOnboarding,
     showProductModal,
     setShowOnboarding,

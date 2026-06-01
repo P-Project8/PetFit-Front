@@ -11,8 +11,9 @@ import MenuList from '../components/mypage/MenuList';
 import OrderHistoryTab from '../components/mypage/OrderHistoryTab';
 import ProfileEditTab from '../components/mypage/ProfileEditTab';
 import PetListTab from '../components/mypage/PetListTab';
+import MyGalleryTab from '../components/mypage/MyGalleryTab';
 
-type TabType = 'main' | 'orders' | 'profile' | 'faq' | 'notices' | 'inquiries' | 'pets';
+type TabType = 'main' | 'orders' | 'profile' | 'faq' | 'notices' | 'inquiries' | 'pets' | 'gallery';
 
 export default function MyPage() {
   const navigate = useNavigate();
@@ -48,6 +49,7 @@ export default function MyPage() {
         />
 
         <MenuList
+          onGalleryClick={() => setCurrentTab('gallery')}
           onPetsClick={() => setCurrentTab('pets')}
           onOrdersClick={() => setCurrentTab('orders')}
           onInquiriesClick={() => setCurrentTab('inquiries')}
@@ -57,6 +59,11 @@ export default function MyPage() {
         />
       </div>
     );
+  }
+
+  // 스타일링 갤러리 탭
+  if (currentTab === 'gallery') {
+    return <MyGalleryTab onBack={() => setCurrentTab('main')} />;
   }
 
   // 반려견 탭

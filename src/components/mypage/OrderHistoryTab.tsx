@@ -13,6 +13,7 @@ const ORDER_STATUS_LABEL: Record<string, string> = {
   CANCELLED: '주문 취소',
 };
 import ReviewWriteModal from '../product/ReviewWriteModal';
+import ConfirmModal from '../common/ConfirmModal';
 
 interface StoredReview {
   reviewId: number;
@@ -33,6 +34,7 @@ export default function OrderHistoryTab({ onBack }: OrderHistoryTabProps) {
   const [reviewedItems, setReviewedItems] = useState<
     Record<string, StoredReview>
   >({});
+  const [cancelTargetId, setCancelTargetId] = useState<number | null>(null);
   const [selectedItemForReview, setSelectedItemForReview] = useState<{
     productId: number;
     orderId: number;
@@ -112,16 +114,18 @@ export default function OrderHistoryTab({ onBack }: OrderHistoryTabProps) {
     });
   }
 
-  async function handleCancelOrder(orderId: number) {
-    if (!window.confirm('주문을 취소하시겠습니까?')) return;
+  async function confirmCancelOrder() {
+    if (cancelTargetId === null) return;
     try {
-      await cancelOrder(orderId);
-      setOrders((prev) => prev.filter((o) => o.id !== orderId));
+      await cancelOrder(cancelTargetId);
+      setOrders((prev) => prev.filter((o) => o.id !== cancelTargetId));
       toast.success('주문이 취소되었습니다.');
     } catch (err) {
       const message =
         err instanceof Error ? err.message : '주문 취소에 실패했습니다.';
       toast.error(message);
+    } finally {
+      setCancelTargetId(null);
     }
   }
 
@@ -167,7 +171,7 @@ export default function OrderHistoryTab({ onBack }: OrderHistoryTabProps) {
                   </div>
                   {order.status === 'PENDING' && (
                     <button
-                      onClick={() => handleCancelOrder(order.id)}
+                      onClick={() => setCancelTargetId(order.id)}
                       className="text-xs text-red-500 border border-red-400 rounded px-2 py-0.5 hover:bg-red-50 transition-colors"
                     >
                       주문 취소
@@ -241,6 +245,16 @@ export default function OrderHistoryTab({ onBack }: OrderHistoryTabProps) {
           </div>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={cancelTargetId !== null}
+        title="주문 취소"
+        message="주문을 취소하시겠습니까?"
+        confirmText="취소하기"
+        cancelText="닫기"
+        onConfirm={confirmCancelOrder}
+        onCancel={() => setCancelTargetId(null)}
+      />
 
       {selectedItemForReview && (
         <ReviewWriteModal
