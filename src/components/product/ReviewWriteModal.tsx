@@ -13,7 +13,7 @@ import {
   FormMessage,
 } from '../ui/form';
 import { Button } from '../ui/button';
-import { createReview } from '../../services/api';
+import { createReview, updateReview } from '../../services/api';
 
 const reviewSchema = z.object({
   rating: z.number().min(1, '별점을 선택해주세요.').max(5),
@@ -26,25 +26,32 @@ interface ReviewWriteModalProps {
   productId: number;
   orderId: number;
   productName: string;
+  reviewId?: number;
+  defaultRating?: number;
+  defaultContent?: string;
   onClose: () => void;
-  onSuccess?: () => void;
+  onSuccess?: (reviewId: number, rating: number, content: string) => void;
 }
 
 export default function ReviewWriteModal({
   productId,
   orderId,
   productName,
+  reviewId,
+  defaultRating = 0,
+  defaultContent = '',
   onClose,
   onSuccess,
 }: ReviewWriteModalProps) {
+  const isEditMode = reviewId !== undefined;
   const [isLoading, setIsLoading] = useState(false);
   const [hoveredStar, setHoveredStar] = useState<number | null>(null);
 
   const form = useForm<ReviewFormValues>({
     resolver: zodResolver(reviewSchema),
     defaultValues: {
-      rating: 0,
-      content: '',
+      rating: defaultRating,
+      content: defaultContent,
     },
   });
 
@@ -53,17 +60,24 @@ export default function ReviewWriteModal({
   async function handleSubmit(values: ReviewFormValues) {
     setIsLoading(true);
     try {
-      await createReview({
-        productId,
-        orderId,
-        rating: values.rating,
-        content: values.content,
-      });
-      toast.success('리뷰가 등록되었습니다.');
-      onSuccess?.();
+      if (isEditMode) {
+        await updateReview(reviewId, { rating: values.rating, content: values.content });
+        toast.success('리뷰가 수정되었습니다.');
+        onSuccess?.(reviewId, values.rating, values.content);
+      } else {
+        const created = await createReview({
+          productId,
+          orderId,
+          rating: values.rating,
+          content: values.content,
+        });
+        toast.success('리뷰가 등록되었습니다.');
+        onSuccess?.(created.id, values.rating, values.content);
+      }
       onClose();
-    } catch {
-      toast.error('리뷰 등록에 실패했습니다.');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -94,7 +108,9 @@ export default function ReviewWriteModal({
     <div className="fixed inset-0 bg-black/50 z-100 flex items-end sm:items-center justify-center">
       <div className="bg-white w-full sm:max-w-md sm:rounded-t-2xl rounded-t-2xl max-h-screen overflow-y-auto">
         <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">리뷰 작성</h2>
+          <h2 className="text-lg font-semibold text-gray-900">
+            {isEditMode ? '리뷰 수정' : '리뷰 작성'}
+          </h2>
           <button
             onClick={onClose}
             className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
@@ -151,7 +167,7 @@ export default function ReviewWriteModal({
                 disabled={isLoading}
                 className="w-full bg-[#14314F] hover:bg-[#0d1f33] h-11"
               >
-                {isLoading ? '등록 중...' : '리뷰 등록'}
+                {isLoading ? (isEditMode ? '수정 중...' : '등록 중...') : (isEditMode ? '리뷰 수정' : '리뷰 등록')}
               </Button>
             </form>
           </Form>

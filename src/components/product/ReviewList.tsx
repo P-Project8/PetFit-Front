@@ -55,11 +55,6 @@ export default function ReviewList({
     return userId[0] + '*'.repeat(userId.length - 1);
   }
 
-  // "2024-11-01T12:00:00" → "2024.11.01"
-  function formatDate(createdAt: string) {
-    return createdAt.slice(0, 10).replace(/-/g, '.');
-  }
-
   function renderStars(starRating: number) {
     return (
       <div className="flex gap-px">
@@ -111,14 +106,11 @@ export default function ReviewList({
               key={review.id}
               className="border-b border-gray-100 pb-4 last:border-b-0"
             >
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-gray-900">
-                    {maskUserId(review.userId)}
-                  </span>
-                  {renderStars(review.rating)}
-                </div>
-                <span className="text-xs text-gray-400">{formatDate(review.createdAt)}</span>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-sm font-semibold text-gray-900">
+                  {maskUserId(review.userId)}
+                </span>
+                {renderStars(review.rating)}
               </div>
 
               <p className="text-sm text-gray-700 leading-relaxed">{review.content}</p>

@@ -3,7 +3,6 @@ import { X, Plus, Minus, ChevronDown, ChevronUp } from 'lucide-react';
 import type { ProductDetail } from '../../services/api';
 import { useCartStore } from '../../store/cartStore';
 import { toast } from 'sonner';
-import CheckoutModal from '../order/CheckoutModal';
 
 interface ProductOptionModalProps {
   product: ProductDetail;
@@ -27,7 +26,6 @@ export default function ProductOptionModal({
   const [options, setOptions] = useState<SelectedOption[]>([]);
   const [isSizeOpen, setIsSizeOpen] = useState(false);
   const [isColorOpen, setIsColorOpen] = useState(false);
-  const [showCheckout, setShowCheckout] = useState(false);
   const optionIdCounter = useRef(0);
   // options[] 배열에서 중복 없는 사이즈/색상 추출
   const sizes = [...new Set(product.options.map((o) => o.size))];
@@ -106,8 +104,6 @@ export default function ProductOptionModal({
       return;
     }
 
-    // 선택한 모든 옵션을 순차적으로 장바구니에 추가
-    // product.options에서 size+color가 일치하는 항목을 찾아 productOptionId를 같이 전달
     for (const option of options) {
       const matched = product.options.find(
         (o) => o.size === option.size && o.color === option.color,
@@ -116,23 +112,6 @@ export default function ProductOptionModal({
     }
 
     onClose();
-  }
-
-  async function handlePurchase() {
-    if (options.length === 0) {
-      toast('옵션을 선택해주세요.');
-      return;
-    }
-
-    // 선택한 옵션을 장바구니에 담은 후 체크아웃 진행
-    for (const option of options) {
-      const matched = product.options.find(
-        (o) => o.size === option.size && o.color === option.color,
-      );
-      await addItem(product.id, matched?.id, option.quantity);
-    }
-
-    setShowCheckout(true);
   }
 
   const totalPrice = options.reduce(
@@ -268,40 +247,21 @@ export default function ProductOptionModal({
             </div>
           )}
           {/* Buttons */}
-          <div className="flex gap-2">
-            <button
-              onClick={handleAddToCart}
-              disabled={options.length === 0}
-              className={`flex-1 py-3 rounded-lg font-semibold text-base transition-colors ${
-                options.length > 0
-                  ? 'bg-gray-100 text-[#14314F] active:bg-gray-50'
-                  : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-              }`}
-            >
-              장바구니
-            </button>
-            <button
-              onClick={handlePurchase}
-              disabled={options.length === 0}
-              className={`flex-1 py-3 rounded-lg font-semibold text-base transition-colors ${
-                options.length > 0
-                  ? 'bg-[#14314F] text-white active:bg-[#0d1f33]'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              }`}
-            >
-              구매하기
-            </button>
-          </div>
+          <button
+            onClick={handleAddToCart}
+            disabled={options.length === 0}
+            className={`w-full py-3 rounded-lg font-semibold text-base transition-colors ${
+              options.length > 0
+                ? 'bg-[#14314F] text-white active:bg-[#0d1f33]'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
+          >
+            구매하기
+          </button>
         </div>
       </div>
     </div>
 
-    {showCheckout && (
-      <CheckoutModal
-        onClose={() => setShowCheckout(false)}
-        onSuccess={onClose}
-      />
-    )}
     </>
   );
 }

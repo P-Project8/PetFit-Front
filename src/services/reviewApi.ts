@@ -13,7 +13,7 @@ export interface ReviewItem {
   rating: number;
   content: string;
   imageUrl: string | null;
-  createdAt: string;
+  createdAt: string | null; // API 미지원, UI에서 미사용
 }
 
 // 리뷰 작성 요청
