@@ -62,7 +62,7 @@ export function useAIStyling() {
             ? await filterProducts({ categoryId, size: 8 })
             : await getProducts({ size: 8 });
         } else {
-          result = await getProducts({ size: 8, sort: 'reviewCount,desc' });
+          result = await getProducts({ size: 8, sort: 'createdAt,desc' });
         }
         const filtered = result.content
           .filter((p) => p.id !== selectedProduct?.id)

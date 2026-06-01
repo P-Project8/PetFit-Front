@@ -1,37 +1,8 @@
-import { useState } from 'react';
-import { X, Ruler, ChevronRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { X, Ruler, ChevronRight, PawPrint } from 'lucide-react';
+import { toast } from 'sonner';
+import { getMyPets, getSizeRecommendation } from '../../services/petApi';
 import type { PetResponse, SizeRecommendationResponse } from '../../types/pet';
-
-const MOCK_PETS: PetResponse[] = [
-  {
-    id: 1,
-    name: '콩이',
-    breed: '말티즈',
-    age: 3,
-    weight: 2.8,
-    neckSize: 22,
-    chestSize: 34,
-    backLength: 28,
-    createdAt: '',
-    updatedAt: '',
-  },
-];
-
-function buildMockResult(pet: PetResponse, productId: number, productName: string): SizeRecommendationResponse {
-  return {
-    petId: pet.id,
-    petName: pet.name,
-    productId,
-    productName,
-    recommendedSize: 'S',
-    reasoning: `${pet.name}의 가슴 둘레(${pet.chestSize}cm)를 기준으로 분석했을 때, S 사이즈가 가장 편안한 착용감을 제공할 것으로 예측됩니다.`,
-    optionFits: [
-      { size: 'XS', fit: '타이트', description: '가슴 둘레 기준 약 2cm 작음' },
-      { size: 'S', fit: '딱 맞음', description: '가슴 둘레 기준 최적 사이즈' },
-      { size: 'M', fit: '여유있음', description: '가슴 둘레 기준 약 3cm 큼' },
-    ],
-  };
-}
 
 const FIT_COLORS: Record<string, string> = {
   '딱 맞음': 'bg-green-100 text-green-700',
@@ -52,21 +23,44 @@ export default function SizeRecommendModal({
   productId,
   productName,
 }: SizeRecommendModalProps) {
+  const [pets, setPets] = useState<PetResponse[]>([]);
+  const [isPetsLoading, setIsPetsLoading] = useState(false);
   const [step, setStep] = useState<'select' | 'loading' | 'result'>('select');
   const [selectedPet, setSelectedPet] = useState<PetResponse | null>(null);
   const [result, setResult] = useState<SizeRecommendationResponse | null>(null);
 
+  useEffect(() => {
+    if (!isOpen) return;
+
+    async function fetchPets() {
+      setIsPetsLoading(true);
+      try {
+        const data = await getMyPets();
+        setPets(data);
+      } catch {
+        toast.error('반려견 목록을 불러오지 못했습니다.');
+      } finally {
+        setIsPetsLoading(false);
+      }
+    }
+
+    fetchPets();
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
-  function handlePetSelect(pet: PetResponse) {
+  async function handlePetSelect(pet: PetResponse) {
     setSelectedPet(pet);
     setStep('loading');
-
-    // mock: 로딩 시뮬레이션
-    setTimeout(() => {
-      setResult(buildMockResult(pet, productId, productName));
+    try {
+      const data = await getSizeRecommendation(pet.id, productId);
+      setResult(data);
       setStep('result');
-    }, 1200);
+    } catch {
+      toast.error('사이즈 추천에 실패했습니다.');
+      setStep('select');
+      setSelectedPet(null);
+    }
   }
 
   function handleClose() {
@@ -109,24 +103,38 @@ export default function SizeRecommendModal({
                 <span className="font-semibold text-gray-800">{productName}</span>의 사이즈를 추천받을 반려견을 선택하세요
               </p>
 
-              {MOCK_PETS.length === 0 ? (
+              {isPetsLoading ? (
+                <div className="flex justify-center py-8">
+                  <div className="w-7 h-7 border-4 border-gray-200 border-t-[#14314F] rounded-full animate-spin" />
+                </div>
+              ) : pets.length === 0 ? (
                 <div className="text-center py-8">
-                  <p className="text-gray-500 text-sm">등록된 반려견이 없어요</p>
+                  <PawPrint className="w-10 h-10 text-gray-200 mx-auto mb-3" />
+                  <p className="text-gray-500 text-sm font-medium">등록된 반려견이 없어요</p>
                   <p className="text-xs text-gray-400 mt-1">마이페이지에서 반려견을 먼저 등록해주세요</p>
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {MOCK_PETS.map((pet) => (
+                  {pets.map((pet) => (
                     <button
                       key={pet.id}
                       onClick={() => handlePetSelect(pet)}
                       className="w-full flex items-center justify-between px-4 py-3.5 border border-gray-200 rounded-xl hover:border-[#14314F] hover:bg-blue-50 transition-all text-left"
                     >
-                      <div>
-                        <p className="font-semibold text-gray-900 text-sm">{pet.name}</p>
-                        <p className="text-xs text-gray-400 mt-0.5">
-                          {pet.breed} · 가슴 {pet.chestSize}cm
-                        </p>
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full overflow-hidden bg-gray-100 shrink-0 flex items-center justify-center">
+                          {pet.imageUrl ? (
+                            <img src={pet.imageUrl} alt={pet.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <PawPrint className="w-4 h-4 text-gray-300" />
+                          )}
+                        </div>
+                        <div>
+                          <p className="font-semibold text-gray-900 text-sm">{pet.name}</p>
+                          <p className="text-xs text-gray-400 mt-0.5">
+                            {pet.breed} · 가슴 {pet.chestSize}cm
+                          </p>
+                        </div>
                       </div>
                       <ChevronRight className="w-4 h-4 text-gray-400" />
                     </button>
