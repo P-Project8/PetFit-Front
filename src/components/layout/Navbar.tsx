@@ -9,6 +9,7 @@ export function Navbar() {
   const hideNavbar =
     location.pathname.startsWith('/product/') ||
     location.pathname === '/cart' ||
+    location.pathname === '/checkout' ||
     location.pathname === '/ai-styling' ||
     location.pathname === '/my' ||
     location.pathname === '/login' ||
@@ -16,7 +17,7 @@ export function Navbar() {
 
   const navItems = [
     { id: 'home', icon: Home, label: '홈', location: '/' },
-    { id: 'gallery', icon: Images, label: '갤러리', location: '/gallery' },
+    { id: 'gallery', icon: Images, label: '피드', location: '/gallery' },
     { id: 'styling', icon: Shirt, label: '스타일링', location: '/ai-styling' },
     { id: 'wishlist', icon: Heart, label: '찜', location: '/wish' },
     { id: 'mypage', icon: User, label: '마이페이지', location: '/my' },

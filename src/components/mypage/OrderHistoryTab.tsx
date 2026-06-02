@@ -6,6 +6,11 @@ import type { OrderResponse, OrderItem } from '../../services/api';
 import { useAuthStore } from '../../store/authStore';
 import { toast } from 'sonner';
 
+// ─── DEV ONLY: 백엔드 배송 상태 연동 완료 후 아래 두 줄 삭제 ───────────────
+// 배송완료로 강제할 주문 ID를 여기에 추가 (예: [12, 34, 56])
+const DEV_DELIVERED_ORDER_IDS = new Set<number>([6]);
+// ────────────────────────────────────────────────────────────────────────────
+
 const ORDER_STATUS_LABEL: Record<string, string> = {
   PENDING: '결제 완료',
   SHIPPING: '배송 중',
@@ -49,6 +54,7 @@ export default function OrderHistoryTab({ onBack }: OrderHistoryTabProps) {
     try {
       const result = await getOrders({ size: 20, sort: 'id,desc' });
       setOrders(result.content);
+      console.log('주문내역:', result.content);
       return result.content;
     } catch {
       setOrders([]);
@@ -158,90 +164,101 @@ export default function OrderHistoryTab({ onBack }: OrderHistoryTabProps) {
           </div>
         ) : (
           <div className="space-y-3">
-            {orders.map((order) => (
-              <div key={order.id} className="bg-white rounded-xl p-4 shadow-sm">
-                <div className="flex items-center justify-between mb-3 pb-3 border-b border-gray-100">
-                  <div className="flex gap-2 items-center">
-                    <span className="text-xs text-gray-500">
-                      {formatDate(order.createdAt)}
-                    </span>
-                    <span className="text-xs font-medium text-[#14314F]">
-                      {ORDER_STATUS_LABEL[order.status] ?? order.status}
+            {orders.map((order) => {
+              // DEV ONLY: 실제 연동 후 아래 한 줄 삭제하고 order.status 직접 사용
+              const status = DEV_DELIVERED_ORDER_IDS.has(order.id)
+                ? 'DELIVERED'
+                : order.status;
+              return (
+                <div
+                  key={order.id}
+                  className="bg-white rounded-xl p-4 shadow-sm"
+                >
+                  <div className="flex items-center justify-between mb-3 pb-3 border-b border-gray-100">
+                    <div className="flex gap-2 items-center">
+                      <span className="text-xs text-gray-500">
+                        {formatDate(order.createdAt)}
+                      </span>
+                      <span className="text-xs font-medium text-[#14314F]">
+                        {ORDER_STATUS_LABEL[status] ?? status}
+                      </span>
+                    </div>
+                    {status === 'PENDING' && (
+                      <button
+                        onClick={() => setCancelTargetId(order.id)}
+                        className="text-xs text-red-500 border border-red-400 rounded px-2 py-0.5 hover:bg-red-50 transition-colors"
+                      >
+                        주문 취소
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="space-y-4">
+                    {order.items.map((item) => {
+                      const hasReview = Boolean(
+                        reviewedItems[String(item.productId)],
+                      );
+                      return (
+                        <div key={item.id}>
+                          <div
+                            className="flex gap-3 cursor-pointer"
+                            onClick={() =>
+                              navigate(`/product/${item.productId}`)
+                            }
+                          >
+                            <div className="w-20 h-20 bg-gray-200 rounded-lg overflow-hidden shrink-0">
+                              {item.thumbnailUrl && (
+                                <img
+                                  src={item.thumbnailUrl}
+                                  alt={item.productName}
+                                  className="w-full h-full object-cover"
+                                />
+                              )}
+                            </div>
+
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-sm font-medium text-gray-900 mb-1 truncate">
+                                {item.productName}
+                              </h3>
+                              <p className="text-xs text-gray-400 mb-1">
+                                {item.size} / {item.color} / {item.quantity}개
+                              </p>
+                              <span className="text-sm font-bold text-gray-900">
+                                {item.price.toLocaleString()}원
+                              </span>
+                            </div>
+                          </div>
+
+                          {status === 'DELIVERED' && (
+                            <div className="mt-3 pt-3 border-t border-gray-100">
+                              <button
+                                onClick={() =>
+                                  handleOpenReviewModal(item, order.id)
+                                }
+                                className={`w-full py-2.5 text-sm font-medium rounded-lg transition-colors ${
+                                  hasReview
+                                    ? 'bg-white text-[#14314F] border border-[#14314F] hover:bg-gray-50'
+                                    : 'bg-[#14314F] text-white hover:bg-[#0d1f33]'
+                                }`}
+                              >
+                                {hasReview ? '리뷰 수정하기' : '리뷰 작성하기'}
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="mt-3 pt-3 border-t border-gray-100 flex justify-between items-center">
+                    <span className="text-xs text-gray-500">총 결제금액</span>
+                    <span className="text-sm font-bold text-gray-900">
+                      {order.totalPrice.toLocaleString()}원
                     </span>
                   </div>
-                  {order.status === 'PENDING' && (
-                    <button
-                      onClick={() => setCancelTargetId(order.id)}
-                      className="text-xs text-red-500 border border-red-400 rounded px-2 py-0.5 hover:bg-red-50 transition-colors"
-                    >
-                      주문 취소
-                    </button>
-                  )}
                 </div>
-
-                <div className="space-y-4">
-                  {order.items.map((item) => {
-                    const hasReview = Boolean(
-                      reviewedItems[String(item.productId)],
-                    );
-                    return (
-                      <div key={item.id}>
-                        <div
-                          className="flex gap-3 cursor-pointer"
-                          onClick={() => navigate(`/product/${item.productId}`)}
-                        >
-                          <div className="w-20 h-20 bg-gray-200 rounded-lg overflow-hidden shrink-0">
-                            {item.thumbnailUrl && (
-                              <img
-                                src={item.thumbnailUrl}
-                                alt={item.productName}
-                                className="w-full h-full object-cover"
-                              />
-                            )}
-                          </div>
-
-                          <div className="flex-1 min-w-0">
-                            <h3 className="text-sm font-medium text-gray-900 mb-1 truncate">
-                              {item.productName}
-                            </h3>
-                            <p className="text-xs text-gray-400 mb-1">
-                              {item.size} / {item.color} / {item.quantity}개
-                            </p>
-                            <span className="text-sm font-bold text-gray-900">
-                              {item.price.toLocaleString()}원
-                            </span>
-                          </div>
-                        </div>
-
-                        {order.status === 'DELIVERED' && (
-                          <div className="mt-3 pt-3 border-t border-gray-100">
-                            <button
-                              onClick={() =>
-                                handleOpenReviewModal(item, order.id)
-                              }
-                              className={`w-full py-2.5 text-sm font-medium rounded-lg transition-colors ${
-                                hasReview
-                                  ? 'bg-white text-[#14314F] border border-[#14314F] hover:bg-gray-50'
-                                  : 'bg-[#14314F] text-white hover:bg-[#0d1f33]'
-                              }`}
-                            >
-                              {hasReview ? '리뷰 수정하기' : '리뷰 작성하기'}
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <div className="mt-3 pt-3 border-t border-gray-100 flex justify-between items-center">
-                  <span className="text-xs text-gray-500">총 결제금액</span>
-                  <span className="text-sm font-bold text-gray-900">
-                    {order.totalPrice.toLocaleString()}원
-                  </span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

@@ -58,7 +58,7 @@ export default function MyGalleryTab({ onBack }: MyGalleryTabProps) {
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <Images className="w-12 h-12 text-gray-200 mb-4" />
           <p className="text-gray-500 font-medium">공유한 스타일링이 없어요</p>
-          <p className="text-sm text-gray-400 mt-1">AI 스타일링 결과를 갤러리에 공유해보세요!</p>
+          <p className="text-sm text-gray-400 mt-1">AI 스타일링 결과를 피드에 공유해보세요!</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-0.5 mt-0.5">

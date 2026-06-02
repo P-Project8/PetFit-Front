@@ -1,4 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
+import type { SimilarPetCurationProduct } from '../../types/pet';
+
+// TODO: 실제 상품 데이터 연동 후 제거
+const MOCK_PRODUCTS: SimilarPetCurationProduct[] = [
+  { productId: 1, name: '강아지 체크 패턴 후드집업', price: 28000, thumbnailUrl: 'https://placehold.co/200x200?text=후드', orderCount: 142, popularityPercent: 38 },
+  { productId: 2, name: '봄봄 스트라이프 티셔츠', price: 19000, thumbnailUrl: 'https://placehold.co/200x200?text=티셔츠', orderCount: 98, popularityPercent: 26 },
+  { productId: 3, name: '포근한 양털 조끼', price: 32000, thumbnailUrl: 'https://placehold.co/200x200?text=조끼', orderCount: 76, popularityPercent: 20 },
+  { productId: 4, name: '데님 오버롤 올인원', price: 35000, thumbnailUrl: 'https://placehold.co/200x200?text=오버롤', orderCount: 61, popularityPercent: 16 },
+  { productId: 5, name: '캐주얼 맨투맨 스웨트셔츠', price: 24000, thumbnailUrl: 'https://placehold.co/200x200?text=맨투맨', orderCount: 55, popularityPercent: 14 },
+];
 import { Plus, PawPrint } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
@@ -137,19 +147,22 @@ export default function PetListTab({ onBack }: PetListTabProps) {
         setCurationData(result);
       } else {
         const popular = await getProducts({ size: 10, sort: 'createdAt,desc' });
+        const products = popular.content.length > 0
+          ? popular.content.map((p) => ({
+              productId: p.id,
+              name: p.name,
+              price: p.price,
+              thumbnailUrl: p.thumbnailUrl,
+              orderCount: p.reviewCount,
+              popularityPercent: 0,
+            }))
+          : MOCK_PRODUCTS;
         setCurationData({
           petId,
           petName: pet?.name ?? '',
           chestSize: pet?.chestSize ?? 0,
-          similarUserCount: 0,
-          products: popular.content.map((p) => ({
-            productId: p.id,
-            name: p.name,
-            price: p.price,
-            thumbnailUrl: p.thumbnailUrl,
-            orderCount: p.reviewCount,
-            popularityPercent: 0,
-          })),
+          similarUserCount: 32,
+          products,
         });
       }
     } catch {

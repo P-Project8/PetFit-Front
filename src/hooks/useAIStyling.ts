@@ -11,18 +11,23 @@ export function useAIStyling() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const preSelectedProduct = location.state?.selectedProduct as ProductListItem | undefined;
+  const preSelectedProduct = location.state?.selectedProduct as
+    | ProductListItem
+    | undefined;
 
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showProductModal, setShowProductModal] = useState(false);
 
   const [petImage, setPetImage] = useState<string | null>(null);
   const [clothingImage, setClothingImage] = useState<string | null>(null);
-  const [selectedProduct, setSelectedProduct] = useState<ProductListItem | null>(
-    preSelectedProduct || null,
-  );
-  const [selectedPetProfile, setSelectedPetProfile] = useState<PetResponse | null>(null);
+  const [selectedProduct, setSelectedProduct] =
+    useState<ProductListItem | null>(preSelectedProduct || null);
+  const [selectedPetProfile, setSelectedPetProfile] =
+    useState<PetResponse | null>(null);
   const [myPets, setMyPets] = useState<PetResponse[]>([]);
+
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
@@ -31,7 +36,9 @@ export function useAIStyling() {
 
   // 온보딩 체크
   useEffect(() => {
-    const hasSeenOnboarding = localStorage.getItem('ai-styling-onboarding-seen');
+    const hasSeenOnboarding = localStorage.getItem(
+      'ai-styling-onboarding-seen',
+    );
     if (!hasSeenOnboarding) setShowOnboarding(true);
   }, []);
 
@@ -66,10 +73,16 @@ export function useAIStyling() {
         let result;
         if (selectedProduct) {
           const CATEGORY_ID_MAP: Record<string, number> = {
-            outer: 1, top: 2, 'one-piece': 3, muffler: 4,
-            shoes: 5, accessory: 6, etc: 7,
+            outer: 1,
+            top: 2,
+            'one-piece': 3,
+            muffler: 4,
+            shoes: 5,
+            accessory: 6,
+            etc: 7,
           };
-          const categoryId = CATEGORY_ID_MAP[selectedProduct.categoryName?.toLowerCase() ?? ''];
+          const categoryId =
+            CATEGORY_ID_MAP[selectedProduct.categoryName?.toLowerCase() ?? ''];
           result = categoryId
             ? await filterProducts({ categoryId, size: 8 })
             : await getProducts({ size: 8 });
@@ -77,7 +90,9 @@ export function useAIStyling() {
           result = await getProducts({ size: 8, sort: 'createdAt,desc' });
         }
         setSimilarProducts(
-          result.content.filter((p) => p.id !== selectedProduct?.id).slice(0, 4),
+          result.content
+            .filter((p) => p.id !== selectedProduct?.id)
+            .slice(0, 4),
         );
       } catch {
         setSimilarProducts([]);
@@ -106,9 +121,15 @@ export function useAIStyling() {
     reader.readAsDataURL(file);
   }
 
-  function handleProductSelect(product: ProductListItem) {
+  function handleProductSelect(
+    product: ProductListItem,
+    color?: string,
+    size?: string,
+  ) {
     setSelectedProduct(product);
     setClothingImage(product.thumbnailUrl || null);
+    setSelectedColor(color ?? null);
+    setSelectedSize(size ?? null);
   }
 
   async function handleAIStyling() {
@@ -137,10 +158,15 @@ export function useAIStyling() {
       console.error(error);
       const errorMessage = error instanceof Error ? error.message : '';
 
-      if (errorMessage === '강아지나 옷 사진이 아닌 것 같습니다. 다시 확인해주세요.') {
+      if (
+        errorMessage ===
+        '강아지나 옷 사진이 아닌 것 같습니다. 다시 확인해주세요.'
+      ) {
         toast.error(errorMessage);
       } else if (errorMessage.includes('429')) {
-        toast.error('이용 한도가 초과되었습니다. 유료 결제(Billing)가 필요합니다.');
+        toast.error(
+          '이용 한도가 초과되었습니다. 유료 결제(Billing)가 필요합니다.',
+        );
       } else if (errorMessage.includes('404')) {
         toast.error('모델을 찾을 수 없습니다. (지원되지 않는 모델)');
       } else {
@@ -155,6 +181,8 @@ export function useAIStyling() {
     setPetImage(null);
     setClothingImage(null);
     setSelectedProduct(null);
+    setSelectedColor(null);
+    setSelectedSize(null);
     setResultImage(null);
     setResultImageUrl(null);
     setSimilarProducts([]);
@@ -164,7 +192,10 @@ export function useAIStyling() {
     if (!resultImage) return;
     if (navigator.share) {
       navigator
-        .share({ title: 'PetFit AI 스타일링', text: '우리 아이 스타일링 결과를 확인해보세요!' })
+        .share({
+          title: 'PetFit AI 스타일링',
+          text: '우리 아이 스타일링 결과를 확인해보세요!',
+        })
         .catch(() => toast('공유에 실패했습니다.'));
     } else {
       toast('공유 기능을 지원하지 않는 브라우저입니다.');
@@ -188,8 +219,6 @@ export function useAIStyling() {
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-
-      toast.success('이미지가 저장되었습니다!');
     } catch (error) {
       console.error('Download failed:', error);
 
@@ -197,15 +226,23 @@ export function useAIStyling() {
         try {
           const response = await fetch(downloadTarget);
           const blob = await response.blob();
-          const file = new File([blob], `petfit-styling-${Date.now()}.png`, { type: blob.type });
-          await navigator.share({ files: [file], title: 'PetFit 스타일링', text: '우리 아이 AI 스타일링 결과' });
+          const file = new File([blob], `petfit-styling-${Date.now()}.png`, {
+            type: blob.type,
+          });
+          await navigator.share({
+            files: [file],
+            title: 'PetFit 스타일링',
+            text: '우리 아이 AI 스타일링 결과',
+          });
           return;
         } catch {
           // 공유도 실패
         }
       }
 
-      toast.error('이미지 저장에 실패했습니다. 이미지를 길게 눌러 저장해주세요.');
+      toast.error(
+        '이미지 저장에 실패했습니다. 이미지를 길게 눌러 저장해주세요.',
+      );
     }
   }
 
@@ -213,6 +250,8 @@ export function useAIStyling() {
     petImage,
     clothingImage,
     selectedProduct,
+    selectedColor,
+    selectedSize,
     selectedPetProfile,
     myPets,
     isProcessing,

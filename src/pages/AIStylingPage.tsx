@@ -11,6 +11,8 @@ export default function AIStylingPage() {
     petImage,
     clothingImage,
     selectedProduct,
+    selectedColor,
+    selectedSize,
     selectedPetProfile,
     myPets,
     isProcessing,
@@ -24,7 +26,6 @@ export default function AIStylingPage() {
     setSelectedProduct,
     setSelectedPetProfile,
     handlePetImageChange,
-    handleClothingImageChange,
     handleProductSelect,
     handleAIStyling,
     handleReset,
@@ -46,12 +47,13 @@ export default function AIStylingPage() {
             petImage={petImage}
             clothingImage={clothingImage}
             selectedProduct={selectedProduct}
+            selectedColor={selectedColor}
+            selectedSize={selectedSize}
             isProcessing={isProcessing}
             resultImage={resultImage}
             myPets={myPets}
             selectedPetProfile={selectedPetProfile}
             onPetImageChange={handlePetImageChange}
-            onClothingImageChange={handleClothingImageChange}
             onPetImageRemove={() => setPetImage(null)}
             onClothingImageRemove={() => {
               setClothingImage(null);

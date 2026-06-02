@@ -1,11 +1,11 @@
 import {
-  Upload,
   X,
   Plus,
   Shirt,
   HelpCircle,
   PawPrint,
   CircleCheckBig,
+  Upload,
 } from 'lucide-react';
 import type { PetResponse } from '../../types/pet';
 
@@ -13,12 +13,13 @@ interface ImageUploadStepProps {
   petImage: string | null;
   clothingImage: string | null;
   selectedProduct: { id: number; name: string } | null;
+  selectedColor: string | null;
+  selectedSize: string | null;
   isProcessing: boolean;
   resultImage: string | null;
   myPets: PetResponse[];
   selectedPetProfile: PetResponse | null;
   onPetImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onClothingImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onPetImageRemove: () => void;
   onClothingImageRemove: () => void;
   onShowProductModal: () => void;
@@ -31,12 +32,13 @@ export default function ImageUploadStep({
   petImage,
   clothingImage,
   selectedProduct,
+  selectedColor,
+  selectedSize,
   isProcessing,
   resultImage,
   myPets,
   selectedPetProfile,
   onPetImageChange,
-  onClothingImageChange,
   onPetImageRemove,
   onClothingImageRemove,
   onShowProductModal,
@@ -156,24 +158,22 @@ export default function ImageUploadStep({
                         <p className="text-white text-xs font-medium line-clamp-2">
                           {selectedProduct.name}
                         </p>
+                        {(selectedColor || selectedSize) && (
+                          <div className="flex gap-1 mt-1 flex-wrap">
+                            {selectedColor && (
+                              <span className="text-[10px] bg-white/20 text-white px-1.5 py-0.5 rounded-full">
+                                {selectedColor}
+                              </span>
+                            )}
+                            {selectedSize && (
+                              <span className="text-[10px] bg-white/20 text-white px-1.5 py-0.5 rounded-full">
+                                {selectedSize}
+                              </span>
+                            )}
+                          </div>
+                        )}
                       </div>
                     )}
-                  </div>
-                  <div className="relative">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={onClothingImageChange}
-                      className="hidden"
-                      id="clothing-image-input-2"
-                    />
-                    <label
-                      htmlFor="clothing-image-input-2"
-                      className="flex items-center justify-center gap-1 w-full py-2 text-xs text-gray-500 hover:text-gray-700 cursor-pointer transition-colors"
-                    >
-                      <Upload className="w-3 h-3" />
-                      <span>다른 옷 업로드</span>
-                    </label>
                   </div>
                 </>
               ) : (
@@ -187,22 +187,6 @@ export default function ImageUploadStep({
                       <p className="text-xs font-medium">상품 선택</p>
                     </div>
                   </button>
-                  <div className="relative">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={onClothingImageChange}
-                      className="hidden"
-                      id="clothing-image-input"
-                    />
-                    <label
-                      htmlFor="clothing-image-input"
-                      className="flex items-center justify-center gap-1 w-full py-2 text-xs text-gray-500 hover:text-gray-700 cursor-pointer transition-colors"
-                    >
-                      <Upload className="w-3 h-3" />
-                      <span>직접 업로드</span>
-                    </label>
-                  </div>
                 </>
               )}
             </div>

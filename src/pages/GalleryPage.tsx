@@ -28,7 +28,7 @@ export default function GalleryPage() {
 
   return (
     <div className="min-h-screen bg-white pt-12 pb-24">
-      <PageHeader title="Pet Gallery" onBackClick={() => navigate(-1)} />
+      <PageHeader title="피드" onBackClick={() => navigate(-1)} />
 
       {/* 탭 */}
       <div className="flex border-b border-gray-100 sticky top-12 bg-white z-10">

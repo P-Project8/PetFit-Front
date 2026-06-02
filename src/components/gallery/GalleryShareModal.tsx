@@ -27,7 +27,7 @@ export default function GalleryShareModal({
     setIsSharing(true);
     try {
       await createGalleryPost({ resultImageUrl, productId });
-      toast.success('갤러리에 공유되었습니다! 🐾');
+      toast.success('피드에 공유되었습니다! 🐾');
       onClose();
     } catch {
       toast.error('공유에 실패했습니다.');
@@ -43,11 +43,13 @@ export default function GalleryShareModal({
       <div className="relative w-full bg-white rounded-t-2xl pb-[env(safe-area-inset-bottom)]">
         {/* 헤더 */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <div className="flex items-center gap-2">
-            <Share2 className="w-5 h-5 text-[#14314F]" />
-            <h2 className="text-lg font-bold text-gray-900">Pet Gallery에 공유</h2>
+          <div className="flex items-center">
+            <h2 className="text-lg font-bold text-gray-900">피드에 공유</h2>
           </div>
-          <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full transition-colors">
+          <button
+            onClick={onClose}
+            className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+          >
             <X className="w-5 h-5 text-gray-500" />
           </button>
         </div>
@@ -56,11 +58,19 @@ export default function GalleryShareModal({
           {/* 이미지 미리보기 */}
           <div className="flex items-center gap-4">
             <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gray-100 shrink-0">
-              <img src={resultImageUrl} alt="스타일링 결과" className="w-full h-full object-cover" />
+              <img
+                src={resultImageUrl}
+                alt="스타일링 결과"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div>
-              <p className="text-sm font-semibold text-gray-900">AI 스타일링 결과</p>
-              <p className="text-xs text-gray-400 mt-0.5">커뮤니티에 공유하면 다른 반려인들이 볼 수 있어요</p>
+              <p className="text-sm font-semibold text-gray-900">
+                AI 스타일링 결과
+              </p>
+              <p className="text-xs text-gray-400 mt-0.5">
+                커뮤니티에 공유하면 다른 반려인들이 볼 수 있어요
+              </p>
             </div>
           </div>
 
@@ -84,7 +94,7 @@ export default function GalleryShareModal({
             ) : (
               <Share2 className="w-5 h-5" />
             )}
-            {isSharing ? '공유 중...' : '갤러리에 공유하기'}
+            {isSharing ? '공유 중...' : '공유하기'}
           </button>
         </div>
       </div>

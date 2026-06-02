@@ -62,7 +62,7 @@ export default function ResultSection({
           className="py-3 bg-white text-[#14314F] border border-gray-300 font-semibold rounded-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2"
         >
           <Images className="w-4 h-4" />
-          갤러리 공유
+          피드 공유
         </button>
         <button
           onClick={onReset}
