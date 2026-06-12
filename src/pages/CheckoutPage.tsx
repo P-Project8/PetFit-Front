@@ -97,7 +97,6 @@ export default function CheckoutPage() {
         address: pendingValues.address,
       });
       await fetchCart();
-      toast.success('주문이 완료되었습니다!');
       navigate('/my', { replace: true });
     } catch {
       toast.error('주문에 실패했습니다. 다시 시도해주세요.');

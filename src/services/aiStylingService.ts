@@ -1,8 +1,5 @@
-import { generateAIStyling } from './api';
+import { generateAIStyling } from './aiApi';
 import type { AIStylingResult } from './aiApi';
-
-// TODO: 백엔드 API 복구 후 false로 변경
-const USE_MOCK = true;
 
 export interface StylingResult {
   stylingId: number;
@@ -39,15 +36,6 @@ export async function generateStylingImage(
   productId?: number,
   petProfileId?: number,
 ): Promise<StylingResult> {
-  if (USE_MOCK) {
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    return {
-      stylingId: 0,
-      resultImageUrl: '/temp_result.png',
-      resultImageBase64: '',
-    };
-  }
-
   const petImageBase64 = await toBase64(petImage);
   const clothImageBase64 = await toBase64(clothingImage);
 
@@ -61,6 +49,8 @@ export async function generateStylingImage(
   return {
     stylingId: result.stylingId,
     resultImageUrl: result.resultImageUrl,
-    resultImageBase64: `data:image/png;base64,${result.resultImageBase64}`,
+    resultImageBase64: result.resultImageBase64
+      ? `data:image/png;base64,${result.resultImageBase64}`
+      : '',
   };
 }

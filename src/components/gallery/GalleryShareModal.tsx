@@ -1,23 +1,28 @@
 import { useState } from 'react';
 import { X, Share2, Tag } from 'lucide-react';
+import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { createGalleryPost } from '../../services/galleryApi';
 
 interface GalleryShareModalProps {
   isOpen: boolean;
   onClose: () => void;
-  resultImageUrl: string;
+  imageUrl: string;
   productId?: number;
-  productName?: string;
+  stylingId?: number;
+  petProfileId?: number;
 }
 
 export default function GalleryShareModal({
   isOpen,
   onClose,
-  resultImageUrl,
+  imageUrl,
   productId,
-  productName,
+  stylingId,
+  petProfileId,
 }: GalleryShareModalProps) {
+  const navigate = useNavigate();
+  const [caption, setCaption] = useState('');
   const [isSharing, setIsSharing] = useState(false);
 
   if (!isOpen) return null;
@@ -26,9 +31,16 @@ export default function GalleryShareModal({
     if (isSharing) return;
     setIsSharing(true);
     try {
-      await createGalleryPost({ resultImageUrl, productId });
-      toast.success('피드에 공유되었습니다! 🐾');
+      await createGalleryPost({
+        imageUrl,
+        caption: caption.trim() || undefined,
+        productId,
+        stylingId,
+        petProfileId,
+      });
+      toast.success('피드에 공유됐어요!');
       onClose();
+      navigate('/gallery');
     } catch {
       toast.error('공유에 실패했습니다.');
     } finally {
@@ -43,13 +55,8 @@ export default function GalleryShareModal({
       <div className="relative w-full bg-white rounded-t-2xl pb-[env(safe-area-inset-bottom)]">
         {/* 헤더 */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <div className="flex items-center">
-            <h2 className="text-lg font-bold text-gray-900">피드에 공유</h2>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-          >
+          <h2 className="text-lg font-bold text-gray-900">피드에 공유</h2>
+          <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full transition-colors">
             <X className="w-5 h-5 text-gray-500" />
           </button>
         </div>
@@ -58,29 +65,28 @@ export default function GalleryShareModal({
           {/* 이미지 미리보기 */}
           <div className="flex items-center gap-4">
             <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gray-100 shrink-0">
-              <img
-                src={resultImageUrl}
-                alt="스타일링 결과"
-                className="w-full h-full object-cover"
-              />
+              <img src={imageUrl} alt="스타일링 결과" className="w-full h-full object-cover" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-gray-900">
-                AI 스타일링 결과
-              </p>
-              <p className="text-xs text-gray-400 mt-0.5">
-                커뮤니티에 공유하면 다른 반려인들이 볼 수 있어요
-              </p>
+              <p className="text-sm font-semibold text-gray-900">AI 스타일링 결과</p>
+              <p className="text-xs text-gray-400 mt-0.5">커뮤니티에 공유하면 다른 반려인들이 볼 수 있어요</p>
             </div>
           </div>
 
+          {/* 캡션 입력 */}
+          <textarea
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+            maxLength={500}
+            placeholder="한마디 남겨보세요 (선택)"
+            className="w-full h-20 px-3 py-2.5 text-sm border border-gray-200 rounded-xl resize-none focus:outline-none focus:border-[#14314F]"
+          />
+
           {/* 상품 태그 */}
-          {productName && (
+          {productId && (
             <div className="flex items-center gap-2 px-3 py-2.5 bg-blue-50 rounded-xl">
               <Tag className="w-4 h-4 text-[#14314F] shrink-0" />
-              <p className="text-sm text-[#14314F] font-medium truncate">
-                {productName} 자동 태그됨
-              </p>
+              <p className="text-sm text-[#14314F] font-medium">상품이 자동 태그됩니다</p>
             </div>
           )}
 

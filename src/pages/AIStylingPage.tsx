@@ -32,6 +32,7 @@ export default function AIStylingPage() {
     handleDownload,
     getSimilarProducts,
     resultImageUrl,
+    resultStylingId,
     navigate,
   } = useAIStyling();
 
@@ -70,6 +71,8 @@ export default function AIStylingPage() {
           <ResultSection
             resultImage={resultImage}
             resultImageUrl={resultImageUrl ?? undefined}
+            resultStylingId={resultStylingId ?? undefined}
+            petProfileId={selectedPetProfile?.id}
             selectedProduct={selectedProduct}
             similarProducts={similarProducts}
             onDownload={handleDownload}

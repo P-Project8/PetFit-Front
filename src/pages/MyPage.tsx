@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuthStore } from '../store/authStore';
 import { useWishlistStore } from '../store/wishlistStore';
 import { useCartStore } from '../store/cartStore';
 import { logout as apiLogout } from '../services/api';
-import { toast } from 'sonner';
+import { getSubscription } from '../services/subscriptionApi';
 import PageHeader from '../components/layout/PageHeader';
 import ProfileSection from '../components/mypage/ProfileSection';
 import MenuList from '../components/mypage/MenuList';
@@ -12,13 +12,27 @@ import OrderHistoryTab from '../components/mypage/OrderHistoryTab';
 import ProfileEditTab from '../components/mypage/ProfileEditTab';
 import PetListTab from '../components/mypage/PetListTab';
 import MyGalleryTab from '../components/mypage/MyGalleryTab';
+import SubscriptionTab from '../components/mypage/SubscriptionTab';
 
-type TabType = 'main' | 'orders' | 'profile' | 'faq' | 'notices' | 'inquiries' | 'pets' | 'gallery';
+type TabType = 'main' | 'subscription' | 'orders' | 'profile' | 'faq' | 'notices' | 'inquiries' | 'pets' | 'gallery';
 
 export default function MyPage() {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
   const [currentTab, setCurrentTab] = useState<TabType>('main');
+  const [isPremium, setIsPremium] = useState<boolean | undefined>(undefined);
+
+  useEffect(() => {
+    async function fetchSubscription() {
+      try {
+        const sub = await getSubscription();
+        setIsPremium(sub.isPremium);
+      } catch {
+        // 비로그인 등 에러 무시
+      }
+    }
+    fetchSubscription();
+  }, []);
 
   async function handleLogout() {
     try {
@@ -26,7 +40,6 @@ export default function MyPage() {
       useWishlistStore.getState().reset();
       useCartStore.getState().reset();
       useAuthStore.getState().logout();
-      toast.success('로그아웃 되었습니다.');
       navigate('/login');
     } catch {
       useWishlistStore.getState().reset();
@@ -45,10 +58,12 @@ export default function MyPage() {
         <ProfileSection
           name={user?.name || '사용자'}
           email={user?.email || ''}
+          isPremium={isPremium}
           onEditClick={() => setCurrentTab('profile')}
         />
 
         <MenuList
+          onSubscriptionClick={() => setCurrentTab('subscription')}
           onGalleryClick={() => setCurrentTab('gallery')}
           onPetsClick={() => setCurrentTab('pets')}
           onOrdersClick={() => setCurrentTab('orders')}
@@ -58,6 +73,16 @@ export default function MyPage() {
           onLogoutClick={handleLogout}
         />
       </div>
+    );
+  }
+
+  // 구독 관리 탭
+  if (currentTab === 'subscription') {
+    return (
+      <SubscriptionTab
+        onBack={() => setCurrentTab('main')}
+        onPlanChange={(premium) => setIsPremium(premium)}
+      />
     );
   }
 

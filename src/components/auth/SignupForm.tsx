@@ -63,7 +63,6 @@ export default function SignupForm({
         birth: values.birth,
       });
 
-      toast.success('회원가입이 완료되었습니다. 로그인해주세요.');
       onSignupSuccess();
     } catch (error) {
       const apiError = error as ApiException;

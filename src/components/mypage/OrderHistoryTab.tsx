@@ -125,7 +125,6 @@ export default function OrderHistoryTab({ onBack }: OrderHistoryTabProps) {
     try {
       await cancelOrder(cancelTargetId);
       setOrders((prev) => prev.filter((o) => o.id !== cancelTargetId));
-      toast.success('주문이 취소되었습니다.');
     } catch (err) {
       const message =
         err instanceof Error ? err.message : '주문 취소에 실패했습니다.';

@@ -63,14 +63,12 @@ export const useWishlistStore = create<WishlistStore>()((set, get) => ({
             (item) => item.productId !== productId,
           ),
         }));
-        toast.success('찜 목록에서 제거했습니다.');
       } else {
         // 찜 추가 → 서버에서 반환한 WishlistItem으로 wishlistItems 업데이트
         const newItem = await addWishlist(productId);
         set((state) => ({
           wishlistItems: [...state.wishlistItems, newItem],
         }));
-        toast.success('찜 목록에 추가했습니다.');
       }
     } catch {
       // API 실패 시 낙관적 업데이트 rollback

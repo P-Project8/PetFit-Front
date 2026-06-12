@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
-import onboarding1 from '/images/onboarding1.png';
-import onboarding2 from '/images/onboarding2.png';
-import onboarding3 from '/images/onboarding3.png';
+import onboarding1 from '/images/onboarding1.jpg';
+import onboarding2 from '/images/onboarding2.webp';
+import onboarding3 from '/images/onboarding3.jpeg';
 
 interface OnboardingModalProps {
   isOpen: boolean;
@@ -13,6 +13,7 @@ const slides = [
   {
     title: '반려동물 사진 선택',
     description: '스타일링 하고 싶은 강아지의\n사진을 업로드 해주세요',
+    tip: '전신이 보이는 정면 사진일수록\n더 정확한 스타일링 결과를 얻을 수 있어요',
     image: onboarding1,
     step: '1/3',
   },
@@ -97,6 +98,16 @@ export default function OnboardingModal({
           <p className="text-sm text-gray-600 whitespace-pre-line leading-relaxed">
             {slides[currentSlide].description}
           </p>
+
+          {/* Tip */}
+          {slides[currentSlide].tip && (
+            <div className="mt-4 px-4 py-3 bg-blue-50 rounded-xl text-left">
+              <p className="text-xs font-semibold text-blue-600 mb-1">촬영 팁</p>
+              <p className="text-xs text-blue-500 whitespace-pre-line leading-relaxed">
+                {slides[currentSlide].tip}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Dots */}

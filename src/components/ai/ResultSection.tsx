@@ -10,7 +10,9 @@ import type { SimilarPetCurationResponse } from '../../types/pet';
 interface ResultSectionProps {
   resultImage: string;
   resultImageUrl?: string;
-  selectedProduct: { id: number; name: string } | null;
+  resultStylingId?: number;
+  petProfileId?: number;
+  selectedProduct: { id: number; name: string; thumbnailUrl?: string } | null;
   similarProducts: ProductListItem[];
   curationData?: SimilarPetCurationResponse;
   onDownload: () => void;
@@ -22,6 +24,8 @@ interface ResultSectionProps {
 export default function ResultSection({
   resultImage,
   resultImageUrl,
+  resultStylingId,
+  petProfileId,
   selectedProduct,
   similarProducts,
   curationData,
@@ -105,9 +109,10 @@ export default function ResultSection({
       <GalleryShareModal
         isOpen={showShareModal}
         onClose={() => setShowShareModal(false)}
-        resultImageUrl={resultImageUrl || resultImage}
+        imageUrl={resultImageUrl || resultImage}
         productId={selectedProduct?.id}
-        productName={selectedProduct?.name}
+        stylingId={resultStylingId}
+        petProfileId={petProfileId}
       />
     </div>
   );

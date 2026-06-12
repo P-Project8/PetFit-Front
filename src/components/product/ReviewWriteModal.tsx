@@ -62,7 +62,6 @@ export default function ReviewWriteModal({
     try {
       if (isEditMode) {
         await updateReview(reviewId, { rating: values.rating, content: values.content });
-        toast.success('리뷰가 수정되었습니다.');
         onSuccess?.(reviewId, values.rating, values.content);
       } else {
         const created = await createReview({
@@ -71,7 +70,6 @@ export default function ReviewWriteModal({
           rating: values.rating,
           content: values.content,
         });
-        toast.success('리뷰가 등록되었습니다.');
         onSuccess?.(created.id, values.rating, values.content);
       }
       onClose();

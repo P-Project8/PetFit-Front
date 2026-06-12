@@ -29,7 +29,7 @@ export default function GalleryDetailPage() {
       try {
         const data = await getGalleryDetail(Number(galleryId));
         setItem(data);
-        setIsLiked(data.isLiked);
+        setIsLiked(data.liked);
         setLikeCount(data.likeCount);
       } catch {
         toast.error('게시물을 불러오지 못했습니다.');
@@ -47,11 +47,11 @@ export default function GalleryDetailPage() {
     setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
     setIsLiking(true);
     try {
-      const result = await toggleLike(item.id, isLiked);
-      setIsLiked(result.isLiked);
+      const result = await toggleLike(item.id);
+      setIsLiked(result.liked);
       setLikeCount(result.likeCount);
     } catch {
-      setIsLiked(isLiked);
+      setIsLiked(item.liked);
       setLikeCount(item.likeCount);
       toast.error('좋아요 처리에 실패했습니다.');
     } finally {
@@ -76,7 +76,11 @@ export default function GalleryDetailPage() {
 
       {/* 이미지 */}
       <div className="w-full aspect-square bg-gray-100">
-        <img src={item.resultImageUrl} alt="스타일링 결과" className="w-full h-full object-cover" />
+        <img
+          src={item.imageUrl}
+          alt="스타일링 결과"
+          className="w-full h-full object-cover"
+        />
       </div>
 
       {/* 작성자 + 좋아요 */}
@@ -87,7 +91,9 @@ export default function GalleryDetailPage() {
           </div>
           <div>
             <p className="text-sm font-semibold text-gray-900">{item.userId}</p>
-            <p className="text-xs text-gray-400">{formatDate(item.createdAt)}</p>
+            <p className="text-xs text-gray-400">
+              {formatDate(item.createdAt)}
+            </p>
           </div>
         </div>
         <button
@@ -97,32 +103,24 @@ export default function GalleryDetailPage() {
           <Heart
             className={`w-6 h-6 transition-colors ${isLiked ? 'fill-red-500 text-red-500' : 'text-gray-400'}`}
           />
-          <span className="text-sm font-semibold text-gray-700">{likeCount}</span>
+          <span className="text-sm font-semibold text-gray-700">
+            {likeCount}
+          </span>
         </button>
       </div>
 
-      {/* 상품 태그 */}
-      {item.productId && item.productName && (
-        <div className="mx-4 my-3 flex items-center gap-3 p-3 border border-gray-200 rounded-2xl">
-          {item.productThumbnailUrl && (
-            <img
-              src={item.productThumbnailUrl}
-              alt={item.productName}
-              className="w-12 h-12 rounded-xl object-cover bg-gray-100 shrink-0"
-            />
-          )}
-          <div className="flex-1 min-w-0">
-            <p className="text-xs text-gray-500">착용 상품</p>
-            <p className="text-sm font-semibold text-gray-900 truncate">{item.productName}</p>
-          </div>
-          <button
-            onClick={() => navigate(`/product/${item.productId}`)}
-            className="shrink-0 flex items-center gap-1 px-3 py-2 bg-[#14314F] text-white text-xs font-bold rounded-xl"
-          >
+      {/* 착용 상품 */}
+      {item.productId && (
+        <button
+          onClick={() => navigate(`/product/${item.productId}`)}
+          className="mx-4 my-3 w-[calc(100%-2rem)] flex items-center justify-between p-3 border border-gray-200 rounded-2xl active:bg-gray-50 transition-colors"
+        >
+          <p className="text-sm text-gray-500">착용 상품이 있어요</p>
+          <div className="shrink-0 flex items-center gap-1 px-3 py-2 bg-[#14314F] text-white text-xs font-bold rounded-xl">
             <ShoppingBag className="w-3.5 h-3.5" />
             구매하기
-          </button>
-        </div>
+          </div>
+        </button>
       )}
 
       {/* 댓글 */}

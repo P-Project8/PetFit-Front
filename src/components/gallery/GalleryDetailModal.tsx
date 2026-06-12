@@ -18,7 +18,7 @@ function formatDate(iso: string) {
 
 export default function GalleryDetailModal({ item, onClose }: GalleryDetailModalProps) {
   const navigate = useNavigate();
-  const [isLiked, setIsLiked] = useState(item.isLiked);
+  const [isLiked, setIsLiked] = useState(item.liked);
   const [likeCount, setLikeCount] = useState(item.likeCount);
   const [isLiking, setIsLiking] = useState(false);
 
@@ -29,12 +29,12 @@ export default function GalleryDetailModal({ item, onClose }: GalleryDetailModal
     setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
     setIsLiking(true);
     try {
-      const result = await toggleLike(item.id, isLiked);
-      setIsLiked(result.isLiked);
+      const result = await toggleLike(item.id);
+      setIsLiked(result.liked);
       setLikeCount(result.likeCount);
     } catch {
       // 롤백
-      setIsLiked(isLiked);
+      setIsLiked(item.liked);
       setLikeCount(item.likeCount);
       toast.error('좋아요 처리에 실패했습니다.');
     } finally {
@@ -68,7 +68,7 @@ export default function GalleryDetailModal({ item, onClose }: GalleryDetailModal
           {/* 이미지 */}
           <div className="w-full aspect-square bg-gray-100">
             <img
-              src={item.resultImageUrl}
+              src={item.imageUrl}
               alt="스타일링 결과"
               className="w-full h-full object-cover"
             />
@@ -88,19 +88,9 @@ export default function GalleryDetailModal({ item, onClose }: GalleryDetailModal
           </div>
 
           {/* 상품 태그 */}
-          {item.productId && item.productName && (
-            <div className="mx-4 mb-3 flex items-center gap-3 p-3 border border-gray-200 rounded-2xl">
-              {item.productThumbnailUrl && (
-                <img
-                  src={item.productThumbnailUrl}
-                  alt={item.productName}
-                  className="w-12 h-12 rounded-xl object-cover bg-gray-100 shrink-0"
-                />
-              )}
-              <div className="flex-1 min-w-0">
-                <p className="text-xs text-gray-500">착용 상품</p>
-                <p className="text-sm font-semibold text-gray-900 truncate">{item.productName}</p>
-              </div>
+          {item.productId && (
+            <div className="mx-4 mb-3 flex items-center justify-between p-3 border border-gray-200 rounded-2xl">
+              <p className="text-sm text-gray-500">착용 상품이 있어요</p>
               <button
                 onClick={() => { onClose(); navigate(`/product/${item.productId}`); }}
                 className="shrink-0 flex items-center gap-1 px-3 py-2 bg-[#14314F] text-white text-xs font-bold rounded-xl"

@@ -163,9 +163,6 @@ export default function ProfileEditTab({ onBack }: ProfileEditTabProps) {
         form.setValue('currentPassword', '');
         form.setValue('newPassword', '');
         form.setValue('confirmPassword', '');
-        toast.success('프로필 및 비밀번호가 변경되었습니다.');
-      } else {
-        toast.success('프로필이 수정되었습니다.');
       }
     } catch (error) {
       console.error('프로필 수정 에러:', error);

@@ -55,7 +55,6 @@ export default function CheckoutModal({ onClose, onSuccess }: CheckoutModalProps
       });
       // 주문 생성 후 장바구니 새로고침 (백엔드에서 자동 처리했을 수 있음)
       await fetchCart();
-      toast.success('주문이 완료되었습니다!');
       onSuccess();
     } catch {
       toast.error('주문에 실패했습니다. 다시 시도해주세요.');

@@ -55,15 +55,17 @@ body {
   /* 스크롤바 숨기기 클래스의 속성을 여기에 직접 줍니다 */
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden; /* 가로 스크롤 강력 차단 */
-  position: relative; /* 내부 요소 기준점 확보 */
-  touch-action: pan-y; /* 수직 스크롤은 허용하되, 대각선/수평 흔들림 방지 */
-  overscroll-behavior-y: none;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden; /* 가로 스크롤 강력 차단 */
+  touch-action: pan-y; /* 수직 스크롤은 허용하되, 대각선/수평 흔들림 방지 */
+  overscroll-behavior-y: none;
   input:-webkit-autofill,
   input:-webkit-autofill:hover,
   input:-webkit-autofill:focus {

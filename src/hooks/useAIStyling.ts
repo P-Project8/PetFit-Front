@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import type { ProductListItem } from '../services/api';
 import { getProducts, filterProducts } from '../services/api';
 import { generateStylingImage } from '../services/aiStylingService';
+import { downloadStyling } from '../services/aiApi';
 import { getMyPets } from '../services/petApi';
 import type { PetResponse } from '../types/pet';
 
@@ -32,6 +33,7 @@ export function useAIStyling() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [resultImageUrl, setResultImageUrl] = useState<string | null>(null); // S3 URL
+  const [resultStylingId, setResultStylingId] = useState<number | null>(null);
   const [similarProducts, setSimilarProducts] = useState<ProductListItem[]>([]);
 
   // 온보딩 체크
@@ -150,10 +152,10 @@ export function useAIStyling() {
         selectedPetProfile?.id,
       );
 
+      setResultStylingId(result.stylingId);
       // 표시용: S3 URL 우선, 없으면 base64
       setResultImage(result.resultImageUrl || result.resultImageBase64);
       setResultImageUrl(result.resultImageUrl);
-      toast.success('스타일링 이미지가 생성되었습니다!');
     } catch (error) {
       console.error(error);
       const errorMessage = error instanceof Error ? error.message : '';
@@ -185,6 +187,7 @@ export function useAIStyling() {
     setSelectedSize(null);
     setResultImage(null);
     setResultImageUrl(null);
+    setResultStylingId(null);
     setSimilarProducts([]);
   }
 
@@ -203,13 +206,40 @@ export function useAIStyling() {
   }
 
   async function handleDownload() {
-    // S3 URL이 있으면 직접 다운로드, 없으면 base64 처리
-    const downloadTarget = resultImageUrl || resultImage;
-    if (!downloadTarget) return;
+    if (!resultStylingId && !resultImageUrl && !resultImage) return;
 
     try {
-      const response = await fetch(downloadTarget);
-      const blob = await response.blob();
+      let base64Data: string;
+
+      if (resultStylingId) {
+        // 서버 다운로드 API: 구독 등급별 품질 차별화 (FREE: 512px+워터마크, PREMIUM: 원본)
+        const response = await downloadStyling(resultStylingId);
+        base64Data = response.resultImageBase64;
+      } else {
+        // fallback: S3 URL 또는 base64 직접 사용
+        const source = resultImageUrl || resultImage!;
+        if (source.startsWith('data:')) {
+          const match = source.match(/^data:.+;base64,(.+)$/);
+          base64Data = match ? match[1] : source;
+        } else {
+          const res = await fetch(source);
+          const blob = await res.blob();
+          base64Data = await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve((reader.result as string).split(',')[1]);
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+
+      // 서버가 "data:image/png;base64,..." 형태로 줄 수도 있어서 prefix 제거
+      const rawBase64 = base64Data.includes(',') ? base64Data.split(',')[1] : base64Data;
+      const byteChars = atob(rawBase64.trim());
+      const byteArray = new Uint8Array(byteChars.length);
+      for (let i = 0; i < byteChars.length; i++) {
+        byteArray[i] = byteChars.charCodeAt(i);
+      }
+      const blob = new Blob([byteArray], { type: 'image/png' });
       const url = window.URL.createObjectURL(blob);
 
       const link = document.createElement('a');
@@ -221,28 +251,7 @@ export function useAIStyling() {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Download failed:', error);
-
-      if (navigator.share && downloadTarget) {
-        try {
-          const response = await fetch(downloadTarget);
-          const blob = await response.blob();
-          const file = new File([blob], `petfit-styling-${Date.now()}.png`, {
-            type: blob.type,
-          });
-          await navigator.share({
-            files: [file],
-            title: 'PetFit 스타일링',
-            text: '우리 아이 AI 스타일링 결과',
-          });
-          return;
-        } catch {
-          // 공유도 실패
-        }
-      }
-
-      toast.error(
-        '이미지 저장에 실패했습니다. 이미지를 길게 눌러 저장해주세요.',
-      );
+      toast.error('이미지 저장에 실패했습니다. 이미지를 길게 눌러 저장해주세요.');
     }
   }
 
@@ -257,6 +266,7 @@ export function useAIStyling() {
     isProcessing,
     resultImage,
     resultImageUrl,
+    resultStylingId,
     showOnboarding,
     showProductModal,
     setShowOnboarding,

@@ -102,7 +102,6 @@ export default function PetListTab({ onBack }: PetListTabProps) {
         setOpenCurationPetId(null);
         setCurationData(null);
       }
-      toast.success('반려견이 삭제되었습니다.');
     } catch {
       toast.error('삭제에 실패했습니다.');
     } finally {
@@ -114,11 +113,9 @@ export default function PetListTab({ onBack }: PetListTabProps) {
     if (formMode === 'create') {
       const newPet = await createPet(data as CreatePetRequest);
       setPets((prev) => [...prev, newPet]);
-      toast.success('반려견이 등록되었습니다.');
     } else if (editingPet) {
       const updated = await updatePet(editingPet.id, data);
       setPets((prev) => prev.map((p) => (p.id === editingPet.id ? updated : p)));
-      toast.success('반려견 정보가 수정되었습니다.');
     }
     setView('list');
   }

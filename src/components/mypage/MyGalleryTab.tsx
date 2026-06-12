@@ -36,7 +36,6 @@ export default function MyGalleryTab({ onBack }: MyGalleryTabProps) {
     try {
       await deleteGalleryPost(deleteId);
       setItems((prev) => prev.filter((i) => i.id !== deleteId));
-      toast.success('게시물이 삭제되었습니다.');
     } catch {
       toast.error('삭제에 실패했습니다.');
     } finally {

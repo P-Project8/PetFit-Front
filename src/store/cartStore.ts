@@ -55,7 +55,6 @@ export const useCartStore = create<CartStore>()((set, get) => ({
         }
         return { items: [...state.items, newItem] };
       });
-      toast.success('장바구니에 추가되었습니다.');
     } catch {
       toast.error('장바구니 추가에 실패했습니다.');
     }

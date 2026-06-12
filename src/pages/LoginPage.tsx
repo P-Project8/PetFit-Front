@@ -63,7 +63,6 @@ export default function LoginPage() {
         // 프로필 조회 실패해도 로그인은 유지
       }
 
-      toast.success('로그인 되었습니다.');
       navigate('/');
     } catch (error) {
       const apiError = error as ApiException;

@@ -55,11 +55,9 @@ export default function RootLayout() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="min-h-screen bg-white">
       {!['/login', '/signup'].includes(pathname) && <Header />}
-      <div className="flex-1 flex flex-col">
-        <Outlet />
-      </div>
+      <Outlet />
       <Navbar />
     </div>
   );

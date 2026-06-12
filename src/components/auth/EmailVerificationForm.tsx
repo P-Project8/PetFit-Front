@@ -53,7 +53,6 @@ export default function EmailVerificationForm({
     try {
       await sendVerificationCode(email);
       setCodeSent(true);
-      toast.success('인증 코드가 발송되었습니다.');
     } catch (error) {
       const apiError = error as ApiException;
       toast.error(apiError.message || '인증 코드 발송에 실패했습니다.');
@@ -71,7 +70,6 @@ export default function EmailVerificationForm({
       const response = await verifyEmail(trimmedEmail, trimmedCode);
 
       if (response.verified) {
-        toast.success('이메일 인증이 완료되었습니다.');
         onVerificationSuccess(trimmedEmail);
       } else {
         toast.error('인증 코드가 일치하지 않습니다.');

@@ -7,9 +7,11 @@ import {
   LogOut,
   PawPrint,
   Images,
+  Crown,
 } from 'lucide-react';
 
 interface MenuListProps {
+  onSubscriptionClick: () => void;
   onGalleryClick: () => void;
   onPetsClick: () => void;
   onOrdersClick: () => void;
@@ -20,6 +22,7 @@ interface MenuListProps {
 }
 
 export default function MenuList({
+  onSubscriptionClick,
   onGalleryClick,
   onPetsClick,
   onOrdersClick,
@@ -34,6 +37,7 @@ export default function MenuList({
       <div className="mt-2 bg-white">
         <div className="px-6 py-4">
           <div className="space-y-1">
+            <MenuItem icon={Crown} label="구독 관리" onClick={onSubscriptionClick} />
             <MenuItem icon={Images} label="내 스타일링" onClick={onGalleryClick} />
             <MenuItem icon={PawPrint} label="내 반려견" onClick={onPetsClick} />
             <MenuItem icon={Package} label="주문내역" onClick={onOrdersClick} />
