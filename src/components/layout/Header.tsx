@@ -1,7 +1,9 @@
-import { Search, ShoppingCart } from 'lucide-react';
+import { Bell, Search, ShoppingCart } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useCartStore } from '../../store/cartStore';
+import { useAuthStore } from '../../store/authStore';
+import { getUnreadCount } from '../../services/api';
 import PLogo from '/src/assets/P.svg?react';
 import FLogo from '/src/assets/F.svg?react';
 
@@ -13,7 +15,9 @@ export function Header({ scrollContainer }: HeaderProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const totalItems = useCartStore((state) => state.getTotalItems());
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   const isMainPage = location.pathname === '/';
 
@@ -30,6 +34,26 @@ export function Header({ scrollContainer }: HeaderProps) {
     target.addEventListener('scroll', handleScroll);
     return () => target.removeEventListener('scroll', handleScroll);
   }, [scrollContainer]);
+
+  useEffect(function pollUnreadCount() {
+    if (!isAuthenticated) {
+      setUnreadCount(0);
+      return;
+    }
+
+    async function fetchCount() {
+      try {
+        const count = await getUnreadCount();
+        setUnreadCount(count);
+      } catch {
+        // 실패 시 뱃지 유지
+      }
+    }
+
+    fetchCount();
+    const interval = setInterval(fetchCount, 30_000);
+    return () => clearInterval(interval);
+  }, [isAuthenticated]);
 
   return (
     <header
@@ -73,6 +97,20 @@ export function Header({ scrollContainer }: HeaderProps) {
           >
             <Search className="w-5 h-5 text-gray-700" />
           </button>
+
+          {isAuthenticated && (
+            <button
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors relative cursor-pointer"
+              onClick={() => navigate('/notifications')}
+            >
+              <Bell className="w-5 h-5 text-gray-700" />
+              {unreadCount > 0 && (
+                <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
+            </button>
+          )}
 
           <button
             className="p-2 hover:bg-gray-100 rounded-full transition-colors relative cursor-pointer"

@@ -9,3 +9,4 @@ export * from './reviewApi';
 export * from './aiApi';
 export * from './fileApi';
 export * from './petApi';
+export * from './notificationApi';

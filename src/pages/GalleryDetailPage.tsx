@@ -7,8 +7,12 @@ import GalleryCommentSection from '../components/gallery/GalleryCommentSection';
 import { getGalleryDetail, toggleLike } from '../services/galleryApi';
 import type { GalleryItem } from '../types/gallery';
 
-function formatDate(iso: string) {
-  const d = new Date(iso);
+function formatDate(iso: string | null | undefined) {
+  if (!iso) return '';
+  // 서버가 Z 없이 UTC 시간을 반환하는 경우 KST로 올바르게 변환되도록 Z 명시
+  const utc = iso.endsWith('Z') || iso.includes('+') ? iso : iso + 'Z';
+  const d = new Date(utc);
+  if (isNaN(d.getTime())) return '';
   return `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
 }
 

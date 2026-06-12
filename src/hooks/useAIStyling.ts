@@ -209,15 +209,19 @@ export function useAIStyling() {
     if (!resultStylingId && !resultImageUrl && !resultImage) return;
 
     try {
-      let base64Data: string;
+      let base64Data: string | undefined;
 
       if (resultStylingId) {
         // 서버 다운로드 API: 구독 등급별 품질 차별화 (FREE: 512px+워터마크, PREMIUM: 원본)
         const response = await downloadStyling(resultStylingId);
         base64Data = response.resultImageBase64;
-      } else {
-        // fallback: S3 URL 또는 base64 직접 사용
-        const source = resultImageUrl || resultImage!;
+      }
+
+      // API 응답에 base64가 없으면 URL/로컬 base64로 fallback
+      if (!base64Data) {
+        const source = resultImageUrl || resultImage;
+        if (!source) throw new Error('다운로드할 이미지가 없습니다.');
+
         if (source.startsWith('data:')) {
           const match = source.match(/^data:.+;base64,(.+)$/);
           base64Data = match ? match[1] : source;
@@ -231,6 +235,8 @@ export function useAIStyling() {
           });
         }
       }
+
+      if (!base64Data) throw new Error('이미지 데이터를 가져올 수 없습니다.');
 
       // 서버가 "data:image/png;base64,..." 형태로 줄 수도 있어서 prefix 제거
       const rawBase64 = base64Data.includes(',') ? base64Data.split(',')[1] : base64Data;

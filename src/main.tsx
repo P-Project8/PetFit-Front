@@ -17,6 +17,7 @@ import MyPage from './pages/MyPage';
 import GalleryPage from './pages/GalleryPage';
 import GalleryDetailPage from './pages/GalleryDetailPage';
 import CheckoutPage from './pages/CheckoutPage';
+import NotificationsPage from './pages/NotificationsPage';
 import StyleGuidePage from './pages/StyleGuidePage';
 import ScrollToTop from './components/common/ScrollToTop';
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -86,6 +87,16 @@ createRoot(document.getElementById('root')!).render(
             {/* 갤러리 */}
             <Route path="/gallery" element={<GalleryPage />} />
             <Route path="/gallery/:galleryId" element={<GalleryDetailPage />} />
+
+            {/* 알림 */}
+            <Route
+              path="/notifications"
+              element={
+                <ProtectedRoute>
+                  <NotificationsPage />
+                </ProtectedRoute>
+              }
+            />
 
             {/* 마이페이지 */}
             <Route

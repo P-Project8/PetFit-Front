@@ -8,8 +8,11 @@ interface GalleryCommentSectionProps {
   galleryId: number;
 }
 
-function formatDate(iso: string) {
-  const d = new Date(iso);
+function formatDate(iso: string | null | undefined) {
+  if (!iso) return '';
+  const utc = iso.endsWith('Z') || iso.includes('+') ? iso : iso + 'Z';
+  const d = new Date(utc);
+  if (isNaN(d.getTime())) return '';
   return `${d.getMonth() + 1}.${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 }
 

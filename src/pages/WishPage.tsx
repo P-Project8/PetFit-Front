@@ -66,7 +66,7 @@ export default function WishPage() {
 
   return (
     <div className="min-h-screen bg-white pt-12 pb-20">
-      <PageHeader title="찜 목록" showBackButton={false} />
+      <PageHeader title="찜 목록" onBackClick={() => navigate(-1)} />
       <ProductListHeader
         itemCount={sortedProducts.length}
         sortBy={sortBy}
