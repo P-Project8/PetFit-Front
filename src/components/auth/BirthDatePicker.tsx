@@ -72,7 +72,7 @@ export default function BirthDatePicker({ field }: BirthDatePickerProps) {
                 <SelectValue placeholder="년도" />
               </SelectTrigger>
             </FormControl>
-            <SelectContent className="max-h-[200px]">
+            <SelectContent side="top" className="max-h-[200px]">
               {years.map((year) => (
                 <SelectItem key={year} value={year.toString()}>
                   {year}년
@@ -90,7 +90,7 @@ export default function BirthDatePicker({ field }: BirthDatePickerProps) {
                 <SelectValue placeholder="월" />
               </SelectTrigger>
             </FormControl>
-            <SelectContent className="max-h-[200px]">
+            <SelectContent side="top" className="max-h-[200px]">
               {months.map((month) => (
                 <SelectItem key={month} value={month.toString()}>
                   {month}월
@@ -108,7 +108,7 @@ export default function BirthDatePicker({ field }: BirthDatePickerProps) {
                 <SelectValue placeholder="일" />
               </SelectTrigger>
             </FormControl>
-            <SelectContent className="max-h-[200px]">
+            <SelectContent side="top" className="max-h-[200px]">
               {days.map((day) => (
                 <SelectItem key={day} value={day.toString()}>
                   {day}일

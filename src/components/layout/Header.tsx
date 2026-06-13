@@ -24,9 +24,9 @@ export function Header({ scrollContainer }: HeaderProps) {
   useEffect(() => {
     const handleScroll = () => {
       if (scrollContainer?.current) {
-        setIsScrolled(scrollContainer.current.scrollTop > 50);
+        setIsScrolled(scrollContainer.current.scrollTop > 10);
       } else {
-        setIsScrolled(window.scrollY > 50);
+        setIsScrolled(window.scrollY > 10);
       }
     };
 

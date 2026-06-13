@@ -42,6 +42,7 @@ export interface ProductDetail extends ProductListItem {
   stockQuantity: number;
   options: ProductOption[];
   images: ProductImage[];
+  wishCount?: number;
 }
 
 // 카테고리

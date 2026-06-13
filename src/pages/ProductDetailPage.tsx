@@ -24,6 +24,7 @@ export default function ProductDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [showOptionModal, setShowOptionModal] = useState(false);
   const [showSizeRecommendModal, setShowSizeRecommendModal] = useState(false);
+  const [wishCount, setWishCount] = useState(0);
 
   useEffect(
     function fetchProduct() {
@@ -33,6 +34,7 @@ export default function ProductDetailPage() {
         try {
           const result = await getProductById(Number(productId));
           setProduct(result);
+          setWishCount(result.wishCount ?? 0);
         } catch {
           toast.error('상품 정보를 불러오지 못했습니다.');
         } finally {
@@ -80,6 +82,7 @@ export default function ProductDetailPage() {
       toast.error('로그인이 필요한 서비스입니다.');
       return;
     }
+    setWishCount((prev) => (liked ? prev - 1 : prev + 1));
     toggleWishlist(id);
   }
 
@@ -145,7 +148,7 @@ export default function ProductDetailPage() {
 
       <ProductActionBar
         isLike={liked}
-        wishCount={0}
+        wishCount={wishCount}
         onWishClick={() => handleWishClick(product.id)}
         onAIStyling={handleAIStyling}
         onBuyClick={handleBuyClick}

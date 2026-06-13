@@ -1,0 +1,16 @@
+{
+  "name": "PetFit",
+  "short_name": "PetFit",
+  "description": "AI 반려동물 패션 스타일링",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#14314F",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png"
+    }
+  ]
+}

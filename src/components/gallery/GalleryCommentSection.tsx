@@ -103,7 +103,7 @@ export default function GalleryCommentSection({ galleryId }: GalleryCommentSecti
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') handleSend(); }}
           placeholder="댓글을 입력하세요..."
-          className="flex-1 text-sm px-3 py-2 bg-gray-100 rounded-full outline-none"
+          className="flex-1 text-base px-3 py-2 bg-gray-100 rounded-full outline-none"
         />
         <button
           onClick={handleSend}

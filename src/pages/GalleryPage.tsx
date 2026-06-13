@@ -31,7 +31,7 @@ export default function GalleryPage() {
       <PageHeader title="피드" onBackClick={() => navigate(-1)} />
 
       {/* 탭 */}
-      <div className="flex border-b border-gray-100 sticky top-12 bg-white z-10">
+      <div className="flex border-b border-gray-100 sticky top-12 bg-white/70 backdrop-blur-md z-10">
         {(['latest', 'popular'] as FeedTab[]).map((t) => (
           <button
             key={t}

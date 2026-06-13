@@ -148,7 +148,7 @@ export default function PetFormPage({ mode, initialData, onBack, onSubmit }: Pet
               value={form.name}
               onChange={(e) => handleChange('name', e.target.value)}
               placeholder="반려견 이름"
-              className="w-full px-4 py-3.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#14314F] bg-gray-50 focus:bg-white transition-colors"
+              className="w-full px-4 py-3.5 border border-gray-200 rounded-xl text-base focus:outline-none focus:border-[#14314F] bg-gray-50 focus:bg-white transition-colors"
             />
           </div>
 
@@ -161,7 +161,7 @@ export default function PetFormPage({ mode, initialData, onBack, onSubmit }: Pet
               value={form.breed}
               onChange={(e) => handleChange('breed', e.target.value)}
               placeholder="예: 말티즈, 푸들, 시바이누"
-              className="w-full px-4 py-3.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#14314F] bg-gray-50 focus:bg-white transition-colors"
+              className="w-full px-4 py-3.5 border border-gray-200 rounded-xl text-base focus:outline-none focus:border-[#14314F] bg-gray-50 focus:bg-white transition-colors"
             />
           </div>
 
@@ -174,7 +174,7 @@ export default function PetFormPage({ mode, initialData, onBack, onSubmit }: Pet
                 onChange={(e) => handleChange('age', e.target.value)}
                 placeholder="0"
                 min="0" max="30"
-                className="w-full px-4 py-3.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#14314F] bg-gray-50 focus:bg-white transition-colors"
+                className="w-full px-4 py-3.5 border border-gray-200 rounded-xl text-base focus:outline-none focus:border-[#14314F] bg-gray-50 focus:bg-white transition-colors"
               />
             </div>
             <div>
@@ -185,7 +185,7 @@ export default function PetFormPage({ mode, initialData, onBack, onSubmit }: Pet
                 onChange={(e) => handleChange('weight', e.target.value)}
                 placeholder="0.0"
                 min="0" step="0.1"
-                className="w-full px-4 py-3.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#14314F] bg-gray-50 focus:bg-white transition-colors"
+                className="w-full px-4 py-3.5 border border-gray-200 rounded-xl text-base focus:outline-none focus:border-[#14314F] bg-gray-50 focus:bg-white transition-colors"
               />
             </div>
           </div>
@@ -207,7 +207,7 @@ export default function PetFormPage({ mode, initialData, onBack, onSubmit }: Pet
                 onChange={(e) => handleChange('neckSize', e.target.value)}
                 placeholder="0.0"
                 min="0" step="0.1"
-                className="w-full px-3 py-3.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#14314F] bg-gray-50 focus:bg-white transition-colors text-center"
+                className="w-full px-3 py-3.5 border border-gray-200 rounded-xl text-base focus:outline-none focus:border-[#14314F] bg-gray-50 focus:bg-white transition-colors text-center"
               />
             </div>
             <div>
@@ -218,7 +218,7 @@ export default function PetFormPage({ mode, initialData, onBack, onSubmit }: Pet
                 onChange={(e) => handleChange('chestSize', e.target.value)}
                 placeholder="0.0"
                 min="0" step="0.1"
-                className="w-full px-3 py-3.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#14314F] bg-gray-50 focus:bg-white transition-colors text-center"
+                className="w-full px-3 py-3.5 border border-gray-200 rounded-xl text-base focus:outline-none focus:border-[#14314F] bg-gray-50 focus:bg-white transition-colors text-center"
               />
             </div>
             <div>
@@ -229,7 +229,7 @@ export default function PetFormPage({ mode, initialData, onBack, onSubmit }: Pet
                 onChange={(e) => handleChange('backLength', e.target.value)}
                 placeholder="0.0"
                 min="0" step="0.1"
-                className="w-full px-3 py-3.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#14314F] bg-gray-50 focus:bg-white transition-colors text-center"
+                className="w-full px-3 py-3.5 border border-gray-200 rounded-xl text-base focus:outline-none focus:border-[#14314F] bg-gray-50 focus:bg-white transition-colors text-center"
               />
             </div>
           </div>

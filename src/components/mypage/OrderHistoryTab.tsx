@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 
 // ─── DEV ONLY: 백엔드 배송 상태 연동 완료 후 아래 두 줄 삭제 ───────────────
 // 배송완료로 강제할 주문 ID를 여기에 추가 (예: [12, 34, 56])
-const DEV_DELIVERED_ORDER_IDS = new Set<number>([6]);
+const DEV_DELIVERED_ORDER_IDS = new Set<number>([6, 8]);
 // ────────────────────────────────────────────────────────────────────────────
 
 const ORDER_STATUS_LABEL: Record<string, string> = {
