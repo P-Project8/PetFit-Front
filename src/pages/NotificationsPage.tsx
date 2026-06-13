@@ -9,6 +9,7 @@ import {
 } from '../services/api';
 import type { NotificationItem, NotificationType } from '../services/api';
 import type { PageResponse } from '../services/client';
+import { useNotificationStore } from '../store/notificationStore';
 
 const GALLERY_TYPES: NotificationType[] = ['GALLERY_LIKED', 'GALLERY_COMMENTED'];
 
@@ -46,6 +47,8 @@ export default function NotificationsPage() {
   const [pageData, setPageData] = useState<PageResponse<NotificationItem> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isMarkingAll, setIsMarkingAll] = useState(false);
+  const decrement = useNotificationStore((state) => state.decrement);
+  const resetCount = useNotificationStore((state) => state.reset);
 
   const load = useCallback(async function loadNotifications(targetPage: number) {
     setIsLoading(true);
@@ -74,6 +77,7 @@ export default function NotificationsPage() {
 
     try {
       await markNotificationRead(notification.id);
+      decrement();
       setPageData((prev) => {
         if (!prev) return prev;
         return {
@@ -96,6 +100,7 @@ export default function NotificationsPage() {
     setIsMarkingAll(true);
     try {
       await markAllNotificationsRead();
+      resetCount();
       setPageData((prev) => {
         if (!prev) return prev;
         return {

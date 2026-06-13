@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useCartStore } from '../../store/cartStore';
 import { useAuthStore } from '../../store/authStore';
+import { useNotificationStore } from '../../store/notificationStore';
 import { getUnreadCount } from '../../services/api';
 import PLogo from '/src/assets/P.svg?react';
 import FLogo from '/src/assets/F.svg?react';
@@ -15,9 +16,10 @@ export function Header({ scrollContainer }: HeaderProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
   const totalItems = useCartStore((state) => state.getTotalItems());
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const unreadCount = useNotificationStore((state) => state.unreadCount);
+  const setUnreadCount = useNotificationStore((state) => state.setUnreadCount);
 
   const isMainPage = location.pathname === '/';
 
@@ -53,7 +55,7 @@ export function Header({ scrollContainer }: HeaderProps) {
     fetchCount();
     const interval = setInterval(fetchCount, 30_000);
     return () => clearInterval(interval);
-  }, [isAuthenticated]);
+  }, [isAuthenticated, location.pathname]);
 
   return (
     <header
